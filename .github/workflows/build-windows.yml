@@ -1,0 +1,89 @@
+# BookWizOfficial · windows source build
+name: BookWiz · Windows
+'on':
+  workflow_dispatch: {}
+  push:
+    branches:
+    - '**'
+    tags:
+    - windows-v*
+    paths:
+    - source-windows.zip
+    - .github/workflows/build-windows.yml
+permissions:
+  contents: write
+concurrency:
+  group: bookwiz-windows-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  build:
+    if: ${{ github.event_name == 'workflow_dispatch' || github.ref_type == 'tag' || github.ref_name == github.event.repository.default_branch
+      }}
+    runs-on: windows-latest
+    timeout-minutes: 60
+    defaults:
+      run:
+        shell: bash
+        working-directory: bookwiz
+    steps:
+    - uses: actions/checkout@v7.0.1
+      with:
+        persist-credentials: false
+    - uses: actions/setup-python@v7.1.0
+      with:
+        python-version: '3.12'
+    - name: Verify the source archive
+      run: |
+        python - <<'PYEXTRACT'
+        import hashlib,json,pathlib,stat,zipfile
+        source=pathlib.Path('source-windows.zip')
+        if not source.is_file():raise SystemExit('Missing source-windows.zip at the repository root.')
+        output=pathlib.Path('bookwiz').resolve();seen=set()
+        with zipfile.ZipFile(source)as archive:
+            entries=archive.infolist()
+            if len(entries)>10000 or sum(x.file_size for x in entries)>256*1024*1024:raise SystemExit('The source archive exceeds the build limit.')
+            for entry in entries:
+                name=entry.filename;parts=pathlib.PurePosixPath(name)
+                if name in seen or parts.is_absolute() or '..'in parts.parts or '\\'in name or ':'in name or stat.S_ISLNK(entry.external_attr>>16):raise SystemExit('Unsafe source archive path: '+name)
+                seen.add(name)
+            manifest=json.loads(archive.read('SOURCE-MANIFEST.json'))
+            if manifest.get('platform')!='windows':raise SystemExit('Use the matching windows source ZIP and workflow.')
+            if seen!=set(manifest['files'])|{'SOURCE-MANIFEST.json'}:raise SystemExit('The archive contents differ from its source manifest. Regenerate the source ZIP after editing.')
+            for entry in entries:
+                data=archive.read(entry)
+                if entry.filename!='SOURCE-MANIFEST.json' and hashlib.sha256(data).hexdigest()!=manifest['files'][entry.filename]:raise SystemExit('Source checksum mismatch: '+entry.filename)
+                target=output/entry.filename;target.parent.mkdir(parents=True,exist_ok=True);target.write_bytes(data)
+        if not (output/'package.json').is_file():raise SystemExit('The source package does not contain package.json.')
+        print('Verified and unpacked '+source.name+' into bookwiz/.')
+        PYEXTRACT
+      working-directory: .
+    - uses: actions/setup-node@v7.1.0
+      with:
+        node-version: '24'
+        cache: npm
+        cache-dependency-path: bookwiz/package-lock.json
+    - name: Install build and test dependencies
+      run: npm ci
+    - name: Check the application source
+      run: npm run check
+    - name: Run application tests
+      run: npm test
+    - name: Refresh the offline application cache
+      run: node tools/version-cache.mjs
+    - name: Bundle the offline studio
+      run: node tools/prepare-native.mjs --target desktop
+    - name: Build one Windows installer for x64 and ARM64
+      run: npx electron-builder --config native/desktop/electron-builder.yml --win nsis --x64 --arm64 --publish never
+      env:
+        CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+    - uses: actions/upload-artifact@v7.0.2
+      with:
+        name: BookWiz-Windows-${{ github.run_id }}
+        path: |-
+          bookwiz/release/*.exe
+        if-no-files-found: error
+        retention-days: 14
+    - name: Publish packages and checksums to GitHub Releases
+      run: node tools/ci-release.mjs --target windows
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
