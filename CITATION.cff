@@ -1,0 +1,21 @@
+cff-version: 1.2.0
+message: "If BookWiz helps your work, please cite this repository using the metadata below."
+type: software
+title: "BookWiz: A private writing and publishing studio"
+authors:
+  - name: muneebwanee
+    website: "https://github.com/muneebwanee"
+version: 1.0.0
+repository-code: "https://github.com/muneebwanee/BookWizOfficial"
+url: "https://github.com/muneebwanee/BookWizOfficial"
+abstract: >-
+  BookWiz is a private writing studio for planning, drafting, revising,
+  designing and exporting books. It combines local manuscript storage,
+  optional connected writing models, Draft Flow continuation steering,
+  story profiles, original cover directions and publishing tools.
+keywords:
+  - writing
+  - manuscript
+  - publishing
+  - local-first
+  - creative-writing

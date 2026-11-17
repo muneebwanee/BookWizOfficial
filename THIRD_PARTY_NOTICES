@@ -1,0 +1,27 @@
+BookWiz by muneebwanee
+
+fflate 0.8.x: Copyright 2020 Arjun Barrett, MIT License.
+PDF.js 6.5.438: Mozilla Foundation and contributors, Apache License 2.0.
+DM Sans: respective font authors, SIL Open Font License 1.1.
+Lora: respective font authors, SIL Open Font License 1.1.
+Literata, Source Serif 4 and IBM Plex Sans: respective font authors, SIL Open Font License 1.1; bundled locally with full notices in dist/licenses.
+
+Full runtime library and font licenses are included in dist/licenses.
+jsdom is a test-only dependency under the MIT license. Its dependency notices remain in node_modules after npm install.
+
+Original sample book titles, prose, and geometric cover art are supplied as BookWiz reading samples. No publisher logos, trademarks, or official imprint templates are bundled. Provider names identify external services and imply no affiliation or endorsement.
+
+Native desktop hosts use Electron 45.3.2 (MIT and bundled Chromium/third-party licenses). Electron's LICENSE and LICENSES.chromium.html remain in packaged distributions. Packaging uses electron-builder, resedit, and resvg under their respective licenses. Android uses the OS WebView and Google Android SDK build tools; SDK tools are not redistributed with the app. Apple targets use system SwiftUI, WebKit, Network, WatchConnectivity, UIKit, and AVFoundation frameworks. No third-party telemetry SDK is added.
+
+Android App Bundle packaging uses Google bundletool 1.18.3 (Apache License 2.0, https://github.com/google/bundletool). The build fetches its pinned release JAR and verifies the published SHA-256; the JAR is a build tool and is not bundled with the application or source ZIP.
+
+Right-to-left LaTeX support includes the unmodified bidi 26.01.08 runtime and source by Vafa Khalighi and the bidi-tex contributors, under LPPL 1.3c. Its license, upstream README, source and checksum manifest are retained in dist/assets/tex/bidi/. The upstream distribution is https://ctan.org/pkg/bidi. These files retain their own license independently of BWNCL.
+
+qrcode-generator 2.0.4: Copyright 2009 Kazuhiko Arase, MIT License. Creates the real BookWiz project QR used on back covers.
+Noto Naskh Arabic, Noto Serif Devanagari and Noto Serif Bengali: respective font authors, SIL Open Font License 1.1. Bundled for local language-aware book rendering.
+
+BookWiz theme packs, skeletons, session controls and cover geometry are original application code. No third-party theme service, hosted font request or tracking SDK is used.
+
+PDF.js offline resources include Adobe CMap data, Foxit/Liberation standard fonts and codec runtimes. Their separate notices are retained in dist/assets/pdf.
+
+Provider brand artwork: LobeHub Icons contributors, MIT License. Bundled SVGs, source URLs and trademark attribution are in dist/assets/providers/SOURCES.json; full license in dist/licenses/lobehub-icons-MIT.txt. Provider marks identify their respective services and imply no endorsement. The custom-endpoint connection icon and the Google Gemini text identifier are original BookWiz geometry.
