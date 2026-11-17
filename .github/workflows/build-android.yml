@@ -1,0 +1,132 @@
+# BookWizOfficial · android source build
+name: BookWiz · Android
+'on':
+  workflow_dispatch: {}
+  push:
+    branches:
+    - '**'
+    tags:
+    - android-v*
+    paths:
+    - source-android.zip
+    - .github/workflows/build-android.yml
+permissions:
+  contents: write
+concurrency:
+  group: bookwiz-android-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  build:
+    if: ${{ github.event_name == 'workflow_dispatch' || github.ref_type == 'tag' || github.ref_name == github.event.repository.default_branch
+      }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    defaults:
+      run:
+        shell: bash
+        working-directory: bookwiz
+    steps:
+    - uses: actions/checkout@v7.0.1
+      with:
+        persist-credentials: false
+    - uses: actions/setup-python@v7.1.0
+      with:
+        python-version: '3.12'
+    - name: Verify the source archive
+      run: |
+        python - <<'PYEXTRACT'
+        import hashlib,json,pathlib,stat,zipfile
+        source=pathlib.Path('source-android.zip')
+        if not source.is_file():raise SystemExit('Missing source-android.zip at the repository root.')
+        output=pathlib.Path('bookwiz').resolve();seen=set()
+        with zipfile.ZipFile(source)as archive:
+            entries=archive.infolist()
+            if len(entries)>10000 or sum(x.file_size for x in entries)>256*1024*1024:raise SystemExit('The source archive exceeds the build limit.')
+            for entry in entries:
+                name=entry.filename;parts=pathlib.PurePosixPath(name)
+                if name in seen or parts.is_absolute() or '..'in parts.parts or '\\'in name or ':'in name or stat.S_ISLNK(entry.external_attr>>16):raise SystemExit('Unsafe source archive path: '+name)
+                seen.add(name)
+            manifest=json.loads(archive.read('SOURCE-MANIFEST.json'))
+            if manifest.get('platform')!='android':raise SystemExit('Use the matching android source ZIP and workflow.')
+            if seen!=set(manifest['files'])|{'SOURCE-MANIFEST.json'}:raise SystemExit('The archive contents differ from its source manifest. Regenerate the source ZIP after editing.')
+            for entry in entries:
+                data=archive.read(entry)
+                if entry.filename!='SOURCE-MANIFEST.json' and hashlib.sha256(data).hexdigest()!=manifest['files'][entry.filename]:raise SystemExit('Source checksum mismatch: '+entry.filename)
+                target=output/entry.filename;target.parent.mkdir(parents=True,exist_ok=True);target.write_bytes(data)
+        if not (output/'package.json').is_file():raise SystemExit('The source package does not contain package.json.')
+        print('Verified and unpacked '+source.name+' into bookwiz/.')
+        PYEXTRACT
+      working-directory: .
+    - uses: actions/setup-node@v7.1.0
+      with:
+        node-version: '24'
+        cache: npm
+        cache-dependency-path: bookwiz/package-lock.json
+    - name: Install build and test dependencies
+      run: npm ci --ignore-scripts
+    - name: Check the application source
+      run: npm run check
+    - name: Run application tests
+      run: npm test
+    - name: Verify the bundletool downloader
+      run: python3 tests/android-bundletool.test.py
+    - name: Refresh the offline application cache
+      run: node tools/version-cache.mjs
+    - uses: actions/setup-java@v6.3.0
+      with:
+        distribution: temurin
+        java-version: '21'
+    - name: Cache the pinned bundletool release
+      uses: actions/cache@v6.1.0
+      with:
+        path: bookwiz/.build-tools/bundletool-all-1.18.3.jar
+        key: bookwiz-bundletool-${{ hashFiles('bookwiz/tools/android_bundletool.py') }}
+    - uses: actions/cache@v6.1.0
+      if: ${{ env.BOOKWIZ_ANDROID_OWNER_SIGNING != 'true' }}
+      with:
+        path: bookwiz/.build-tools/signing/bookwiz-development.jks
+        key: bookwiz-android-development-key-v1-${{ github.repository_id }}
+    - name: Choose a fresh Android version code
+      run: |
+        node --input-type=module <<'JS'
+        import {appendFileSync} from 'node:fs';
+        const base=Number(process.env.VERSION_CODE_BASE||100000);
+        const code=base+Number(process.env.GITHUB_RUN_NUMBER)*100+Number(process.env.GITHUB_RUN_ATTEMPT);
+        if(!Number.isSafeInteger(code)||code<1||code>2100000000)throw Error('Set a valid BOOKWIZ_ANDROID_VERSION_CODE_BASE repository variable.');
+        appendFileSync(process.env.GITHUB_ENV,`BOOKWIZ_VERSION_CODE=${code}\n`);
+        console.log('Android version code: '+code);
+        JS
+      env:
+        VERSION_CODE_BASE: ${{ vars.BOOKWIZ_ANDROID_VERSION_CODE_BASE || '100000' }}
+    - name: Install the stable Android SDK tools
+      run: python3 tools/setup-android.py
+    - name: Build and verify the APK and Google Play AAB
+      run: |
+        python3 - <<'PYCHECK'
+        import os
+        names=['BOOKWIZ_ANDROID_KEYSTORE_BASE64','BOOKWIZ_ANDROID_KEYSTORE_PASSWORD','BOOKWIZ_ANDROID_KEY_ALIAS','BOOKWIZ_ANDROID_KEY_PASSWORD']
+        present=[bool(os.environ.get(name))for name in names]
+        if any(present)and not all(present):raise SystemExit('Configure all four Android signing secrets, or remove all four to build with the cached development key.')
+        PYCHECK
+        python3 tools/build-android.py
+        python3 tools/build-aab.py
+      env:
+        BOOKWIZ_ANDROID_KEYSTORE_BASE64: ${{ secrets.BOOKWIZ_ANDROID_KEYSTORE_BASE64 }}
+        BOOKWIZ_ANDROID_KEYSTORE_PASSWORD: ${{ secrets.BOOKWIZ_ANDROID_KEYSTORE_PASSWORD }}
+        BOOKWIZ_ANDROID_KEY_ALIAS: ${{ secrets.BOOKWIZ_ANDROID_KEY_ALIAS }}
+        BOOKWIZ_ANDROID_KEY_PASSWORD: ${{ secrets.BOOKWIZ_ANDROID_KEY_PASSWORD }}
+    - uses: actions/upload-artifact@v7.0.2
+      with:
+        name: BookWiz-Android-${{ github.run_id }}
+        path: |-
+          bookwiz/release/*.apk
+          bookwiz/release/*.aab
+        if-no-files-found: error
+        retention-days: 14
+    - name: Publish packages and checksums to GitHub Releases
+      run: node tools/ci-release.mjs --target android
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        BOOKWIZ_SIGNING_MODE: ${{ secrets.BOOKWIZ_ANDROID_KEYSTORE_BASE64 != '' && 'owner' || 'development' }}
+    env:
+      BOOKWIZ_ANDROID_OWNER_SIGNING: ${{ secrets.BOOKWIZ_ANDROID_KEYSTORE_BASE64 != '' }}
