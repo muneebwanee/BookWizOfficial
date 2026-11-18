@@ -12,6 +12,15 @@ What is new in the writing room.
 
 ---
 
+## Mobile layouts, native PDF and home-screen shortcuts
+
+- Android widgets now have distinct layouts and grid sizes, with a clock, writing shortcuts and weekly progress. Book tiles restore their saved chapter; other tiles open the controls they name.
+- Mobile library list rows keep their covers and titles aligned. Draft Flow labels fit and the final controls scroll clear of navigation.
+- Cover selection and book proofs keep their controls visible; proofs default to fitting the complete page.
+- Literary polish opens a visible text-model chooser when needed and produces revisions for review after sharing approval.
+- Mobile PDF options use the device’s print engine. Android requests the book’s trim, avoids extra system margins and embeds the local fonts.
+- Source pushes automatically build and publish the affected editions. All eight source ZIPs, platform READMEs, checksums, origin metadata and the offline cache refresh automatically, without duplicate release builds. ZIP-only source distributions retain verified extraction.
+
 ## 1.0.0
 
 ### The writing room
