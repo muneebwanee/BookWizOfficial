@@ -26,7 +26,8 @@ jobs:
         from pathlib import Path
         allowed = {'README.md', 'CONTRIBUTING.md', 'LICENSE', 'TERMS.md', '.gitignore', 'SOURCE-ORIGINS.json',
                    'docs/BUILDING.md', 'docs/SOURCE_ARCHIVES.md', 'docs/STUDIO_README.md',
-                   'docs/assets/star-history.svg', 'docs/assets/star-history.json', 'tools/package-platform-kits.py'}
+                   'docs/assets/star-history.svg', 'docs/assets/star-history.json', 'tools/package-platform-kits.py',
+                   'screenshots/README.md'}
         for platform in ['android', 'ios', 'watchos', 'tvos', 'windows', 'macos', 'linux', 'web']:
             allowed.update([f'README-{platform}.md', f'docs/platforms/{platform}.md'])
         names = subprocess.check_output(['git', 'ls-files', '-z']).decode().split('\0')
@@ -299,7 +300,7 @@ jobs:
         \ files are **BWNCL**. `*.md` documentation, wordlists, regex catalogs, and rubrics are **CC BY 4.0**. Third-party\
         \ licenses remain intact. [Read the boundary →](LICENSING.md)\n\n---\n\n**BookWiz · by muneebwanee**\nBOOKWIZ_FILE_66a82470ce7e4dbb\n\
         mv -f -- 'docs/SOURCE_ARCHIVES.md.bookwiz-new' 'docs/SOURCE_ARCHIVES.md'\nif [ ! -e 'docs/STAR_HISTORY.md'\
-        \ ]; then\ncat > 'docs/STAR_HISTORY.md.bookwiz-new' <<'BOOKWIZ_FILE_eb21c261a905a7d2'\n<div align=\"center\"\
+        \ ]; then\ncat > 'docs/STAR_HISTORY.md.bookwiz-new' <<'BOOKWIZ_FILE_e7611a4a3dad7817'\n<div align=\"center\"\
         >\n\n# A room, growing together\n\n**BookWiz's star-history chart is generated here and hosted here.**\n\
         \n[BookWiz](../README.md) · [Star the repository](https://github.com/muneebwanee/BookWizOfficial/stargazers)\
         \ · [Contribute](../CONTRIBUTING.md)\n\n</div>\n\n---\n\n![BookWiz star history](assets/star-history.svg)\n\
@@ -309,26 +310,65 @@ jobs:
         \ login\npython3 scripts/gen_star_history.py\n```\n\nThe generator uses Python's standard library and GitHub\
         \ CLI. It requests every page of timestamped stargazers, validates the response, groups stars by UTC date,\
         \ and writes the SVG and aggregate JSON. It does not store usernames or user IDs in the generated files.\
-        \ An authenticated `GH_TOKEN` can be used instead of interactive login in automation.\n\n## Daily refresh\n\
-        \n`.github/workflows/star-history.yml` runs each day at **06:17 UTC** and can also be started with **Actions\
-        \ → Star history → Run workflow**. It regenerates the chart with the repository's `GITHUB_TOKEN`, then commits\
-        \ only the chart and its aggregate JSON to the default branch when they change. GitHub may delay scheduled\
-        \ runs. Branch rules that prohibit direct bot commits also apply to this workflow.\n\nThe workflow uses\
-        \ a concurrency group and checks out the default branch even for a manual run. Its commit step refuses to\
-        \ overwrite a newer change to the same generated files. It does not modify source ZIPs, screenshots, videos,\
-        \ tags, or releases.\n\n## What the line represents\n\nThe line shows **current stargazers grouped by their\
-        \ recorded star dates**. A repository with no stars displays an honest empty state. Someone who later removes\
-        \ their star is no longer present in GitHub's current stargazer list, so the chart is not a complete historical\
-        \ record of stars that have since been removed.\n\nCounts are checked against GitHub's repository metadata.\
-        \ If the list changes during pagination or GitHub returns incomplete data, the generator retries and then\
-        \ leaves the previous chart in place if it still cannot obtain a consistent snapshot.\n\n---\n\nThe generator\
-        \ is **BWNCL** code. This guide, the generated SVG, and its aggregate data are **CC BY 4.0**. [Licensing\
-        \ details →](LICENSING.md)\nBOOKWIZ_FILE_eb21c261a905a7d2\nmv -f -- 'docs/STAR_HISTORY.md.bookwiz-new' 'docs/STAR_HISTORY.md'\n\
-        fi\nif [ ! -e 'scripts/gen_star_history.py' ]; then\ncat > 'scripts/gen_star_history.py.bookwiz-new' <<'BOOKWIZ_FILE_f5165fd4a4203a0c'\n\
-        #!/usr/bin/env python3\n\"\"\"Render BookWiz's repository-hosted star history. Run gh auth login first.\"\
-        \"\"\nfrom __future__ import annotations\n\nimport argparse\nfrom collections import Counter\nfrom datetime\
-        \ import datetime, timezone\nfrom html import escape\nimport json\nimport math\nfrom pathlib import Path\n\
-        import re\nimport shutil\nimport subprocess\nimport sys\nimport tempfile\nimport time\n\nROOT = Path(__file__).resolve().parents[1]\n\
+        \ An authenticated `GH_TOKEN` can be used instead of interactive login in automation.\n\nThe SVG and JSON\
+        \ are committed with the source. Normal contributor checks use those files without contacting GitHub. The\
+        \ initial source-import workflow generates them before validating documentation or packaging the platform\
+        \ archives.\n\nTo check every local documentation link and image reference:\n\n```sh\npython3 scripts/check_docs.py\n\
+        ```\n\nThe check includes the README, contributor guides, platform notes, and gallery. It reports missing\
+        \ local targets without fetching external links.\n\n## Daily refresh\n\n`.github/workflows/star-history.yml`\
+        \ runs each day at **06:17 UTC** and can also be started with **Actions → Star history → Run workflow**.\
+        \ It regenerates the chart with the repository's `GITHUB_TOKEN`, then commits only the chart and its aggregate\
+        \ JSON to the default branch when they change. GitHub may delay scheduled runs. Branch rules that prohibit\
+        \ direct bot commits also apply to this workflow.\n\nThe workflow uses a concurrency group and checks out\
+        \ the default branch even for a manual run. Its commit step refuses to overwrite a newer change to the same\
+        \ generated files. It does not modify source ZIPs, screenshots, videos, tags, or releases.\n\n## What the\
+        \ line represents\n\nThe line shows **current stargazers grouped by their recorded star dates**. A repository\
+        \ with no stars displays an honest empty state. Someone who later removes their star is no longer present\
+        \ in GitHub's current stargazer list, so the chart is not a complete historical record of stars that have\
+        \ since been removed.\n\nCounts are checked against GitHub's repository metadata. If the list changes during\
+        \ pagination or GitHub returns incomplete data, the generator retries and then leaves the previous chart\
+        \ in place if it still cannot obtain a consistent snapshot.\n\n---\n\nThe generator is **BWNCL** code. This\
+        \ guide, the generated SVG, and its aggregate data are **CC BY 4.0**. [Licensing details →](LICENSING.md)\n\
+        BOOKWIZ_FILE_e7611a4a3dad7817\nmv -f -- 'docs/STAR_HISTORY.md.bookwiz-new' 'docs/STAR_HISTORY.md'\nfi\n\
+        if [ ! -e 'scripts/check_docs.py' ]; then\ncat > 'scripts/check_docs.py.bookwiz-new' <<'BOOKWIZ_FILE_2caada786b902d64'\n\
+        #!/usr/bin/env python3\n\"\"\"Check local file references in BookWiz Markdown without contacting a server.\"\
+        \"\"\nfrom __future__ import annotations\n\nimport argparse\nfrom html.parser import HTMLParser\nfrom pathlib\
+        \ import Path\nimport re\nimport subprocess\nimport sys\nfrom urllib.parse import unquote, urlsplit\n\n\
+        ROOT = Path(__file__).resolve().parents[1]\nIGNORED = {'.git', 'node_modules', 'build', 'release', '.build-tools',\
+        \ '__pycache__'}\n\n\nclass HTMLReferences(HTMLParser):\n    def __init__(self):\n        super().__init__(convert_charrefs=True)\n\
+        \        self.references = []\n\n    def handle_starttag(self, tag, attributes):\n        for name, value\
+        \ in attributes:\n            if name in {'href', 'src'} and value:\n                self.references.append(value)\n\
+        \n\ndef references(text: str) -> list[str]:\n    # Ignore examples in fenced and inline code, then read\
+        \ Markdown links,\n    # reference definitions, and the HTML image strips used in the gallery.\n    text\
+        \ = re.sub(r'(?ms)^\\s*(`{3,}|~{3,})[^\\n]*\\n.*?^\\s*\\1\\s*$', '', text)\n    text = re.sub(r'(`+)(?!`)(.*?)\\\
+        1', '', text, flags=re.S)\n    found = []\n    for match in re.finditer(r'!?\\[[^\\]\\n]*\\]\\(\\s*(?:<([^>]+)>|([^\\\
+        s)]+))(?:\\s+[\"\\'][^\\n]*?[\"\\'])?\\s*\\)', text):\n        found.append(match.group(1) or match.group(2))\n\
+        \    for match in re.finditer(r'^\\s*\\[[^\\]]+\\]:\\s*(?:<([^>]+)>|(\\S+))', text, re.M):\n        found.append(match.group(1)\
+        \ or match.group(2))\n    parser = HTMLReferences()\n    parser.feed(text)\n    return found + parser.references\n\
+        \n\ndef markdown_files(root: Path):\n    try:\n        result = subprocess.run(['git', 'ls-files', '--cached',\
+        \ '--others', '--exclude-standard', '-z'], cwd=root, check=True, capture_output=True)\n        names = sorted(set(result.stdout.decode().split('\\\
+        0')))\n        return [root / name for name in names if name.endswith('.md') and (root / name).is_file()\
+        \ and not IGNORED.intersection(Path(name).parts)]\n    except (OSError, subprocess.CalledProcessError):\n\
+        \        return [p for p in sorted(root.rglob('*.md')) if not IGNORED.intersection(p.relative_to(root).parts)\
+        \ and p.is_file()]\n\n\ndef check(root: Path) -> dict:\n    root = root.resolve()\n    files, checked, missing\
+        \ = markdown_files(root), 0, []\n    for document in files:\n        for reference in references(document.read_text(encoding='utf-8-sig')):\n\
+        \            parsed = urlsplit(reference)\n            if parsed.scheme or parsed.netloc or not parsed.path:\n\
+        \                continue\n            checked += 1\n            local = unquote(parsed.path)\n        \
+        \    destination = (root / local.lstrip('/') if local.startswith('/') else document.parent / local).resolve()\n\
+        \            if not destination.is_relative_to(root) or not destination.is_file():\n                missing.append({'document':\
+        \ document.relative_to(root).as_posix(), 'reference': reference})\n    return {'markdownFiles': len(files),\
+        \ 'localReferences': checked, 'missing': missing}\n\n\ndef main(argv=None):\n    parser = argparse.ArgumentParser(description=__doc__)\n\
+        \    parser.add_argument('--root', type=Path, default=ROOT)\n    args = parser.parse_args(argv)\n    result\
+        \ = check(args.root)\n    if result['missing']:\n        for entry in result['missing']:\n            print(f\"\
+        Missing documentation target: {entry['document']} -> {entry['reference']}\", file=sys.stderr)\n        return\
+        \ 1\n    print(f\"Checked {result['markdownFiles']} Markdown files and {result['localReferences']} local\
+        \ file references.\")\n    return 0\n\n\nif __name__ == '__main__':\n    raise SystemExit(main())\nBOOKWIZ_FILE_2caada786b902d64\n\
+        mv -f -- 'scripts/check_docs.py.bookwiz-new' 'scripts/check_docs.py'\nfi\nif [ ! -e 'scripts/gen_star_history.py'\
+        \ ]; then\ncat > 'scripts/gen_star_history.py.bookwiz-new' <<'BOOKWIZ_FILE_f5165fd4a4203a0c'\n#!/usr/bin/env\
+        \ python3\n\"\"\"Render BookWiz's repository-hosted star history. Run gh auth login first.\"\"\"\nfrom __future__\
+        \ import annotations\n\nimport argparse\nfrom collections import Counter\nfrom datetime import datetime,\
+        \ timezone\nfrom html import escape\nimport json\nimport math\nfrom pathlib import Path\nimport re\nimport\
+        \ shutil\nimport subprocess\nimport sys\nimport tempfile\nimport time\n\nROOT = Path(__file__).resolve().parents[1]\n\
         DEFAULT_REPO = 'muneebwanee/BookWizOfficial'\n\n\ndef gh_json(endpoint: str, *, paginate: bool = False):\n\
         \    command = ['gh', 'api', '-H', 'Accept: application/vnd.github.star+json',\n               '-H', 'X-GitHub-Api-Version:\
         \ 2022-11-28', endpoint]\n    if paginate:\n        command += ['--paginate']\n    for attempt in range(3):\n\
@@ -479,7 +519,41 @@ jobs:
         \    report = import_sources(args.root)\n    print(f'Added {len(report[\"created\"])} editable files. All\
         \ eight source ZIPs and existing repository files were preserved.')\n\n\nif __name__ == '__main__':\n  \
         \  main()\nBOOKWIZ_FILE_a5e8e124dd2e4c90\nmv -f -- 'scripts/import_platform_sources.py.bookwiz-new' 'scripts/import_platform_sources.py'\n\
-        fi\nif [ ! -e 'tests/platform-kits.test.py' ]; then\ncat > 'tests/platform-kits.test.py.bookwiz-new' <<'BOOKWIZ_FILE_7aa0e52d56d665a9'\n\
+        fi\nif [ ! -e 'tests/docs.test.py' ]; then\ncat > 'tests/docs.test.py.bookwiz-new' <<'BOOKWIZ_FILE_4b00d91bea594c98'\n\
+        \"\"\"Validate linked documentation assets, including a freshly generated chart.\"\"\"\nimport importlib.util\n\
+        from pathlib import Path\nimport tempfile\nimport unittest\n\nROOT = Path(__file__).resolve().parents[1]\n\
+        spec = importlib.util.spec_from_file_location('bookwiz_docs', ROOT / 'scripts/check_docs.py')\ndocs = importlib.util.module_from_spec(spec)\n\
+        spec.loader.exec_module(docs)\n\n\nclass Documentation(unittest.TestCase):\n    def test_missing_chart_is_reported_then_resolves_when_generated(self):\n\
+        \        with tempfile.TemporaryDirectory() as directory:\n            root = Path(directory)\n        \
+        \    (root / 'docs/assets').mkdir(parents=True)\n            (root / 'docs/STAR_HISTORY.md').write_text('![Star\
+        \ history](assets/star-history.svg)')\n            self.assertEqual(docs.check(root)['missing'], [{'document':\
+        \ 'docs/STAR_HISTORY.md', 'reference': 'assets/star-history.svg'}])\n            (root / 'docs/assets/star-history.svg').write_text('<svg\
+        \ xmlns=\"http://www.w3.org/2000/svg\"/>')\n            self.assertEqual(docs.check(root)['missing'], [])\n\
+        \n    def test_html_images_markdown_and_reference_links_are_checked(self):\n        with tempfile.TemporaryDirectory()\
+        \ as directory:\n            root = Path(directory)\n            (root / 'docs').mkdir()\n            (root\
+        \ / 'docs/guide.md').write_text('# Guide')\n            (root / 'README.md').write_text('[Guide](docs/guide.md#guide)\\\
+        n<img src=\"missing.svg\">\\n[details]: docs/missing.md\\n')\n            result = docs.check(root)\n  \
+        \          self.assertEqual({r['reference'] for r in result['missing']}, {'missing.svg', 'docs/missing.md'})\n\
+        \n    def test_spaces_queries_and_parent_directory_links_resolve(self):\n        with tempfile.TemporaryDirectory()\
+        \ as directory:\n            root = Path(directory)\n            (root / 'docs').mkdir()\n            (root\
+        \ / 'README.md').write_text('Project')\n            (root / 'docs/my guide.md').write_text('[Project](../README.md)')\n\
+        \            (root / 'docs/index.md').write_text('[A](<my guide.md>) [B](my%20guide.md?view=source#title)')\n\
+        \            self.assertEqual(docs.check(root)['missing'], [])\n\n    def test_external_links_and_code_examples_are_not_fetched_or_checked(self):\n\
+        \        text = '''[Web](https://example.test/missing) [Wallet](bitcoin:address)\n```md\n[Example](not-a-project-file.md)\n\
+        ```\n`[Inline](also-an-example.md)`\n'''\n        with tempfile.TemporaryDirectory() as directory:\n   \
+        \         root = Path(directory)\n            (root / 'README.md').write_text(text)\n            result\
+        \ = docs.check(root)\n            self.assertEqual(result['localReferences'], 0)\n            self.assertEqual(result['missing'],\
+        \ [])\n\n    def test_build_and_dependency_markdown_are_excluded(self):\n        with tempfile.TemporaryDirectory()\
+        \ as directory:\n            root = Path(directory)\n            for name in ['node_modules', 'build', '.git']:\n\
+        \                (root / name).mkdir()\n                (root / name / 'README.md').write_text('[Not project\
+        \ documentation](missing.md)')\n            (root / 'README.md').write_text('# BookWiz')\n            result\
+        \ = docs.check(root)\n            self.assertEqual(result['markdownFiles'], 1)\n            self.assertEqual(result['missing'],\
+        \ [])\n\n    def test_links_cannot_escape_the_repository(self):\n        with tempfile.TemporaryDirectory()\
+        \ as directory:\n            root = Path(directory) / 'project'\n            root.mkdir()\n            (root.parent\
+        \ / 'outside.md').write_text('Outside')\n            (root / 'README.md').write_text('[Outside](../outside.md)')\n\
+        \            self.assertEqual(len(docs.check(root)['missing']), 1)\n\n\nif __name__ == '__main__':\n   \
+        \ unittest.main()\nBOOKWIZ_FILE_4b00d91bea594c98\nmv -f -- 'tests/docs.test.py.bookwiz-new' 'tests/docs.test.py'\n\
+        fi\nif [ ! -e 'tests/platform-kits.test.py' ]; then\ncat > 'tests/platform-kits.test.py.bookwiz-new' <<'BOOKWIZ_FILE_069a970cbb199683'\n\
         \"\"\"Verify source archives and build definitions, target isolation, manifests and regeneration.\"\"\"\n\
         import hashlib,importlib.util,json,pathlib,posixpath,re,subprocess,tempfile,unittest,zipfile\nROOT=pathlib.Path(__file__).resolve().parents[1]\n\
         spec=importlib.util.spec_from_file_location('kits',ROOT/'tools/package-platform-kits.py');kits=importlib.util.module_from_spec(spec);spec.loader.exec_module(kits)\n\
@@ -498,8 +572,9 @@ jobs:
         \ name.endswith('.md'):continue\n                    text=re.sub(r'```.*?```','',content.decode(),flags=re.S)\n\
         \                    for href in re.findall(r'\\]\\(([^)\\s]+)\\)',text):\n                        if re.match(r'^(?:[A-Za-z][A-Za-z0-9+.-]*:|#)',href):continue\n\
         \                        linked=posixpath.normpath(posixpath.join(posixpath.dirname(name),href.split('#')[0]))\n\
-        \                        self.assertIn(linked,set(files),(target,name,href))\n                studio=files['docs/STUDIO_README.md'].decode()\n\
-        \                if 'screenshots/'in (ROOT/'README.md').read_text():\n                    self.assertIn('https://github.com/muneebwanee/BookWizOfficial/blob/HEAD/screenshots/README.md',studio)\n\
+        \                        self.assertTrue(linked in files, f'{target}: {name} links to missing archive file\
+        \ {linked} ({href})')\n                studio=files['docs/STUDIO_README.md'].decode()\n                if\
+        \ 'screenshots/'in (ROOT/'README.md').read_text():\n                    self.assertIn('https://github.com/muneebwanee/BookWizOfficial/blob/HEAD/screenshots/README.md',studio)\n\
         \                    self.assertIn('https://raw.githubusercontent.com/muneebwanee/BookWizOfficial/HEAD/screenshots/',studio)\n\
         \                self.assertFalse(any(name.startswith('screenshots/')for name in files))\n    def test_markdown_relocation_preserves_payment_and_other_absolute_uri_schemes(self):\n\
         \        text='[Support](bitcoin:bc1qfixture?label=BookWiz) [Email](mailto:writer@example.test) [Guide](GETTING_STARTED.md)\
@@ -540,7 +615,7 @@ jobs:
         \        import os\n        from unittest.mock import patch\n        module=importlib.util.spec_from_file_location('android_version',ROOT/'tools/android_version.py');version=importlib.util.module_from_spec(module);module.loader.exec_module(version)\n\
         \        with patch.dict(os.environ,{'BOOKWIZ_VERSION_CODE':'100101','BOOKWIZ_VERSION_NAME':'1.2.3'}):self.assertEqual(version.version_info(ROOT),('100101','1.2.3'))\n\
         \        with patch.dict(os.environ,{'BOOKWIZ_VERSION_CODE':'999999999999'}):\n            with self.assertRaises(ValueError):version.version_info(ROOT)\n\
-        \nif __name__=='__main__':unittest.main()\nBOOKWIZ_FILE_7aa0e52d56d665a9\nmv -f -- 'tests/platform-kits.test.py.bookwiz-new'\
+        \nif __name__=='__main__':unittest.main()\nBOOKWIZ_FILE_069a970cbb199683\nmv -f -- 'tests/platform-kits.test.py.bookwiz-new'\
         \ 'tests/platform-kits.test.py'\nfi\nif [ ! -e 'tests/source-import.test.py' ]; then\ncat > 'tests/source-import.test.py.bookwiz-new'\
         \ <<'BOOKWIZ_FILE_60ff54447dc255e3'\n\"\"\"Source import preserves repository files and rejects inconsistent\
         \ archives.\"\"\"\nimport hashlib\nimport importlib.util\nimport json\nfrom pathlib import Path\nimport\
@@ -712,11 +787,32 @@ jobs:
         \ these commands from its root, where `package.json`, `dist/`, `native/`, `tools/`, and `tests/` are already\
         \ available. The retained platform ZIPs are optional distribution snapshots; contributors work directly\
         \ in the editable tree.',\n        'build guide setup')\n    write(root / 'docs/BUILDING.md', building)\n\
-        \n    terms = (root / 'TERMS.md').read_text()\n    if '## Code and documentation licenses' not in terms:\n\
-        \        notice = '\\n## Code and documentation licenses\\n\\n`*.py`, `*.sh`, and other first-party source\
-        \ files are BWNCL. `*.md` documentation, wordlists, regex catalogs, and rubrics are CC BY 4.0. These grants\
-        \ also apply to corresponding first-party files inside the retained source ZIPs. Third-party licenses remain\
-        \ separate. See [Licensing](docs/LICENSING.md), the [code license](LICENSES/BWNCL-1.0.txt), and [CC BY 4.0](LICENSES/CC-BY-4.0.txt).\\\
+        \n    if 'python3 scripts/check_docs.py' not in building:\n        building = replace_once(building,\n \
+        \           '```sh\\npython3 tests/android-bundletool.test.py',\n            '```sh\\npython3 scripts/check_docs.py\\\
+        npython3 tests/docs.test.py\\npython3 tests/android-bundletool.test.py',\n            'build guide documentation\
+        \ checks')\n        building = replace_once(building,\n            'The archive command includes platform\
+        \ code, shared assets, tests, documentation, and source manifests.',\n            'The documentation check\
+        \ validates local Markdown links and image references without contacting external websites. The committed\
+        \ star-history SVG and JSON are included in platform snapshots, so ordinary contributor checks do not require\
+        \ GitHub authentication. If regenerating the chart, run `gh auth login`, then `python3 scripts/gen_star_history.py`\
+        \ before checking or packaging the documentation.\\n\\nThe archive command includes platform code, shared\
+        \ assets, tests, documentation, and source manifests.',\n            'build guide chart validation explanation')\n\
+        \        write(root / 'docs/BUILDING.md', building)\n\n    gallery_path = root / 'screenshots/README.md'\n\
+        \    if not (root / 'screenshots/BookWiz Explained.mp4').is_file():\n        gallery = gallery_path.read_text()\n\
+        \        if '(BookWiz%20Explained.mp4)' in gallery:\n            gallery = replace_once(gallery,\n     \
+        \           '2 films · 45 images · 9 device galleries · 1200 × 1600 PNGs',\n                '45 images ·\
+        \ 9 device galleries · 1200 × 1600 PNGs',\n                'gallery media count')\n            gallery =\
+        \ replace_once(gallery,\n                '**Two films. One writing room.**',\n                '**Step inside\
+        \ the writing room.**',\n                'gallery introduction')\n            gallery = replace_once(gallery,\n\
+        \                '### 01 · The editorial film\\n\\n**72 seconds** · A quiet room for ambitious books.\\\
+        n\\n[▶ Watch the editorial film](BookWiz%20Explained.mp4)',\n                '### 01 · BookWiz in motion\\\
+        n\\nWatch the film embedded in the project README.\\n\\n[▶ Watch on GitHub](../README.md#bookwiz-in-motion)',\n\
+        \                'gallery film reference')\n            write(gallery_path, gallery)\n\n    terms = (root\
+        \ / 'TERMS.md').read_text()\n    if '## Code and documentation licenses' not in terms:\n        notice =\
+        \ '\\n## Code and documentation licenses\\n\\n`*.py`, `*.sh`, and other first-party source files are BWNCL.\
+        \ `*.md` documentation, wordlists, regex catalogs, and rubrics are CC BY 4.0. These grants also apply to\
+        \ corresponding first-party files inside the retained source ZIPs. Third-party licenses remain separate.\
+        \ See [Licensing](docs/LICENSING.md), the [code license](LICENSES/BWNCL-1.0.txt), and [CC BY 4.0](LICENSES/CC-BY-4.0.txt).\\\
         n'\n        before, marker, footer = terms.rpartition('\\n---\\n\\n<div align=\"center\">')\n        terms\
         \ = before + notice + marker + footer if marker else terms + notice\n    write(root / 'TERMS.md', terms)\n\
         \n    packager = (root / 'tools/package-platform-kits.py').read_text()\n    packager = replace_once(packager,\n\
@@ -740,19 +836,22 @@ jobs:
       run: |
         npm ci --ignore-scripts
         python3 -m pip install 'PyYAML>=6.0.2,<7'
+    - name: Generate the first repository-hosted star chart
+      run: python3 scripts/gen_star_history.py
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Validate Markdown links and generated documentation assets
+      run: python3 scripts/check_docs.py
     - name: Verify the editable application and repository tools
       run: |
         npm run check
         npm test
         python3 tests/source-import.test.py
         python3 tests/star-history.test.py
+        python3 tests/docs.test.py
         python3 tests/apple-package.test.py
         python3 tests/android-bundletool.test.py
         python3 tests/platform-kits.test.py
-    - name: Generate the first repository-hosted star chart
-      run: python3 scripts/gen_star_history.py
-      env:
-        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - name: Verify that existing downloads and release definitions were preserved
       run: |
         python3 - <<'PY'
@@ -765,9 +864,25 @@ jobs:
                 raise SystemExit('An existing protected file changed: ' + name)
         print('Existing source ZIPs, release workflows, icons, screenshots, videos and other protected files are unchanged.')
         PY
+    - name: Stage and verify the complete editable source tree
+      run: |
+        git add -- dist native tools tests scripts docs packaging LICENSE LICENSES package.json package-lock.json .gitignore SOURCE-ORIGINS.json README.md CONTRIBUTING.md TERMS.md README-*.md screenshots/README.md
+        python3 - <<'PY'
+        from pathlib import Path
+        import subprocess
+        from scripts.import_platform_sources import merged_sources
+        files, _, _ = merged_sources(Path.cwd())
+        required = set(files) | {'README.md', 'SOURCE-ORIGINS.json', 'docs/assets/star-history.svg',
+                                 'docs/assets/star-history.json', 'scripts/check_docs.py',
+                                 'LICENSES/BWNCL-1.0.txt', 'LICENSES/CC-BY-4.0.txt'}
+        tracked = set(subprocess.check_output(['git', 'ls-files', '-z']).decode().split('\0'))
+        missing = sorted(required - tracked)
+        if missing:
+            raise SystemExit('Imported source files were not staged: ' + ', '.join(missing))
+        print(f'All {len(required)} required source and documentation asset files are staged, including packaging templates.')
+        PY
     - name: Commit the editable source and contributor updates
       run: |
-        git add -- dist native tools tests scripts docs LICENSE LICENSES package.json package-lock.json .gitignore SOURCE-ORIGINS.json README.md CONTRIBUTING.md TERMS.md README-*.md
         if git diff --cached --quiet; then
           exit 0
         fi

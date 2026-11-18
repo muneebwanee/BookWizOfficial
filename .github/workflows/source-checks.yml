@@ -3,6 +3,7 @@ name: Source checks
 'on':
   pull_request:
     paths:
+      - '**/*.md'
       - 'dist/**'
       - 'native/**'
       - 'tools/**'
@@ -16,6 +17,7 @@ name: Source checks
       - '.github/workflows/source-checks.yml'
   push:
     paths:
+      - '**/*.md'
       - 'dist/**'
       - 'native/**'
       - 'tools/**'
@@ -72,6 +74,7 @@ jobs:
       - name: Check and test the shared application
         if: steps.source.outputs.ready == 'true'
         run: |
+          python3 scripts/check_docs.py
           npm run check
           npm test
       - name: Check source import, star history, and platform packaging
@@ -79,6 +82,7 @@ jobs:
         run: |
           python3 tests/source-import.test.py
           python3 tests/star-history.test.py
+          python3 tests/docs.test.py
           python3 tests/apple-package.test.py
           python3 tests/android-bundletool.test.py
           python3 tests/platform-kits.test.py
