@@ -1,0 +1,106 @@
+name: Refresh source archives
+'on':
+  push:
+    paths:
+    - dist/**
+    - native/**
+    - tools/**
+    - scripts/**
+    - tests/**
+    - docs/**
+    - '**/*.md'
+    - '!README-*.md'
+    - package*.json
+    - LICENSE*
+    - LICENSES/**
+    - THIRD_PARTY_NOTICES
+    - CITATION.cff
+    - .gitignore
+    - packaging/github/**
+    - .github/workflows/sync-source-archives.yml
+    - .github/workflows/build-*.yml
+  workflow_dispatch: {}
+  workflow_run:
+    workflows:
+    - Star history
+    - Add full source
+    types:
+    - completed
+permissions:
+  contents: write
+  actions: write
+concurrency:
+  group: bookwiz-source-archives
+  cancel-in-progress: false
+jobs:
+  refresh:
+    if: |-
+      github.ref_name == github.event.repository.default_branch && (github.event_name != 'workflow_run' ||
+       (github.event.workflow_run.conclusion == 'success' &&
+        github.event.workflow_run.head_branch == github.event.repository.default_branch &&
+        github.event.workflow_run.head_repository.full_name == github.repository))
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+    - uses: actions/checkout@v7.0.1
+      with:
+        ref: ${{ github.event.repository.default_branch }}
+    - uses: actions/setup-python@v7.1.0
+      with:
+        python-version: '3.12'
+    - name: Test archive synchronization
+      run: python3 tests/source-archives.test.py
+    - name: Refresh and commit only generated source downloads
+      env:
+        BOOKWIZ_BRANCH: ${{ github.event.repository.default_branch }}
+        BOOKWIZ_PREPARE_RELEASE: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.name
+          != 'Star history' }}
+      run: |
+        set -euo pipefail
+        BOOKWIZ_PREPARE_RELEASE="${BOOKWIZ_PREPARE_RELEASE:-false}"
+        git config user.name 'github-actions[bot]'
+        git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+        record_commit() {
+          if [[ -n "${GITHUB_OUTPUT:-}" ]]; then
+            echo "commit=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+          fi
+        }
+        for attempt in 1 2 3; do
+          # This is the ephemeral runner checkout. Rebuild from a newer head
+          # after a racing push instead of merging old generated ZIP files.
+          git fetch origin "refs/heads/$BOOKWIZ_BRANCH"
+          git reset --hard FETCH_HEAD
+          python3 scripts/check_docs.py
+          if [[ "$BOOKWIZ_PREPARE_RELEASE" == true ]]; then
+            python3 tools/release-version.py --prepare
+          fi
+          python3 tools/sync-source-archives.py
+          python3 tools/sync-source-archives.py --check
+          python3 scripts/check_docs.py
+          git add -- dist/sw.js SOURCE-ORIGINS.json SHA256SUMS.txt
+          if [[ "$BOOKWIZ_PREPARE_RELEASE" == true ]]; then
+            git add -- release-state.json package.json package-lock.json CITATION.cff native/apple/project.yml native/desktop/runtime/package.json
+          fi
+          for target in android ios watchos tvos windows macos linux web; do
+            git add -- "source-$target.zip" "README-$target.md"
+          done
+          if git diff --cached --quiet; then
+            echo 'Version and generated source downloads are current.'
+            record_commit
+            exit 0
+          fi
+          git commit -m 'Prepare release version and refresh source archives'
+          if git push origin "HEAD:refs/heads/$BOOKWIZ_BRANCH"; then
+            record_commit
+            exit 0
+          fi
+        done
+        echo 'The archive commit could not be pushed. Check branch write access or run again after concurrent changes settle.' >&2
+        exit 1
+      id: prepared
+    - name: Dispatch all editions from the prepared version tag
+      if: github.event_name != 'workflow_run' || github.event.workflow_run.name != 'Star history'
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        BOOKWIZ_PREPARED_COMMIT: ${{ steps.prepared.outputs.commit }}
+      run: python3 tools/dispatch-releases.py --commit "$BOOKWIZ_PREPARED_COMMIT"
