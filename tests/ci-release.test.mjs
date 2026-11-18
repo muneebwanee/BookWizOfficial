@@ -31,3 +31,12 @@ test('release descriptions address readers with the official project and actual 
  assert.match(body,/muneebwanee/);assert.match(body,/Signing: Unsigned/);
  assert.doesNotMatch(body,/uploaded source|Review README|configure owner|before distribution/);
 });
+
+
+test('repository release provenance records current source hashes without attributing the build to an older ZIP',async t=>{
+ const root=await fixture(t);await writeFile(path.join(root,'release','BookWiz-Web.zip'),'current web build');
+ await writeFile(path.join(root,'SOURCE-MANIFEST.json'),JSON.stringify({source_mode:'repository',files:{'dist/app.js':'current-source-digest'}}));
+ const fetcher=async(url,init)=>url.endsWith('/releases')?response({id:99,upload_url:'https://uploads.github.test/assets{?name}'}):init.method==='PATCH'?response({html_url:'https://github.test/release/99'}):response({id:1});
+ await publishRelease({target:'web',root,env:environment,fetcher});const info=JSON.parse(await readFile(path.join(root,'release','BUILD-INFO.json'),'utf8'));
+ assert.equal(info.sourceMode,'repository');assert.equal(info.sourceSha256,null);assert.equal(info.commit,environment.GITHUB_SHA);assert.match(info.sourceManifestSha256,/^[a-f0-9]{64}$/);
+});

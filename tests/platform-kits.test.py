@@ -15,7 +15,7 @@ class PlatformKits(unittest.TestCase):
                 native={name.split('/')[1]for name in files if name.startswith('native/')}
                 self.assertEqual(native,{meta['native']}if meta['native']else set())
                 self.assertTrue(all(not name.endswith(('.jks','.p12','.keystore','.mobileprovision'))for name in files))
-                self.assertIn('LICENSE',files);self.assertIn('PRIVACY.md',files);self.assertIn('tools/ci-release.mjs',files)
+                self.assertIn('LICENSE',files);self.assertIn('PRIVACY.md',files);self.assertIn('tools/ci-release.mjs',files);self.assertIn('tools/sync-source-archives.py',files);self.assertIn('tests/source-archives.test.py',files)
                 if target=='android':
                     self.assertIn('tools/android_bundletool.py',files)
                     self.assertIn('tests/android-bundletool.test.py',files)
@@ -63,6 +63,26 @@ class PlatformKits(unittest.TestCase):
                 if target in ['android','web']:
                     subprocess.run(['python3','tools/package-platform-kits.py','--target',target,'--output',str(root/'regenerated')],cwd=root/'bookwiz',check=True,capture_output=True)
                     self.assertTrue((root/'regenerated'/('source-'+target+'.zip')).is_file())
+    def test_full_repository_builds_edited_source_without_reading_a_retained_zip(self):
+        import yaml
+        with tempfile.TemporaryDirectory(prefix='bookwiz-current-')as temp:
+            root=pathlib.Path(temp)
+            for name,data in kits.selected_files('android').items():
+                dest=root/name;dest.parent.mkdir(parents=True,exist_ok=True);dest.write_bytes(data)
+            edited=(root/'dist/app.js').read_bytes()+b'\n// Current repository edit.\n'
+            (root/'dist/app.js').write_bytes(edited)
+            snapshot=b'A retained snapshot is deliberately not a ZIP.'
+            (root/'source-android.zip').write_bytes(snapshot)
+            workflow=yaml.safe_load((ROOT/'packaging/github/build-android.yml').read_text())
+            step=next(x for x in workflow['jobs']['build']['steps']if x.get('name')=='Verify the source archive')
+            subprocess.run(['bash','-c',step['run']],cwd=root,check=True,capture_output=True)
+            self.assertEqual((root/'bookwiz/dist/app.js').read_bytes(),edited)
+            self.assertEqual((root/'source-android.zip').read_bytes(),snapshot)
+            manifest=json.loads((root/'bookwiz/SOURCE-MANIFEST.json').read_text())
+            self.assertEqual(manifest['source_mode'],'repository')
+            self.assertEqual(manifest['files']['dist/app.js'],hashlib.sha256(edited).hexdigest())
+            self.assertFalse((root/'bookwiz/native/apple').exists())
+
     def test_corrupted_or_wrong_source_is_rejected_before_building(self):
         import yaml
         workflow=yaml.safe_load((ROOT/'packaging/github/build-android.yml').read_text());step=next(x for x in workflow['jobs']['build']['steps']if x.get('name')=='Verify the source archive')
@@ -86,6 +106,37 @@ class PlatformKits(unittest.TestCase):
                 self.assertIn('index.html',archive.namelist());self.assertIn('sw.js',archive.namelist());self.assertIn('LICENSE',archive.namelist())
                 self.assertEqual(archive.read('app.js'),(ROOT/'dist/app.js').read_bytes())
                 self.assertFalse(any(name.startswith('dist/')for name in archive.namelist()))
+    def test_source_pushes_build_affected_editions_and_active_workflows_match_templates(self):
+        import fnmatch,yaml
+        for target,meta in kits.PLATFORMS.items():
+            with self.subTest(target=target):
+                active=yaml.safe_load((ROOT/'.github/workflows'/('build-'+target+'.yml')).read_text())
+                template=yaml.safe_load((ROOT/'packaging/github'/('build-'+target+'.yml')).read_text())
+                self.assertEqual(active,template)
+                paths=active['on']['push']['paths']
+                for name in ['dist/app.js','tools/sync-source-archives.py','docs/WIDGETS.md','package.json','source-'+target+'.zip']:
+                    self.assertTrue(any(fnmatch.fnmatchcase(name,p)for p in paths),(target,name))
+                if meta['native']:
+                    self.assertTrue(any(fnmatch.fnmatchcase('native/'+meta['native']+'/host.txt',p)for p in paths))
+                self.assertIn('workflow_dispatch',active['on'])
+                self.assertIn('default_branch',active['jobs']['build']['if'])
+
+    def test_archive_automation_follows_trusted_bot_jobs_without_following_itself(self):
+        import yaml
+        workflow=yaml.safe_load((ROOT/'.github/workflows/sync-source-archives.yml').read_text())
+        self.assertEqual(workflow['permissions']['contents'],'write')
+        self.assertEqual(set(workflow['on']['workflow_run']['workflows']),{'Star history','Add full source'})
+        self.assertNotIn(workflow['name'],workflow['on']['workflow_run']['workflows'])
+        self.assertIn('head_repository.full_name == github.repository',workflow['jobs']['refresh']['if'])
+        self.assertIn('conclusion',workflow['jobs']['refresh']['if'])
+        step=next(s for s in workflow['jobs']['refresh']['steps']if s.get('name')=='Refresh and commit only generated source downloads')
+        self.assertIn('git reset --hard FETCH_HEAD',step['run'])
+        self.assertIn('tools/sync-source-archives.py --check',step['run'])
+        self.assertNotIn('workflow_dispatch',step['run'])
+        checkout=workflow['jobs']['refresh']['steps'][0]
+        self.assertNotIn('token',checkout['with'])
+        self.assertIn('default_branch',checkout['with']['ref'])
+
     def test_android_version_metadata_is_shared_by_apk_and_aab(self):
         import os
         from unittest.mock import patch
