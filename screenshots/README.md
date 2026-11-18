@@ -16,13 +16,13 @@
 
 ## BookWiz in motion
 
-**Two films. One writing room.**
+**Step inside the writing room.**
 
-### 01 · The editorial film
+### 01 · BookWiz in motion
 
-**72 seconds** · A quiet room for ambitious books.
+Watch the film embedded in the project README.
 
-[▶ Watch the editorial film](BookWiz%20Explained.mp4)
+[▶ Watch on GitHub](../README.md#bookwiz-in-motion)
 
 ### 02 · From a thought to a book
 
