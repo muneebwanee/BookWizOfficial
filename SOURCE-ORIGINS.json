@@ -5,51 +5,51 @@
   "archives": {
     "android": {
       "archive": "source-android.zip",
-      "sha256": "d3d26f169b144182fd01547cc9f34c0e9ee2289fd4247bf08f764e49cb5fdfce",
-      "files": 607,
-      "version": "1.0.1"
+      "sha256": "33215036eaca2b32e41d837cc01d312e740fb3b9d102ddd7d45e4d85f6392435",
+      "files": 620,
+      "version": "1.0.2"
     },
     "ios": {
       "archive": "source-ios.zip",
-      "sha256": "a2711c53953f5a980936ae363db36a40a028c7aa1fb13acf6969d7a73e831245",
-      "files": 615,
-      "version": "1.0.1"
+      "sha256": "b8e392dbed3c9b17d8012bf9b683bc504bd0213d12f820c8ccdaa0c32415f643",
+      "files": 619,
+      "version": "1.0.2"
     },
     "watchos": {
       "archive": "source-watchos.zip",
-      "sha256": "962f9e93d7b1c95244f4e1e7458de4dcb3740208b8df0dbbfe8ee202dfcb1b8c",
-      "files": 615,
-      "version": "1.0.1"
+      "sha256": "8abe0f9cbc9bf8d35f310427157278de3907f4d3c9c536d331f2cfe065c8a845",
+      "files": 619,
+      "version": "1.0.2"
     },
     "tvos": {
       "archive": "source-tvos.zip",
-      "sha256": "15a2326403c4fac4806bf73720eb1db7d08283c5da98510ecb014bec1b877f04",
-      "files": 615,
-      "version": "1.0.1"
+      "sha256": "3a3f7046e0a9c00c240bd70475276d44cc9b45954fe8368e5b8452dccf734534",
+      "files": 619,
+      "version": "1.0.2"
     },
     "windows": {
       "archive": "source-windows.zip",
-      "sha256": "953a7bc1ffa711c3e1492d91e4a4db7204e5081511b1a43354d34c56e2b36438",
-      "files": 577,
-      "version": "1.0.1"
+      "sha256": "ed2022f6651613e0e2bcb2913457690645a0832b770c57a95919a6c48eca1a92",
+      "files": 581,
+      "version": "1.0.2"
     },
     "macos": {
       "archive": "source-macos.zip",
-      "sha256": "c3f4e538bc322dd60e1783e95bfbd2fc371bc373263c8081729dfbcaa18b9bc6",
-      "files": 577,
-      "version": "1.0.1"
+      "sha256": "6a2d6edddb0cc691831367f0be39554fdf1bee6fc1522c5008b396ebfbccffa4",
+      "files": 581,
+      "version": "1.0.2"
     },
     "linux": {
       "archive": "source-linux.zip",
-      "sha256": "3d489e85a7fbdc8ce6835abbb3ca45ddcf6c3d35bbf925b94b12ab61c1e6a5e9",
-      "files": 577,
-      "version": "1.0.1"
+      "sha256": "e460b242db6552e07df46545b36430aff6fb5d32eaf0bc5de62e9ebe2d1690de",
+      "files": 581,
+      "version": "1.0.2"
     },
     "web": {
       "archive": "source-web.zip",
-      "sha256": "9c046e15ece221f5ea7e621ed2acd3d28282bd8fb24c0c1237747b51e138d385",
-      "files": 570,
-      "version": "1.0.1"
+      "sha256": "3cccddb81b6d1ef080f3debf606f1a92ec0b2fdabe3504a2e3acda33c139be7b",
+      "files": 574,
+      "version": "1.0.2"
     }
   }
 }

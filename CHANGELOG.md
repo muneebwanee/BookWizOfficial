@@ -1,5 +1,14 @@
 <div align="center">
 
+## 1.0.2
+
+- Compact mobile section and chapter pickers keep the manuscript in view; writing tools open in a small menu.
+- Android print layout follows the paper actually selected by the system service, preserving readable type and margins.
+- Nine Android widgets use distinct, responsive layouts with progress charts, useful clock shortcuts and daily inspiration.
+- Android writing reminders continue beyond two weeks and recover after restart or timezone changes. Added test notifications and optional session-finished alerts.
+- One current release contains all eight editions. Verified publication reuses its version tag and removes superseded generated pages after every replacement package is ready.
+- Windows and Unix checkouts now produce the same release fingerprint.
+
 # Changelog
 
 ### From the first idea to the reader's copy.
