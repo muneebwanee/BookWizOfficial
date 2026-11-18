@@ -21,6 +21,11 @@ def fingerprint(root=ROOT):
         if name in GENERATED or name.startswith(tuple(kits.IGNORED_NATIVE))or name.startswith(('docs/assets/star-history.','dist/downloads/')):continue
         if not(name in kits.ROOT_FILES or name.startswith(('dist/','native/','tools/','tests/','scripts/','docs/','packaging/','.github/workflows/','LICENSES/'))):continue
         data=(root/name).read_bytes()
+        # Git for Windows can check text out as CRLF. Hash the same text on
+        # every host; binary fonts/images/archives keep their exact bytes.
+        if b'\0' not in data:
+            try:data.decode('utf-8');data=data.replace(b'\r\n',b'\n')
+            except UnicodeDecodeError:pass
         if name in ['package.json','package-lock.json','native/desktop/runtime/package.json']:
             value=json.loads(data);value['version']='VERSION'
             if name=='package-lock.json'and ''in value.get('packages',{}):value['packages']['']['version']='VERSION'

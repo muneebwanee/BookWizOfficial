@@ -29,12 +29,21 @@ def dispatch(repository,commit,version,fingerprint,request=github):
         result=request('POST',base+'/git/refs',{'ref':'refs/tags/'+tag,'sha':commit})
         if result is None:raise RuntimeError('The immutable release tag could not be created.')
         pinned=commit
+    published=request('GET',base+'/releases/tags/'+tag)or{}
+    complete=not published.get('draft',True)and '<!-- BookWiz managed release -->'in published.get('body','')
     result={}
     for target in PLATFORMS:
         workflow=base+'/actions/workflows/build-'+target+'.yml'
         runs=request('GET',workflow+'/runs?'+urllib.parse.urlencode({'event':'workflow_dispatch','head_sha':pinned,'per_page':100}))or{}
         previous=runs.get('workflow_runs',[])
-        if any(r.get('head_sha')==pinned and (r.get('status')!='completed'or r.get('conclusion')=='success')for r in previous):result[target]='already queued or successful';continue
+        previous=[r for r in previous if r.get('head_sha')==pinned]
+        if complete or any(r.get('status')!='completed'for r in previous):result[target]='already published or queued';continue
+        available=False
+        for run in previous:
+            if run.get('conclusion')!='success':continue
+            artifacts=request('GET',base+'/actions/runs/'+str(run['id'])+'/artifacts?per_page=100')or{}
+            if any(a.get('name')=='BookWiz-packages-'+target+'-'+str(run['id'])and not a.get('expired')for a in artifacts.get('artifacts',[])):available=True;break
+        if available:result[target]='verified build artifact available';continue
         request('POST',workflow+'/dispatches',{'ref':tag});result[target]='dispatched'
     return {'version':version,'tag':tag,'commit':pinned,'platforms':result}
 

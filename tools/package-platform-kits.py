@@ -14,8 +14,8 @@ PLATFORMS={
     'linux':{'title':'Linux','native':'desktop','prepare':'desktop','outputs':'x64 AppImage and Debian/Ubuntu DEB packages','tools':[]},
     'web':{'title':'Web','native':None,'prepare':None,'outputs':'Ready-to-host website ZIP, with index.html at its root','tools':['build-web.py']},
 }
-ROOT_FILES=['release-state.json','CITATION.cff','DESIGN.md','PRODUCT.md','package.json','package-lock.json','LICENSE','README.md','CONTRIBUTING.md','PRIVACY.md','TERMS.md','SUPPORT.md','THIRD_PARTY_NOTICES','CHANGELOG.md','.gitignore']
-COMMON_TOOLS=['release-version.py','dispatch-releases.py','sync-source-archives.py','prepare-build-source.py','sync-pdf-assets.mjs','prepare-native.mjs','latex-service.mjs','latex-engine.mjs','version-cache.mjs','ci-release.mjs','check-source.mjs','package-platform-kits.py']
+ROOT_FILES=['release-state.json','CITATION.cff','DESIGN.md','PRODUCT.md','package.json','package-lock.json','LICENSE','README.md','CONTRIBUTING.md','PRIVACY.md','TERMS.md','SUPPORT.md','THIRD_PARTY_NOTICES','CHANGELOG.md','.gitignore','.gitattributes']
+COMMON_TOOLS=['publish-current-release.mjs','collect-release-artifacts.py','release-version.py','dispatch-releases.py','sync-source-archives.py','prepare-build-source.py','sync-pdf-assets.mjs','prepare-native.mjs','latex-service.mjs','latex-engine.mjs','version-cache.mjs','ci-release.mjs','check-source.mjs','package-platform-kits.py']
 IGNORED_NATIVE=['native/desktop/runtime/web/','native/desktop/runtime/latex-engine.mjs','native/desktop/runtime/local-services.mjs','native/android/app/src/main/assets/web/','native/apple/iOS/Web/']
 
 def repository_files(root=ROOT):

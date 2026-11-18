@@ -31,13 +31,12 @@ export function releaseDescription({target,version,files,signing}){
  const rows=files.filter(file=>!file.endsWith('.ipa.json')).map(file=>`| \`${path.basename(file)}\` | ${purpose(file)} |`).join('\n');
  return `## BookWiz ${version} · ${platformNames[target]}\n\nA quiet room for ambitious books. Created and maintained by [muneebwanee](https://github.com/muneebwanee).\n\n${descriptions[target]}\n\n### Downloads\n\n| File | Edition |\n| :--- | :--- |\n${rows}\n\nYour library stays on your device. Your original books remain yours.\n\n<details>\n<summary>Package details</summary>\n\nSHA-256 hashes are in **SHA256SUMS.txt**. **BUILD-INFO.json** records the source commit, package names, and signing status.${signing?'\n\nSigning: '+signing+'.':''}\n\n</details>\n\n[Getting started](${repository}/blob/HEAD/docs/GETTING_STARTED.md) · [Download guide](${repository}/blob/HEAD/docs/RELEASE.md) · [Report an issue](${repository}/issues) · [Star BookWiz](${repository}/stargazers)`;
 }
-export async function publishRelease({target,root=process.cwd(),env=process.env,fetcher=globalThis.fetch}){
+export async function prepareRelease({target,root=process.cwd(),env=process.env,fetcher=globalThis.fetch}){
  const directory=path.join(root,'release'),files=await collectFiles(directory,target);
  const version=JSON.parse(await readFile(path.join(root,'package.json'),'utf8')).version;
- const repository=env.GITHUB_REPOSITORY,token=env.GITHUB_TOKEN;
- if(!repository||!/^[-\w.]+\/[-\w.]+$/.test(repository)||!token)throw Error('GitHub release credentials and repository are required.');
+ const repository=env.GITHUB_REPOSITORY;
+ if(!repository||!/^[-\w.]+\/[-\w.]+$/.test(repository))throw Error('The workflow repository is required.');
  if(!env.GITHUB_SHA||!/^[0-9a-f]{40,64}$/i.test(env.GITHUB_SHA))throw Error('The workflow source commit is missing.');
- const base=new URL(env.GITHUB_API_URL||'https://api.github.com');if(base.protocol!=='https:')throw Error('Use an HTTPS GitHub API.');
  const checksums=[];
  for(const file of files){const content=await readFile(file);checksums.push(createHash('sha256').update(content).digest('hex')+'  '+path.basename(file));}
  await writeFile(path.join(directory,'SHA256SUMS.txt'),checksums.join('\n')+'\n');
@@ -50,21 +49,9 @@ export async function publishRelease({target,root=process.cwd(),env=process.env,
  ['ios','watchos','tvos'].includes(target)?(files.some(f=>f.includes(path.sep+'Apple-exports'+path.sep))?'Unsigned and owner-signed device IPA files':'Unsigned device IPA; signing and provisioning required for installation'):target==='macos'?'Unsigned; not notarized':target==='windows'?'Unsigned':null;
  await writeFile(path.join(directory,'BUILD-INFO.json'),JSON.stringify({application:'BookWiz',developer:'muneebwanee',version,target,architectures:['windows','macos'].includes(target)?['x64','arm64']:target==='linux'?['x64']:undefined,sourceMode,sourceSha256,sourceManifestSha256,repository,commit:env.GITHUB_SHA,run:env.GITHUB_RUN_ID,attempt:env.GITHUB_RUN_ATTEMPT,signing,packages:files.map(f=>path.basename(f))},null,2)+'\n');
  files.push(path.join(directory,'SHA256SUMS.txt'),path.join(directory,'BUILD-INFO.json'));
- const api=new URL('/repos/'+repository+'/releases',base).href;
- async function request(url,method,body,binary=false){
-  const response=await fetcher(url,{method,headers:{Authorization:'Bearer '+token,Accept:'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28','Content-Type':binary?'application/octet-stream':'application/json'},body:body===undefined?undefined:binary?body:JSON.stringify(body),signal:AbortSignal.timeout(240000)});
-  if(!response.ok){let message='';try{message=(await response.json()).message||'';}catch{}throw Error(`GitHub ${method} failed (${response.status}): ${message||'Check Actions workflow write permissions and repository policy.'}`);}
-  return response.status===204?null:response.json();
- }
- const tag=`bookwiz-${target}-${env.GITHUB_RUN_ID}-${env.GITHUB_RUN_ATTEMPT||1}`;
- const body=releaseDescription({target,version,files:files.filter(file=>!['SHA256SUMS.txt','BUILD-INFO.json'].includes(path.basename(file))),signing});
- const release=await request(api,'POST',{tag_name:tag,target_commitish:env.GITHUB_SHA,name:`BookWiz ${version} · ${platformNames[target]}`,body,draft:true,prerelease:false});
- // Drafts stay unpublished if any upload fails. A public release contains every asset.
- for(const file of files){const bytes=await readFile(file);if(!bytes.length)throw Error('Empty release asset: '+path.basename(file));const url=new URL(release.upload_url.split('{')[0]);url.searchParams.set('name',path.basename(file));await request(url.href,'POST',bytes,true);}
- const published=await request(api+'/'+release.id,'PATCH',{draft:false});
- console.log('Published '+published.html_url);return published;
+ return {target,version,files,signing};
 }
 if(process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.url)){
  const index=process.argv.indexOf('--target');
- try{await publishRelease({target:process.argv[index+1]});}catch(e){console.error(e.message);process.exitCode=1;}
+ try{const result=await prepareRelease({target:process.argv[index+1]});console.log('Prepared '+result.target+' packages and checksums for the shared release.');}catch(e){console.error(e.message);process.exitCode=1;}
 }
