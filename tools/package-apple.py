@@ -69,7 +69,7 @@ def package(archive,output,platform):
     entry=zipfile.ZipInfo(name+'/');entry.create_system=3;entry.external_attr=(stat.S_IFDIR|0o755)<<16;z.writestr(entry,b'')
    else:z.write(source,name)
  digest=hashlib.sha256(output.read_bytes()).hexdigest()
- output.with_suffix('.ipa.json').write_text(json.dumps({'application':'BookWiz','platform':platform,'bundleId':info['CFBundleIdentifier'],'signed':False,'sha256':digest,'installNote':'A genuine compiled device IPA, unsigned. It must be signed/provisioned with your own Apple identity before installation.'},indent=2)+'\n')
+ output.with_suffix('.ipa.json').write_text(json.dumps({'application':'BookWiz','platform':platform,'bundleId':info['CFBundleIdentifier'],'signed':False,'version':info.get('CFBundleShortVersionString'),'build':info.get('CFBundleVersion'),'sha256':digest,'installNote':'A genuine compiled device IPA, unsigned. It must be signed/provisioned with your own Apple identity before installation.'},indent=2)+'\n')
  return output
 if __name__=='__main__':
  parser=argparse.ArgumentParser();parser.add_argument('--archive',required=True);parser.add_argument('--output',required=True);parser.add_argument('--platform',choices=PLATFORMS,required=True);args=parser.parse_args();print('Packaged unsigned device IPA:',package(args.archive,args.output,args.platform))
