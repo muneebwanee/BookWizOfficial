@@ -15,3 +15,13 @@
 @container(max-width:650px){.flow-tune-button,.flow-return-button{display:inline-flex;align-self:flex-start;min-height:40px}.flow-controls{scroll-margin-top:20px}.flow-preview-card{scroll-margin-top:20px}.flow-context-summary>span{font-size:10px}.flow-context{padding-block:17px}}
 @container(max-width:430px){.flow-header{flex-direction:row;align-items:flex-start;margin-bottom:24px}.flow-header>div:first-child{min-width:0;flex:1}.flow-header h1{font-size:34px;letter-spacing:-1px;margin-bottom:9px}.flow-header p{font-size:11px;line-height:1.7}.flow-model{display:none}.flow-tune-button{font-size:11px;padding-inline:13px;min-height:38px;margin-top:21px}.flow-context-summary strong{font-size:12px}.flow-context-summary>span{max-width:58%}.flow-preview{font-size:17px;min-height:200px}.flow-preview-card .flow-section-title{margin-bottom:6px}.flow-controls{gap:16px}}
 @media(max-width:650px){body:has(.draft-flow) .studio-tabs{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;min-height:60px;gap:8px}body:has(.draft-flow) .studio-tabs>button,body:has(.draft-flow) .studio-tabs>.studio-tools{flex-shrink:0;white-space:nowrap}.flow-header{margin-bottom:24px}}
+
+/* A primary action keeps its full label at narrow widths and larger text sizes. */
+@container(max-width:430px){
+ .flow-preview-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+ .flow-preview-actions .btn{min-width:0;max-width:100%;white-space:normal;overflow-wrap:normal;line-height:1.45;padding:12px 14px;min-height:46px}
+ .flow-preview-actions [data-flow-action=explore]{grid-column:1/-1}
+ .flow-preview-actions [data-flow-action=copy]{grid-column:1/-1}
+ .flow-keep-actions .btn{white-space:normal;line-height:1.45}
+ .flow-add-pin{flex-wrap:wrap}.flow-add-pin input{flex:1 1 140px}
+}
