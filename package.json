@@ -1,0 +1,37 @@
+{
+  "name": "bookwiz",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "author": "muneebwanee",
+  "license": "SEE LICENSE IN LICENSE",
+  "description": "A local-first writing and publishing studio",
+  "scripts": {
+    "check": "node tools/check-source.mjs",
+    "test": "node --test tests/*.test.mjs",
+    "compiler": "node tools/latex-service.mjs",
+    "native:prepare": "node tools/prepare-native.mjs",
+    "native:android": "python3 tools/build-android.py && python3 tools/build-aab.py",
+    "native:desktop": "npm run native:prepare && electron-builder --config native/desktop/electron-builder.yml --publish never",
+    "vendor:pdf": "node tools/sync-pdf-assets.mjs",
+    "build": "python3 tools/build-web.py",
+    "package:source": "python3 tools/package-platform-kits.py --output build/platform-sources"
+  },
+  "dependencies": {
+    "fflate": "^0.8.2",
+    "pdfjs-dist": "^6.5.438",
+    "qrcode-generator": "^2.0.4"
+  },
+  "devDependencies": {
+    "@resvg/resvg-js": "2.6.2",
+    "electron": "45.3.2",
+    "electron-builder": "26.18.0",
+    "jsdom": "^31.0.1",
+    "resedit": "3.1.0"
+  },
+  "homepage": "https://github.com/muneebwanee/BookWizOfficial",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/muneebwanee/BookWizOfficial.git"
+  }
+}

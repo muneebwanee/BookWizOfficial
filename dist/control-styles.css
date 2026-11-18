@@ -1,0 +1,50 @@
+/* One style contract, applied after component rules so choices remain visible. */
+:root[data-pack][data-platform] .btn{border-radius:var(--control-radius);font-family:var(--ui-font)}
+:root[data-pack][data-platform] .btn.primary{background:var(--accent);color:var(--accent-text);box-shadow:var(--control-shadow)}
+:root[data-pack][data-platform] .btn.secondary,:root[data-pack][data-platform] .model-switch,:root[data-pack][data-platform] .workspace-search{border-radius:var(--control-radius);background:var(--control-surface);border:1px solid var(--control-outline);box-shadow:var(--control-shadow);backdrop-filter:var(--control-backdrop);-webkit-backdrop-filter:var(--control-backdrop)}
+:root[data-pack][data-platform] .field input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=color]),:root[data-pack][data-platform] .field select,:root[data-pack][data-platform] .field textarea,:root[data-pack][data-platform] .cover-book-picker select,:root[data-pack][data-platform] .sort-control,:root[data-pack][data-platform] .search{border-radius:var(--field-radius);border-style:solid;border-width:var(--field-border-width);border-color:var(--line);background:var(--white);font-family:var(--ui-font)}
+:root[data-pack][data-platform] .sidebar .nav button,:root[data-pack][data-platform] .settings-menu button{border-radius:var(--nav-radius)}
+:root[data-pack][data-platform] dialog,:root[data-pack][data-platform] .studio-tools>div{border-radius:var(--dialog-radius);border-color:var(--control-outline)}
+:root[data-pack][data-platform] .appearance-mode{border-radius:var(--field-radius)}
+:root[data-pack][data-platform] .appearance-mode label>span{border-radius:var(--control-radius)}
+:root[data-pack][data-platform=windows] .sidebar .nav button.active{box-shadow:inset 3px 0 0 var(--accent)}
+:root[data-pack][data-platform=linux] .btn.secondary{border-width:1px;box-shadow:none}
+:root[data-pack][data-platform=bookwiz] .sidebar .nav button.active{box-shadow:inset 0 -1px var(--accent)}
+:root[data-pack].reduce-transparency .btn.secondary,:root[data-pack].reduce-transparency .model-switch,:root[data-pack].reduce-transparency .workspace-search{background:var(--white)!important;box-shadow:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;border-color:var(--line)!important}
+.cover-header-actions{display:flex;align-items:flex-end;justify-content:flex-end;flex-wrap:wrap;gap:14px;min-width:0}.cover-book-picker{display:flex;flex-direction:column;gap:7px;min-width:0;width:min(250px,100%);font-size:11px;color:var(--muted)}.cover-book-picker select{width:100%;max-width:100%;min-width:0}.cover-book-picker small{font-size:10px;line-height:1.6}.cover-header-actions>.btn{flex:none;min-height:44px}.cover-workspace-label{display:flex;justify-content:space-between;gap:14px;align-items:center;margin-bottom:13px;font-size:12px;color:var(--muted)}.cover-workspace-label strong{color:var(--ink);font-weight:500}
+
+:root[data-pack][data-platform] .field input:focus,:root[data-pack][data-platform] .field select:focus,:root[data-pack][data-platform] .field textarea:focus,:root[data-pack][data-platform] .cover-book-picker select:focus{border-color:var(--accent);outline:2px solid var(--accent);outline-offset:3px}
+
+@media(max-width:600px){.cover-header-actions{width:100%;align-items:stretch;justify-content:stretch}.cover-book-picker{width:100%}.cover-header-actions>.btn{width:100%;justify-content:center}}
+
+/* Tactile controls: one visual language across the platform treatments. */
+:root[data-pack][data-platform] .btn{position:relative;isolation:isolate;min-height:40px;gap:9px;border:1px solid var(--control-outline);font-weight:550;letter-spacing:.005em;transition:background-color .18s ease,border-color .18s ease,box-shadow .18s ease,transform .16s ease;color:var(--ink)}
+:root[data-pack][data-platform] .btn.primary{color:var(--accent-text);border-color:color-mix(in srgb,var(--accent) 80%,var(--ink));background:var(--accent);box-shadow:inset 0 1px 0 #ffffff24,0 3px 0 color-mix(in srgb,var(--accent) 25%,var(--paper)),0 5px 16px color-mix(in srgb,var(--accent) 16%,transparent)}
+:root[data-pack][data-platform] .btn.quiet{border-color:transparent;background:transparent;box-shadow:none}
+:root[data-pack][data-platform] .btn .icon{flex-shrink:0;transition:transform .18s ease,opacity .18s ease}
+:root[data-pack][data-platform] .icon-btn{transition:background-color .18s ease,border-color .18s ease,transform .16s ease;flex-shrink:0}
+:root[data-pack] :is(.btn,.icon-btn,.tabs>button,.studio-tabs>button,.provider,.view-toggle>button):focus-visible{outline:2px solid var(--accent);outline-offset:4px;box-shadow:0 0 0 5px color-mix(in srgb,var(--accent) 12%,transparent)}
+:root[data-pack] :is(button,.btn):disabled{cursor:not-allowed;opacity:.48;transform:none!important;box-shadow:none!important}
+:root[data-pack] .btn[aria-busy=true]{cursor:progress;opacity:.75}
+:root[data-pack] .tabs>button,:root[data-pack] .studio-tabs>button,:root[data-pack] .view-toggle>button{transition:color .18s ease,background-color .18s ease,box-shadow .18s ease}
+:root[data-pack] .tabs>button.active,:root[data-pack] .studio-tabs>button.active,:root[data-pack] .view-toggle>button.active{color:var(--ink);background:color-mix(in srgb,var(--accent) 12%,var(--white));box-shadow:inset 0 -2px var(--accent)}
+:root[data-pack] .provider{transition:border-color .2s ease,background-color .2s ease,box-shadow .2s ease,transform .2s ease}
+@media(hover:hover) and (prefers-reduced-motion:no-preference){
+ :root[data-pack] .btn:not(:disabled):hover{transform:translateY(-1px);border-color:color-mix(in srgb,var(--accent) 50%,var(--line))}
+ :root[data-pack] .btn.primary:not(:disabled):hover{box-shadow:inset 0 1px 0 #ffffff30,0 4px 0 color-mix(in srgb,var(--accent) 24%,var(--paper)),0 8px 22px color-mix(in srgb,var(--accent) 22%,transparent)}
+ :root[data-pack] .btn:not(:disabled):hover>.icon:last-child{transform:translateX(2px)}
+ :root[data-pack] .icon-btn:not(:disabled):hover{background:color-mix(in srgb,var(--accent) 12%,var(--white));transform:translateY(-1px)}
+ :root[data-pack] .provider:hover{transform:translateY(-2px);border-color:var(--provider,var(--accent));background:color-mix(in srgb,var(--provider,var(--accent)) 5%,var(--white));box-shadow:0 9px 22px #0000000b}
+}
+.local-discovery{margin:26px 0 32px;border-color:color-mix(in srgb,var(--accent) 24%,var(--line));background:color-mix(in srgb,var(--accent) 3%,var(--white));overflow:hidden}
+.local-discovery-heading{display:flex;align-items:center;gap:20px;padding:22px 24px}.local-discovery-heading h2{font-family:var(--book-font,var(--serif));font-size:22px;margin:5px 0 7px}.local-discovery-heading p{font-size:12px;line-height:1.8;max-width:57ch;color:var(--muted)}
+.service-vector{width:88px;height:78px;color:var(--ink);flex:none}.local-discovery .loading-vector{width:88px;height:78px}.local-discovery .section-eyebrow,.compiler-summary .section-eyebrow{font-size:9px;letter-spacing:.14em;color:var(--accent)}
+.detected-models{border-top:1px solid var(--line);padding:0 24px}.detected-model{display:flex;align-items:center;gap:14px;min-width:0;padding:17px 0}.detected-model+.detected-model{border-top:1px solid var(--line)}.detected-model .grow{min-width:0}.detected-model strong{display:block;font-size:13px;overflow-wrap:anywhere}.detected-model small{display:block;font-size:11px;color:var(--muted);margin-top:5px}.detected-model>.btn{flex:none}.service-dot{width:7px;height:7px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 5px color-mix(in srgb,var(--accent) 10%,transparent);flex:none}
+.service-note{border-top:1px solid var(--line);padding:17px 24px!important;font-size:12px;color:var(--muted);line-height:1.8}
+.compiler-state{margin:4px 0 22px}.compiler-summary{display:flex;align-items:center;gap:18px;padding:18px;border:1px solid var(--line);border-radius:var(--field-radius,12px);background:var(--soft)}.compiler-summary h3{font-family:var(--serif);font-size:21px;margin:4px 0 8px}.compiler-summary p{font-size:12px;line-height:1.8;color:var(--muted)}.compiler-summary.is-ready{border-color:color-mix(in srgb,var(--accent) 30%,var(--line))}.status-tag{display:flex;align-items:center;gap:6px;font-size:10px;color:var(--accent);white-space:nowrap}.compiler-privacy{display:flex;align-items:flex-start;gap:10px;font-size:11px;line-height:1.9;color:var(--muted)}.compiler-privacy>.icon{flex:none;margin-top:2px}.compiler-state .model-loading{margin:0}
+@media(max-width:600px){
+ :root[data-pack] .btn{min-height:44px}.local-discovery-heading{gap:12px;padding:18px;flex-wrap:wrap}.local-discovery-heading>.grow{flex:1;min-width:160px}.local-discovery-heading>.btn{margin-left:62px;min-height:38px}.local-discovery-heading h2{font-size:19px}.service-vector,.local-discovery .loading-vector{width:50px;height:52px}.detected-models{padding:0 18px}.detected-model{gap:11px;flex-wrap:wrap}.detected-model>.btn{min-height:38px;font-size:11px}.compiler-summary{padding:14px;gap:12px;flex-wrap:wrap}.compiler-summary>div{flex:1;min-width:160px}.compiler-summary h3{font-size:19px}.compiler-summary .status-tag{margin-left:62px}
+}
+@media(prefers-reduced-motion:reduce){:root[data-pack] :is(.btn,.icon-btn,.provider,.tabs>button,.studio-tabs>button,.view-toggle>button){transition:none!important;transform:none!important}}
+:root[data-pack].reduce-motion :is(.btn,.icon-btn,.provider,.tabs>button,.studio-tabs>button,.view-toggle>button){transition:none!important;transform:none!important}
+:root[data-pack][data-platform] .btn.danger{background:var(--danger-surface);color:var(--danger);border-color:color-mix(in srgb,var(--danger) 32%,var(--line));box-shadow:none}

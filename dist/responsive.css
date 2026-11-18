@@ -1,0 +1,29 @@
+/* Shared sizing contracts; tablet and desktop retain their established spacing. */
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+button,input,select,textarea{font-family:var(--ui-font);box-sizing:border-box}button{line-height:1.4}button .icon,.btn .icon{flex-shrink:0}
+.content,main,.page,.row,.panel,.split>*,.form-grid>*,.editor-column,.editor-paper,.settings-section,.creation-form,.creation-aside{min-width:0}
+.field input,.field select,.field textarea{min-width:0;max-width:100%;width:100%}.field>span{overflow-wrap:anywhere}
+.btn{max-width:100%;line-height:1.4;text-align:center}.row.wrap{row-gap:10px}h1,h2,h3,.project-title,.resume-copy h2,.entity h3{overflow-wrap:anywhere}
+.form-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.model-switch>span{display:block;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dialog-head h2{min-width:0;overflow-wrap:anywhere}.dialog-head>.icon-btn{flex-shrink:0}.dialog-actions{flex-wrap:wrap}.dialog-actions .btn{white-space:normal}.export-option h3,.export-option p{overflow-wrap:anywhere}
+.manuscript,.reader-prose,.version-prose{overflow-wrap:anywhere}.manuscript{word-break:normal}.editor-title{min-width:0;max-width:100%}
+@media(max-width:600px){
+ :root[data-pack] .btn,:root[data-pack] .icon-btn,:root[data-pack] .view-toggle button,:root[data-pack] .editor-toolbar button{min-height:44px}
+ :root[data-pack] .icon-btn,:root[data-pack] .editor-toolbar button{min-width:44px}
+ :root[data-pack] .field input:not([type=range]):not([type=checkbox]):not([type=radio]):not([type=color]),:root[data-pack] input[type=search],:root[data-pack] select,:root[data-pack] textarea{font-size:16px;line-height:1.5;min-height:44px}
+ :root[data-pack] .field input,:root[data-pack] .field select{padding-block:10px}
+ :root[data-pack] .topbar{gap:8px}:root[data-pack] .topbar>.row:first-child{min-width:0;flex:1}:root[data-pack] .top-actions{flex:none;gap:3px}:root[data-pack] .breadcrumb{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}:root[data-pack] .model-switch{min-width:0;max-width:142px;min-height:44px}
+ :root[data-pack] .library-toolbar{gap:17px}:root[data-pack] .library-toolbar .tools{display:flex;flex-wrap:wrap;min-width:0;width:100%;gap:9px}:root[data-pack] .library-toolbar .search{flex:1 1 100px;min-width:0;width:auto}:root[data-pack] .sort-control{min-width:110px;max-width:145px}:root[data-pack] .view-toggle{flex:none}
+ :root[data-pack] .page-intro{align-items:flex-start;gap:14px;flex-wrap:wrap}:root[data-pack] .page-intro>div{min-width:0}:root[data-pack] .page-intro>select{max-width:100%!important;width:100%}
+ :root[data-pack] .form-grid{grid-template-columns:minmax(0,1fr)}:root[data-pack] .settings-card .form-grid{grid-template-columns:minmax(0,1fr)}
+ :root[data-pack] .studio-tabs{align-items:center}:root[data-pack] .studio-tabs>button{white-space:normal;min-height:44px;padding:9px 8px;line-height:1.4}
+ :root[data-pack] .editor-toolbar{overflow:visible;gap:10px;align-items:flex-start}:root[data-pack] .editor-toolbar>.row{flex-wrap:wrap;gap:4px;min-width:0;flex:1 1 280px}:root[data-pack] .editor-toolbar .btn{white-space:normal;font-size:12px;padding:8px 10px}:root[data-pack] .editor-toolbar .toolbar-divider{margin-inline:3px}
+ :root[data-pack] .editor-bottom{align-items:flex-start;flex-wrap:wrap}:root[data-pack] .editor-bottom>.row{flex:1 1 100%;flex-wrap:wrap;gap:8px}:root[data-pack] .editor-bottom>.row>.btn{flex:1 1 130px;justify-content:center;white-space:normal}
+ :root[data-pack] .chapter-panel{scrollbar-width:thin}:root[data-pack] .chapter-panel .chapter-button{min-width:150px;min-height:54px;flex:none}:root[data-pack] .chapter-panel .chapter-button strong{white-space:normal;overflow-wrap:anywhere}
+ :root[data-pack] .connection>.row{flex-wrap:wrap;gap:13px}:root[data-pack] .connection .row.gap8{flex-wrap:wrap;gap:7px}:root[data-pack] .provider-grid,:root[data-pack] .entity-grid{grid-template-columns:minmax(0,1fr)}
+ :root[data-pack] .export-options{grid-template-columns:minmax(0,1fr)}:root[data-pack] .dialog-actions{gap:8px}:root[data-pack] .dialog-actions>.btn{flex:1 1 120px;justify-content:center}
+ :root[data-pack] .creation-progress button{min-height:64px}:root[data-pack] .appearance-mode label>span{min-height:44px}
+}
+@media(max-width:380px){:root[data-pack] .topbar .breadcrumb{display:none}:root[data-pack] .topbar>.row:first-child{flex:0 0 auto}:root[data-pack] .topbar{justify-content:space-between}:root[data-pack] .model-switch{max-width:150px}}
+@media(max-width:600px){:root[data-pack] #cover-form .form-grid{grid-template-columns:minmax(0,1fr)}.cover-gallery-tools{grid-template-columns:minmax(0,1fr)}.cover-palette-list{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media(max-width:600px){:root[data-pack][data-keyboard-open] .studio-shell{padding-bottom:0}:root[data-pack][data-keyboard-open] .page{padding-bottom:20px}}

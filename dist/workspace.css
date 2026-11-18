@@ -1,0 +1,13 @@
+/* The masthead is outside the page scroller, including in Safari sheets. */
+:root[data-pack]{height:100%;height:100dvh;overflow:hidden;overscroll-behavior:none}
+:root[data-pack] body,:root[data-pack] #app{height:100%;min-height:0;overflow:hidden}
+:root[data-pack] .shell{height:100%;min-height:0;overflow:hidden;background:var(--paper)}
+:root[data-pack] .content{display:flex;flex-direction:column;height:100%;min-height:0;overflow:hidden}
+:root[data-pack] .topbar{position:relative;top:auto;flex:0 0 auto;background:var(--paper);backdrop-filter:none;-webkit-backdrop-filter:none;isolation:isolate}
+:root[data-pack] #main{flex:1 1 auto;min-height:0;overflow:auto;overscroll-behavior-y:contain;-webkit-overflow-scrolling:touch;scroll-padding-block:20px;isolation:isolate}
+:root[data-pack] #main:focus-visible{outline:2px solid var(--accent);outline-offset:-3px}
+/* Printing expands the manuscript rather than printing a clipped viewport. */
+@media print{
+ :root[data-pack],:root[data-pack] body,:root[data-pack] #app,:root[data-pack] .shell,:root[data-pack] .content,:root[data-pack] #main{height:auto;min-height:0;overflow:visible;overscroll-behavior:auto}
+ :root[data-pack] .content{display:block}
+}

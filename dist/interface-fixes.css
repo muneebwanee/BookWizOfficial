@@ -1,0 +1,67 @@
+/* Shared writing-room layout: the manuscript scrolls, its controls stay in reach. */
+:root[data-pack] #main.draft-workspace{display:flex;flex-direction:column;overflow:hidden}
+:root[data-pack] .draft-workspace>.studio-tabs,:root[data-pack] .draft-workspace>#story-status,:root[data-pack] .draft-workspace>.setup-return{flex:none}
+:root[data-pack] .draft-workspace>.studio-shell{flex:1 1 auto;min-height:0;overflow:hidden;padding-bottom:0}
+:root[data-pack] .draft-workspace .chapter-panel{min-height:0;overflow-y:auto;overscroll-behavior:contain}
+:root[data-pack] .draft-workspace .editor-column{display:flex;flex-direction:column;min-height:0;overflow:hidden}
+:root[data-pack] .draft-workspace .editor-toolbar{flex:none;gap:12px}
+:root[data-pack] .editor-scroll{flex:1 1 auto;min-height:0;overflow:auto;overscroll-behavior:contain;scroll-padding:28px;-webkit-overflow-scrolling:touch}
+:root[data-pack] .editor-scroll .editor-paper{width:100%;min-height:100%;box-sizing:border-box;padding-bottom:48px}
+:root[data-pack] .draft-workspace .editor-bottom{flex:none;position:relative;z-index:2;min-height:72px;padding:14px 22px;gap:12px;border-top:1px solid var(--line);background:var(--paper)}
+:root[data-pack] .editor-bottom>div:first-child{font-size:11px;line-height:1.7;min-width:0;overflow-wrap:anywhere}
+:root[data-pack] .editor-bottom>.row{flex-shrink:0}
+:root[data-pack] .studio-tabs{column-gap:8px;row-gap:8px;padding:12px 24px;align-items:center}
+:root[data-pack] .studio-tabs>button{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:10px 16px;border:1px solid transparent;border-radius:10px;line-height:1.4;white-space:nowrap}
+:root[data-pack] .studio-tabs>button.active{background:var(--soft);color:var(--soft-text);border-color:color-mix(in srgb,var(--accent) 24%,var(--line));box-shadow:none}
+:root[data-pack] .studio-tabs>button:hover{background:var(--surface);color:var(--ink)}
+:root[data-pack] .studio-tools{flex:none}
+:root[data-pack] .studio-tools summary{min-height:44px}
+/* Saved state is a single, compact object, distinct from workspace search. */
+:root[data-pack] .local-state{display:inline-flex;align-items:center;gap:7px;margin:0 3px;padding:7px 10px;min-height:32px;border-radius:8px;background:var(--surface);font-size:10px;line-height:1.4;white-space:nowrap;color:var(--muted)}
+.save-indicator{display:grid;place-items:center;flex:none;color:var(--accent)}.save-indicator .icon{width:14px;height:14px}
+:root[data-pack] .local-state[data-status=error]{background:var(--warning-surface);color:var(--warning);white-space:normal;max-width:220px}
+.local-state[data-status=error] .save-indicator{color:inherit}
+/* Time controls cannot impose Safari's intrinsic width on their grid column. */
+.reminder-settings #reminder-form{width:100%;min-width:0;gap:22px}
+.reminder-settings .form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px 24px;min-width:0;width:100%;align-items:start}
+.reminder-settings .field{display:flex;flex-direction:column;gap:9px;min-width:0;max-width:100%;margin:0}
+.reminder-settings .field>span{display:block;line-height:1.5}
+:root[data-pack] .reminder-settings .field input,:root[data-pack] .reminder-settings .field select{display:block;box-sizing:border-box;width:100%;min-width:0;max-width:100%;height:48px;min-height:48px;padding:10px 14px;font-size:16px;line-height:1.5}
+.reminder-settings input[type=time]::-webkit-date-and-time-value{text-align:start;min-width:0}
+.reminder-settings .setting-details{min-width:0}.reminder-settings .setting-details .form-grid{padding-bottom:4px}
+.reminder-settings>summary:focus-visible{outline:2px solid var(--accent);outline-offset:5px;border-radius:4px}
+/* Provider artwork is bundled with the studio for consistent offline rendering. */
+:root[data-pack] .provider .provider-brand{width:44px;height:44px;flex:0 0 44px;padding:8px;border-radius:12px;background:#fffdf8;display:grid;place-items:center}
+.provider .provider-brand img{display:block;width:28px;height:28px;object-fit:contain}
+:root[data-pack] .provider>.row:first-child{flex-wrap:nowrap;align-items:center;gap:14px}
+:root[data-pack] .provider>.row:first-child>div:last-child{min-width:0}.provider h3{line-height:1.5}.provider p{line-height:1.6}
+@media(max-width:1150px){:root[data-pack] .local-state{display:none}:root[data-pack] .local-state[data-status=error]{display:inline-flex;max-width:150px}}
+@media(max-width:900px){:root[data-pack] .studio-tabs{padding-inline:16px;column-gap:6px}:root[data-pack] .studio-tabs>button{padding-inline:12px}}
+@media(max-width:600px){
+ :root[data-pack] #main.draft-workspace{padding-bottom:calc(84px + var(--safe-bottom));box-sizing:border-box}
+ :root[data-pack] .draft-workspace>.studio-shell{display:flex;flex-direction:column}
+ :root[data-pack] .draft-workspace .chapter-panel{flex:none;overflow-x:auto;overflow-y:hidden;max-height:100px;padding:10px 12px}
+ :root[data-pack] .draft-workspace .editor-column{flex:1 1 auto}
+ :root[data-pack] .studio-tabs{padding:9px 12px;gap:5px}
+ :root[data-pack] .studio-tabs>button{padding:8px 11px;font-size:11px;flex:none}
+ :root[data-pack] .studio-tools summary{font-size:11px;padding:8px 11px;min-height:44px}
+ :root[data-pack] .draft-workspace .editor-toolbar{padding:6px 10px;gap:4px}
+ :root[data-pack] .draft-workspace .editor-toolbar>.row{flex:1 1 auto;justify-content:flex-start;gap:2px}
+ :root[data-pack] .draft-workspace .editor-toolbar .btn{font-size:11px;padding-inline:8px;gap:5px}
+ :root[data-pack] .draft-workspace .editor-toolbar{flex-direction:column;align-items:stretch;gap:2px}
+ :root[data-pack] .draft-workspace .editor-toolbar>.row{flex:0 0 auto;width:100%;flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;overscroll-behavior-x:contain;scrollbar-width:thin;scrollbar-color:var(--line) transparent}
+ :root[data-pack] .draft-workspace .editor-toolbar>.row>*{flex-shrink:0}
+ :root[data-pack] .draft-workspace .editor-toolbar .btn{white-space:nowrap}
+ :root[data-pack][data-keyboard-open] .draft-workspace>.studio-tabs,:root[data-pack][data-keyboard-open] .draft-workspace .chapter-panel,:root[data-pack][data-keyboard-open] .draft-workspace .editor-toolbar>.row:last-child{display:none}
+ :root[data-pack] .editor-scroll .editor-paper{padding:28px 22px 40px}
+ :root[data-pack] .draft-workspace .editor-bottom{padding:10px 14px;min-height:0;gap:8px}
+ :root[data-pack] .editor-bottom>.row{flex:1 1 100%;gap:8px}
+ :root[data-pack] .editor-bottom>.row>.btn{flex:1 1 0;min-width:0;min-height:44px}
+ .reminder-settings .form-grid{grid-template-columns:minmax(0,1fr);gap:20px}
+ :root[data-pack] .local-state[data-status=error]{display:none}
+ :root[data-pack][data-keyboard-open] #main.draft-workspace,:root[data-pack] body.zen #main.draft-workspace{padding-bottom:0}
+}
+@media print{
+ :root[data-pack] #main.draft-workspace,:root[data-pack] .draft-workspace>.studio-shell,:root[data-pack] .draft-workspace .editor-column,:root[data-pack] .editor-scroll{display:block;height:auto;overflow:visible;padding-bottom:0}
+ :root[data-pack] .draft-workspace .editor-bottom{display:none}
+}

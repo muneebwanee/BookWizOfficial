@@ -1,0 +1,81 @@
+{
+  "collection": "LobeHub Icons",
+  "license": "MIT",
+  "licenseFile": "../../licenses/lobehub-icons-MIT.txt",
+  "note": "Provider marks identify their respective services. Names and marks belong to their owners; inclusion does not imply endorsement. The Apple mark identifies Apple Intelligence.",
+  "assets": {
+    "apple-device": {
+      "source": "https://raw.githubusercontent.com/lobehub/lobe-icons/master/packages/static-svg/icons/apple.svg",
+      "upstreamAsset": "apple.svg"
+    },
+    "gemini": {
+      "source": "BookWiz",
+      "kind": "original text identifier",
+      "note": "The letter G identifies the Google Gemini connection."
+    },
+    "openai": {
+      "source": "https://raw.githubusercontent.com/lobehub/lobe-icons/master/packages/static-svg/icons/openai.svg",
+      "upstreamAsset": "openai.svg"
+    },
+    "anthropic": {
+      "source": "https://raw.githubusercontent.com/lobehub/lobe-icons/master/packages/static-svg/icons/claude-color.svg",
+      "upstreamAsset": "claude-color.svg"
+    },
+    "groq": {
+      "source": "https://raw.githubusercontent.com/lobehub/lobe-icons/master/packages/static-svg/icons/groq.svg",
+      "upstreamAsset": "groq.svg"
+    },
+    "openrouter": {
+      "source": "https://raw.githubusercontent.com/lobehub/lobe-icons/master/packages/static-svg/icons/openrouter.svg",
+      "upstreamAsset": "openrouter.svg"
+    },
+    "mistral": {
+      "source": "https://raw.githubusercontent.com/lobehub/lobe-icons/master/packages/static-svg/icons/mistral-color.svg",
+      "upstreamAsset": "mistral-color.svg"
+    },
+    "together": {
+      "source": "https://raw.githubusercontent.com/lobehub/lobe-icons/master/packages/static-svg/icons/together-color.svg",
+      "upstreamAsset": "together-color.svg"
+    },
+    "deepseek": {
+      "source": "https://raw.githubusercontent.com/lobehub/lobe-icons/master/packages/static-svg/icons/deepseek-color.svg",
+      "upstreamAsset": "deepseek-color.svg"
+    },
+    "perplexity": {
+      "source": "https://raw.githubusercontent.com/lobehub/lobe-icons/master/packages/static-svg/icons/perplexity-color.svg",
+      "upstreamAsset": "perplexity-color.svg"
+    },
+    "xai": {
+      "source": "https://raw.githubusercontent.com/lobehub/lobe-icons/master/packages/static-svg/icons/grok.svg",
+      "upstreamAsset": "grok.svg"
+    },
+    "huggingface": {
+      "source": "https://raw.githubusercontent.com/lobehub/lobe-icons/master/packages/static-svg/icons/huggingface-color.svg",
+      "upstreamAsset": "huggingface-color.svg"
+    },
+    "cerebras": {
+      "source": "https://raw.githubusercontent.com/lobehub/lobe-icons/master/packages/static-svg/icons/cerebras-color.svg",
+      "upstreamAsset": "cerebras-color.svg"
+    },
+    "ollama": {
+      "source": "https://raw.githubusercontent.com/lobehub/lobe-icons/master/packages/static-svg/icons/ollama.svg",
+      "upstreamAsset": "ollama.svg"
+    },
+    "lmstudio": {
+      "source": "https://raw.githubusercontent.com/lobehub/lobe-icons/master/packages/static-svg/icons/lmstudio.svg",
+      "upstreamAsset": "lmstudio.svg"
+    },
+    "stability": {
+      "source": "https://raw.githubusercontent.com/lobehub/lobe-icons/master/packages/static-svg/icons/stability-color.svg",
+      "upstreamAsset": "stability-color.svg"
+    },
+    "fal": {
+      "source": "https://raw.githubusercontent.com/lobehub/lobe-icons/master/packages/static-svg/icons/fal.svg",
+      "upstreamAsset": "fal.svg"
+    },
+    "custom": {
+      "source": "BookWiz",
+      "note": "Original generic endpoint icon; not a provider trademark."
+    }
+  }
+}

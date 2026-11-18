@@ -1,0 +1,13 @@
+{
+  "images": [
+    {
+      "filename": "image.png",
+      "idiom": "tv",
+      "scale": "1x"
+    }
+  ],
+  "info": {
+    "author": "muneebwanee",
+    "version": 1
+  }
+}

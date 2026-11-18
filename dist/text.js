@@ -1,0 +1,6 @@
+export const uid=()=>globalThis.crypto?.randomUUID?.()||String(Date.now()+Math.random());
+export const esc=(s='')=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+export const words=(s='')=>(String(s).trim().match(/\S+/gu)||[]).length;
+export function plain(html=''){const e=document.createElement('div');e.innerHTML=String(html).replace(/<\/(p|div|h[1-6]|li|blockquote)>/gi,'</$1>\n\n').replace(/<br\s*\/?\s*>/gi,'\n');return e.textContent||'';}
+export const paragraphs=text=>String(text).split(/\n\s*\n/).filter(Boolean).map(p=>`<p>${esc(p)}</p>`).join('');
+export function sanitizeHTML(html=''){const d=document.createElement('div');d.innerHTML=String(html);d.querySelectorAll('script,style,iframe,object,svg,img,form,input,link,meta').forEach(e=>e.remove());d.querySelectorAll('div').forEach(e=>{const p=document.createElement('p');p.append(...e.childNodes);e.replaceWith(p);});const allowed=new Set(['P','BR','STRONG','EM','B','I','U','H2','H3','BLOCKQUOTE','UL','OL','LI']);[...d.querySelectorAll('*')].forEach(e=>{if(!allowed.has(e.tagName))e.replaceWith(...e.childNodes);else[...e.attributes].forEach(a=>e.removeAttribute(a.name));});return d.innerHTML;}

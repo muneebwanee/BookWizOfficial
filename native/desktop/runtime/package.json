@@ -1,0 +1,13 @@
+{
+  "name": "bookwiz-desktop",
+  "version": "1.0.0",
+  "description": "A local-first writing and publishing studio",
+  "main": "main.cjs",
+  "author": {
+    "name": "muneebwanee",
+    "url": "https://github.com/muneebwanee"
+  },
+  "homepage": "https://github.com/muneebwanee/BookWizOfficial",
+  "license": "SEE LICENSE IN LICENSE",
+  "desktopName": "com.muneebwanee.bookwiz.desktop"
+}

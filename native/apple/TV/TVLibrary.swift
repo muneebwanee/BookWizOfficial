@@ -1,0 +1,49 @@
+import Foundation
+import SwiftUI
+import AVFoundation
+import Darwin
+
+struct TVChapter: Codable, Identifiable { var id:String;var title:String;var beat:String;var text:String }
+struct TVBook: Codable, Identifiable { var id:String;var title:String;var author:String;var chapters:[TVChapter] }
+final class TVLibrary: NSObject, ObservableObject, AVSpeechSynthesizerDelegate {
+    @Published var books=[TVBook]()
+    @Published var receiving=false
+    @Published var transferURL=""
+    @Published var pairingCode=""
+    @Published var message=""
+    @Published var speaking=false
+    private var server:LocalHTTPServer?
+    private let speech=AVSpeechSynthesizer()
+    private var storage:URL {let root=FileManager.default.urls(for:.applicationSupportDirectory,in:.userDomainMask)[0];try? FileManager.default.createDirectory(at:root,withIntermediateDirectories:true);return root.appendingPathComponent("BookWizLibrary.json")}
+    override init(){super.init();speech.delegate=self;if let data=try? Data(contentsOf:storage),let saved=try? JSONDecoder().decode([TVBook].self,from:data){books=saved}}
+    func save(){if let data=try? JSONEncoder().encode(books){do{try data.write(to:storage,options:.atomic)}catch{message="The TV could not save this library. Keep the original book backup."}}}
+    func erase(){stopReceiving();stopSpeech();books=[];try? FileManager.default.removeItem(at:storage)}
+    func stopReceiving(){server?.stop();server=nil;receiving=false}
+    func startReceiving(){stopReceiving();guard let ip=localAddress() else{message="Connect Apple TV and your other device to the same local network.";return};let code=String(format:"%06d",Int.random(in:0...999999));pairingCode=code;transferURL="http://\(ip):4320";var failed=0
+        server=LocalHTTPServer { [weak self] request in
+            guard let self=self else{return LocalReply(503,"Receiver closed")}
+            if request.method=="GET" && request.path=="/" {return LocalReply(type:"text/html; charset=utf-8",data:Data(Self.uploadPage.utf8))}
+            guard request.method=="POST",let url=URLComponents(string:"http://local"+request.path),url.path=="/import" else{return LocalReply(404,"Not found")}
+            guard failed<10 else{return LocalReply(429,"Restart Receive a book on Apple TV for a new code.")}
+            guard url.queryItems?.first(where:{$0.name=="code"})?.value==code else{failed+=1;return LocalReply(403,"The code did not match.")}
+            guard let decoded=try? Self.decode(request.body),!decoded.isEmpty else{return LocalReply(422,"Choose a BookWiz book or workspace JSON backup.")}
+            DispatchQueue.main.async {for book in decoded {if let i=self.books.firstIndex(where:{$0.id==book.id}){self.books[i]=book}else{self.books.append(book)}};self.save();self.message="Book received. Your library is ready.";self.stopReceiving()}
+            return LocalReply(200,"Book received. You can return to Apple TV.")
+        }
+        do{try server?.start(port:4320,loopback:false){[weak self]error in DispatchQueue.main.async {if let error=error{self?.message=error.localizedDescription;self?.stopReceiving()}else{self?.receiving=true}}}}catch{message=error.localizedDescription;stopReceiving()}
+    }
+    static func decode(_ data:Data)throws->[TVBook]{guard let root=try JSONSerialization.jsonObject(with:data) as? [String:Any],root["version"] as? Int==1,let projects=root["projects"] as? [[String:Any]] else{throw NSError(domain:"BookWiz",code:1)};return projects.compactMap{p in guard let title=p["title"] as? String,let chapters=p["chapters"] as? [[String:Any]],!chapters.isEmpty else{return nil};let parsed=chapters.compactMap{c->TVChapter? in guard let name=c["title"] as? String,let html=c["text"] as? String else{return nil};return TVChapter(id:c["id"] as? String ?? UUID().uuidString,title:name,beat:c["beat"] as? String ?? "",text:plain(html))};guard !parsed.isEmpty else{return nil};return TVBook(id:p["id"] as? String ?? UUID().uuidString,title:title,author:p["author"] as? String ?? "",chapters:parsed)}}
+    static func plain(_ html:String)->String {var s=html.replacingOccurrences(of:"</p>",with:"\n\n",options:.caseInsensitive).replacingOccurrences(of:"<br\\s*/?>",with:"\n",options:.regularExpression);s=s.replacingOccurrences(of:"<[^>]+>",with:"",options:.regularExpression);for (entity,value) in [("&lt;","<"),("&gt;",">"),("&quot;","\""),("&#39;","'"),("&nbsp;"," "),("&amp;","&")]{s=s.replacingOccurrences(of:entity,with:value)};return s.trimmingCharacters(in:.whitespacesAndNewlines)}
+    func read(_ text:String){if speaking{stopSpeech();return};let utterance=AVSpeechUtterance(string:text);utterance.rate=AVSpeechUtteranceDefaultSpeechRate;speech.speak(utterance);speaking=true}
+    func stopSpeech(){speech.stopSpeaking(at:.immediate);speaking=false}
+    func speechSynthesizer(_ synthesizer:AVSpeechSynthesizer,didFinish utterance:AVSpeechUtterance){DispatchQueue.main.async{self.speaking=false}}
+    private func localAddress()->String?{var ptr:UnsafeMutablePointer<ifaddrs>?;guard getifaddrs(&ptr)==0,let first=ptr else{return nil};defer{freeifaddrs(ptr)};var current:UnsafeMutablePointer<ifaddrs>?=first;while let item=current{let value=item.pointee;if let addr=value.ifa_addr,addr.pointee.sa_family==UInt8(AF_INET),String(cString:value.ifa_name).hasPrefix("en"){var host=[CChar](repeating:0,count:Int(NI_MAXHOST));if getnameinfo(addr,socklen_t(addr.pointee.sa_len),&host,socklen_t(host.count),nil,0,NI_NUMERICHOST)==0{return String(cString:host)}};current=value.ifa_next};return nil}
+    private static let uploadPage="""
+    <!doctype html>
+    <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#faf7f1"><title>Bring a book to Apple TV · BookWiz</title><style>
+    *{box-sizing:border-box}body{margin:0;background:#faf7f1;color:#242426;font:16px/1.7 system-ui,-apple-system,sans-serif;-webkit-text-size-adjust:100%}main{max-width:560px;margin:7vh auto;padding:28px 24px 50px}header{display:flex;align-items:center;gap:10px;font:24px/1.2 Georgia,serif;color:#964a38}header svg{width:27px;height:27px}h1{font:clamp(34px,8vw,46px)/1.13 Georgia,serif;letter-spacing:-.025em;margin:35px 0 18px}p{color:#69615c;margin:0 0 24px}form{margin-top:32px}label{display:block;margin-bottom:24px;font-size:14px;font-weight:550}label span{display:block;margin-bottom:9px}input,button{font:inherit;border-radius:12px;min-height:50px;width:100%;box-sizing:border-box}input{padding:12px 15px;background:#fff;border:1px solid #ded8d0;color:#242426;min-width:0}input[type=file]{padding:11px;font-size:14px}input::file-selector-button{border:0;border-radius:7px;background:#f1ebe3;color:#242426;padding:7px 10px;margin-right:12px}#code{font-variant-numeric:tabular-nums;font-size:24px;letter-spacing:.15em}input:focus-visible,button:focus-visible{outline:2px solid #964a38;outline-offset:4px}button{border:0;padding:13px 20px;cursor:pointer;background:#964a38;color:#fff;font-weight:600;transition:transform .15s ease,background .15s ease;touch-action:manipulation}button:active{transform:scale(.985)}button:disabled{opacity:.6;cursor:progress}#status{margin:20px 0 0;min-height:28px;font-size:14px;color:#242426}small{display:block;font-size:12px;line-height:1.8;color:#69615c;border-top:1px solid #ded8d0;padding-top:25px;margin-top:28px}.local{display:flex;gap:8px;align-items:center;font-size:12px;margin-top:23px}.local svg{width:15px;height:15px;flex:none}@media(prefers-reduced-motion:reduce){button{transition:none;transform:none!important}}
+    </style></head><body><main><header><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M3 4h6a4 4 0 0 1 3 1.5A4 4 0 0 1 15 4h6v15h-6a4 4 0 0 0-3 1.5A4 4 0 0 0 9 19H3zM12 5.5v15"/></svg>BookWiz</header><h1>A book on the<br>big screen.</h1><p>Choose a JSON backup from your writing room and enter the code shown on Apple TV.</p><form id="transfer"><label><span>Apple TV code</span><input id="code" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" autocomplete="off" placeholder="000000" required aria-describedby="code-note"></label><p id="code-note" style="font-size:12px;margin-top:-16px">Six digits, shown in the Apple TV receiver.</p><label><span>Book or workspace backup</span><input id="file" type="file" accept=".json,application/json" required></label><button id="send" type="submit">Send to Apple TV</button><p id="status" role="status" aria-live="polite"></p></form><div class="local"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>Your original manuscript stays on its own device.</div><small>Use a trusted network. This local transfer is not encrypted. Never send API keys; BookWiz backups exclude saved credentials.</small></main><script>
+    const button=document.getElementById('send'),field=document.getElementById('file'),pin=document.getElementById('code'),result=document.getElementById('status');document.getElementById('transfer').onsubmit=async event=>{event.preventDefault();try{const f=field.files[0];if(!f)throw Error('Choose a backup first.');if(f.size>30000000)throw Error('Choose a backup below 30 MB.');button.disabled=true;button.textContent='Sending your book…';result.textContent='Keep this page open while the book transfers.';const response=await fetch('/import?code='+encodeURIComponent(pin.value),{method:'POST',headers:{'Content-Type':'application/json'},body:await f.text()});const message=await response.text();if(!response.ok)throw Error(message);result.textContent=message;button.textContent='Book received';}catch(e){result.textContent=e.message;button.textContent='Try sending again';}finally{button.disabled=false;}};
+    </script></body></html>
+    """
+}

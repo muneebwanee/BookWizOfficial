@@ -1,0 +1,124 @@
+/* BookWiz 1.0 · an attentive room, from the first sentence to the finished book. */
+:root[data-pack]{--room-ease:cubic-bezier(.16,1,.3,1);--room-fast:180ms;--room-settle:440ms;--room-gutter:clamp(22px,3.3vw,56px)}
+:root[data-pack] body{font-feature-settings:'ss01' on,'cv11' on;-webkit-font-smoothing:antialiased}
+:root[data-pack] .page{padding:38px var(--room-gutter) 32px;max-width:1600px;margin-inline:auto;width:100%;box-sizing:border-box}
+:root[data-pack] .page-intro{margin-bottom:32px;align-items:center;gap:24px}
+:root[data-pack] .page-intro h1{font:400 clamp(30px,3.2vw,46px)/1.18 Lora,Georgia,serif;letter-spacing:-.035em;margin:0;text-wrap:balance}
+:root[data-pack] .intro-copy{grid-template-columns:minmax(0,1fr);gap:0;position:relative}
+:root[data-pack] .intro-copy>h1,:root[data-pack] .intro-copy>p{grid-column:1}
+:root[data-pack] .intro-copy>.section-art{display:none}
+:root[data-pack] .page-intro p{font-size:13px;line-height:1.8;max-width:66ch;margin-top:13px}
+.fluid-word{display:inline-block;will-change:auto}
+:root[data-pack] .icon{stroke-width:1.55;stroke-linecap:round;stroke-linejoin:round}
+:root[data-pack] .sidebar{padding-inline:14px;background:var(--paper)}
+:root[data-pack] .sidebar-header{padding-inline:8px;padding-top:3px}
+:root[data-pack] .brand{gap:11px}.brand-mark{background:none!important;width:36px;height:36px;border-radius:0}.brand-mark img{display:block;width:36px;height:36px}
+:root[data-pack] .brand span{font:500 25px/1.1 Lora,serif;letter-spacing:-.04em}
+:root[data-pack] .sidebar-search{background:var(--white);min-height:44px;border-color:var(--line);gap:10px;padding-inline:13px}
+:root[data-pack] .nav-label{font-size:11px;letter-spacing:0;text-transform:none;margin-bottom:10px}
+:root[data-pack] .sidebar .nav{gap:6px}
+:root[data-pack] .sidebar .nav button{min-height:46px;font-size:12px;padding:11px 13px;transition:background-color var(--room-fast) ease,color var(--room-fast) ease,transform var(--room-fast) var(--room-ease)}
+:root[data-pack] .sidebar .nav button.active{background:var(--soft);box-shadow:none}
+:root[data-pack] .nav-count{font-size:10px;background:var(--white);color:var(--accent);border-radius:6px}
+:root[data-pack] .sidebar-local{font-size:10px;gap:8px}
+:root[data-pack] .topbar{background:var(--paper);border-bottom-color:var(--line);padding-inline:26px;gap:16px}
+:root[data-pack] .model-switch{min-height:40px;padding:9px 12px;background:var(--white);box-shadow:none}
+:root[data-pack] .breadcrumb{font-size:11px}.workspace-navigation{padding-inline:25px;background:var(--paper)}
+:root[data-pack][data-platform] .btn{min-height:44px;padding:11px 17px;font-size:12px;font-weight:550;letter-spacing:0;box-shadow:none;transition:background-color 180ms ease,border-color 180ms ease,transform 220ms var(--room-ease),box-shadow 220ms ease}
+:root[data-pack][data-platform] .btn.primary{background:var(--accent);color:var(--accent-text);border-color:transparent;box-shadow:0 3px 10px #00000012}
+:root[data-pack][data-platform] .btn.secondary{background:var(--white);box-shadow:none;border-color:var(--line)}
+:root[data-pack][data-platform] .btn.quiet{background:transparent;border-color:transparent;box-shadow:none}
+:root[data-pack][data-platform] .btn:active{transform:scale(.97)}
+:root[data-pack] .icon-btn{min-width:40px;min-height:40px}
+:root[data-pack][data-platform] .field input,:root[data-pack][data-platform] .field textarea,:root[data-pack][data-platform] .field select{border-color:var(--line);font-size:13px;padding:13px 15px;line-height:1.65;box-shadow:none}
+:root[data-pack] .field>span{font-size:12px;font-weight:500;line-height:1.6}.field small{line-height:1.8}
+:root[data-pack] input::placeholder,:root[data-pack] textarea::placeholder{color:var(--muted);opacity:.8}
+:root[data-pack] .field :is(input,textarea,select):focus{outline:2px solid var(--accent);outline-offset:3px;box-shadow:none}
+:root[data-pack] .library-page>.page-intro{margin-bottom:30px}
+:root[data-pack] .library-page .page-intro h1{max-width:680px;font-size:clamp(32px,3.5vw,49px)}
+:root[data-pack] .resume-panel{display:flex;align-items:center;position:relative;isolation:isolate;overflow:hidden;min-height:230px;gap:32px;padding:32px 38px;background:var(--white);border:1px solid var(--line);border-radius:16px;margin-bottom:24px}
+:root[data-pack] .resume-book{flex:none;position:relative;z-index:1;perspective:700px}
+:root[data-pack] .resume-book .book-cover{width:112px;transform:rotate(-3deg);box-shadow:5px 9px 20px #00000020;transition:transform 600ms var(--room-ease)}
+:root[data-pack] .resume-copy{position:relative;z-index:1;min-width:0;flex:1}
+:root[data-pack] .resume-copy h2{font:400 clamp(24px,2.2vw,34px)/1.3 Lora,Georgia,serif;letter-spacing:-.03em;margin:0 0 11px;text-wrap:balance}
+:root[data-pack] .resume-copy p{font-size:12px;line-height:1.7;margin-bottom:22px;color:var(--muted)}
+.room-thread{position:absolute;right:24px;bottom:12px;width:220px;height:68px;pointer-events:none;z-index:0;color:var(--accent);opacity:.16}.room-thread path{stroke:currentColor;stroke-width:1.5;stroke-dasharray:1}
+:root[data-pack] .daily-page{border-left:1px solid var(--line);padding-left:28px;position:relative;z-index:1;width:190px;flex:none}
+:root[data-pack] .daily-page strong{font-size:26px;font-weight:450;letter-spacing:-.03em}.daily-page .goal-track{height:3px}.daily-page p{font-size:11px;line-height:1.8}
+:root[data-pack] .overview{border-block:1px solid var(--line);margin:26px 0 30px;padding-block:18px;display:flex;justify-content:space-between;gap:12px}
+:root[data-pack] .metric{border:0;flex:1;gap:8px;padding:0 12px;min-width:0}
+:root[data-pack] .metric:first-child{padding-left:0}:root[data-pack] .metric strong{font-size:17px;line-height:1.4;font-weight:500;letter-spacing:-.01em}:root[data-pack] .metric label{font-size:10px;line-height:1.6;letter-spacing:0;text-transform:none}
+:root[data-pack] .book-grid{gap:26px;grid-template-columns:repeat(3,minmax(0,1fr))}
+:root[data-pack] .project-card{border:0;border-radius:0;background:transparent;box-shadow:none;overflow:visible}
+:root[data-pack] .cover-stage{border-radius:14px;height:235px;position:relative;overflow:hidden;background:var(--surface);padding:30px}
+:root[data-pack] .cover-stage .book-cover{box-shadow:4px 8px 18px #00000020;transition:transform 550ms var(--room-ease);transform:rotate(-2deg)}
+:root[data-pack] .project-info{padding:18px 2px 10px;background:transparent}
+:root[data-pack] .project-title{font:400 19px/1.5 Lora,Georgia,serif;letter-spacing:-.02em;margin-bottom:5px;white-space:normal}
+:root[data-pack] .project-info .genre{line-height:1.6;font-size:11px}.project-stats{line-height:1.7}.card-bottom{padding-top:13px;margin-top:12px;border-top:1px solid var(--line)}
+:root[data-pack] .new-project-card{border:1px dashed var(--line);border-radius:14px;background:transparent;min-height:235px}
+:root[data-pack] .new-project-card h3{font:400 20px Lora,serif}.new-project-card .icon{color:var(--accent)}
+:root[data-pack] .list-mode .project-card{border-bottom:1px solid var(--line);padding-block:12px}
+:root[data-pack] .list-mode .cover-stage{height:180px;width:150px;padding:24px}
+:root[data-pack] .list-mode .project-info{padding:18px 24px}
+:root[data-pack] .tabs{gap:8px}:root[data-pack] .tabs>button{padding:10px 14px;min-height:44px;border-radius:9px;border:0;font-size:12px}
+:root[data-pack] .tabs>button.active{box-shadow:none;color:var(--soft-text);background:var(--soft)}
+:root[data-pack] .provider{padding:22px;border-radius:14px;background:var(--white);gap:24px;border-color:var(--line);box-shadow:none}
+:root[data-pack] .provider h3{font-size:13px;font-weight:550}.provider p{font-size:11px}
+:root[data-pack] .provider .provider-brand{border-radius:11px}
+:root[data-pack] .local-discovery{border-radius:14px;box-shadow:none;background:var(--white);border-color:var(--line)}
+:root[data-pack] .settings-card{border-radius:14px;box-shadow:none;background:var(--white);padding:26px}
+:root[data-pack] .settings-menu button{min-height:44px;padding:11px 15px;font-size:12px}
+:root[data-pack] .settings-heading h2{font:400 29px/1.3 Lora,serif;letter-spacing:-.025em}
+:root[data-pack] .settings-heading p{line-height:1.8}
+:root[data-pack] .studio-tabs{padding-block:12px;gap:8px;background:var(--paper)}
+:root[data-pack] .draft-workspace .editor-toolbar{background:var(--paper);padding-inline:18px;row-gap:6px}
+:root[data-pack] .editor-scroll .editor-paper{max-width:840px;padding:46px clamp(28px,5vw,74px) 60px}
+:root[data-pack] .editor-title{font-family:Lora,Georgia,serif;font-size:clamp(26px,2.5vw,34px);line-height:1.4;margin-bottom:30px}
+:root[data-pack] .chapter-kicker{letter-spacing:.08em;font-size:10px;text-transform:none;margin-bottom:14px}
+:root[data-pack] .chapter-panel{padding:24px 14px}:root[data-pack] .chapter-panel h3{font-size:10px;letter-spacing:.02em;text-transform:none}
+:root[data-pack] .chapter-button{padding:15px 12px;margin-bottom:7px;border-radius:10px;line-height:1.7}
+:root[data-pack] .chapter-button.active{background:var(--soft)}
+:root[data-pack] .draft-workspace .editor-bottom{padding-inline:22px;background:var(--paper)}
+:root[data-pack] dialog{border-radius:var(--dialog-radius);box-shadow:0 20px 70px #00000030}
+:root[data-pack] dialog::backdrop{background:#10161766;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
+:root[data-pack] .dialog-head{padding:26px 28px 20px}.dialog-head h2{font-size:25px;line-height:1.4}.dialog-body{padding:26px 28px}
+:root[data-pack] .entity{padding:26px;border-radius:14px}.entity h3{font-size:26px}.entity dd{font-size:13px;line-height:1.85}
+:root[data-pack] .world-overview{padding:26px 30px}.world-overview p{line-height:1.95;font-size:17px}
+:root[data-pack] .cover-workspace{border-radius:16px;background:var(--surface);padding:40px;gap:40px}
+:root[data-pack] .export-option{border-radius:12px;padding:23px}.export-option h3{font-size:14px}.export-option p{font-size:12px;line-height:1.8}
+:root[data-pack] .creation-progress{border-radius:12px}.creation-form .story-brief textarea{font-size:14px}
+.support-page{max-width:1200px!important}.support-page .page-intro p{max-width:70ch}
+.support-intro{display:flex;align-items:flex-start;gap:28px;padding:32px 0 38px;border-block:1px solid var(--line);margin-bottom:38px}.support-intro>img{flex:none;border-radius:16px}.support-intro>div{min-width:0;max-width:74ch}
+.support-page h2{font:400 28px/1.35 Lora,Georgia,serif;letter-spacing:-.025em;margin:0 0 13px}.support-page p{font-size:13px;line-height:1.85;color:var(--muted)}.support-intro .row{margin-top:22px}
+.support-payments>p{margin-bottom:24px}.payment-list{border-block:1px solid var(--line)}.payment-row{display:flex;justify-content:space-between;align-items:center;gap:24px;padding:22px 4px;color:var(--ink);text-decoration:none;transition:background 180ms ease,padding 220ms var(--room-ease)}.payment-row+.payment-row{border-top:1px solid var(--line)}.payment-row strong{display:block;font-size:15px;font-weight:550;margin-bottom:6px}.payment-row span{font-size:12px;line-height:1.6;color:var(--muted)}.payment-row>.icon{width:18px;height:18px;flex:none}
+.bitcoin-support{margin-top:28px;padding:26px;background:var(--white);border:1px solid var(--line);border-radius:14px}.bitcoin-support h3{font-size:18px;font-weight:550}.bitcoin-support .field{margin:20px 0 18px}.bitcoin-support input{font-variant-numeric:tabular-nums}.bitcoin-support .small{margin-top:13px}
+.support-community{display:grid;grid-template-columns:1fr 1fr;gap:40px;margin-top:38px;padding-top:36px;border-top:1px solid var(--line)}.support-community p{margin-bottom:20px}.support-community h2{font-size:25px}.support-signature{margin-top:40px;padding-top:24px;border-top:1px solid var(--line);font-size:11px!important}.support-signature a{color:var(--ink)}
+@media(hover:hover){:root[data-pack][data-platform] .btn:not(:disabled):hover{transform:translateY(-1px);box-shadow:none}:root[data-pack][data-platform] .btn.primary:not(:disabled):hover{box-shadow:0 5px 16px #00000020}:root[data-pack] .project-card:hover .cover-stage .book-cover,:root[data-pack] .resume-panel:hover .resume-book .book-cover{transform:rotate(0) translateY(-4px)}.payment-row:hover{padding-inline:12px;background:var(--surface)}}
+@media(min-width:1700px){:root[data-pack] .book-grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media(max-width:1150px){:root[data-pack] .daily-page{display:none}:root[data-pack] .resume-panel{gap:26px;padding:28px}:root[data-pack] .book-grid{gap:20px}}
+@media(max-width:900px){:root[data-pack] .page{padding-top:30px}:root[data-pack] .book-grid{grid-template-columns:repeat(2,minmax(0,1fr))}:root[data-pack] .page-intro h1{font-size:36px}:root[data-pack] .resume-panel{min-height:210px}:root[data-pack] .resume-copy h2{font-size:28px}.support-intro{gap:20px}}
+@media(max-width:600px){
+ :root[data-pack] .page{padding:28px 20px calc(106px + var(--safe-bottom))}:root[data-pack] .page-intro{margin-bottom:25px;gap:18px;align-items:flex-start}:root[data-pack] .page-intro h1,:root[data-pack] .library-page .page-intro h1{font-size:34px;letter-spacing:-.035em}:root[data-pack] .page-intro p{font-size:12px;line-height:1.8;margin-top:12px}
+ :root[data-pack] .topbar{padding-inline:13px;gap:8px}:root[data-pack] .topbar .model-switch{max-width:145px;min-height:42px;font-size:10px}
+ :root[data-pack] .resume-panel{padding:23px 20px;gap:19px;min-height:204px;border-radius:14px;align-items:center;overflow:hidden;margin-bottom:22px}
+ :root[data-pack] .resume-book .book-cover{width:78px}:root[data-pack] .resume-copy h2{font-size:23px;line-height:1.35;margin-bottom:9px}.resume-copy .row{gap:7px}:root[data-pack] .resume-copy p{font-size:10px;line-height:1.7;margin-bottom:15px}:root[data-pack] .resume-copy .btn{font-size:10px;padding:9px 10px;gap:6px;min-height:42px}.room-thread{width:170px;right:-28px;bottom:0}
+ :root[data-pack] .overview{gap:8px;padding-block:16px;margin:22px 0;flex-wrap:wrap}:root[data-pack] .metric{flex:1 1 calc(50% - 8px);padding:0;box-sizing:border-box}:root[data-pack] .metric strong{font-size:16px}:root[data-pack] .metric label{font-size:10px}
+ :root[data-pack] .book-grid{gap:22px 14px}:root[data-pack] .cover-stage{height:196px;padding:22px 13px;border-radius:12px}:root[data-pack] .cover-stage .book-cover{width:94px}:root[data-pack] .project-info{padding:14px 1px 8px}:root[data-pack] .project-title{font-size:16px;line-height:1.4;min-height:44px}:root[data-pack] .project-info .genre{font-size:10px}:root[data-pack] .new-project-card{min-height:196px}:root[data-pack] .new-project-card h3{font-size:17px}
+ :root[data-pack] .tabs{gap:3px}:root[data-pack] .tabs>button{font-size:11px;padding:9px 11px}.library-toolbar .tools{margin-top:2px}
+ :root[data-pack] .provider{padding:21px;gap:22px}:root[data-pack] .settings-card{padding:23px 19px}:root[data-pack] .settings-menu button{padding:8px 3px;font-size:10px}
+ :root[data-pack][data-platform] .field input,:root[data-pack][data-platform] .field textarea,:root[data-pack][data-platform] .field select{font-size:16px;min-height:46px;padding:12px 13px}
+ :root[data-pack] .draft-workspace .chapter-panel{padding:9px 11px}:root[data-pack] .draft-workspace .chapter-button{padding:11px 12px;margin-bottom:0}:root[data-pack] .draft-workspace .editor-toolbar{padding:5px 10px;gap:2px}:root[data-pack] .draft-workspace .editor-toolbar .btn{font-size:11px;padding:8px}
+ :root[data-pack] .editor-scroll .editor-paper{padding:30px 23px 44px}:root[data-pack] .editor-title{font-size:26px}:root[data-pack] .draft-workspace .editor-bottom{padding:10px 14px}
+ :root[data-pack] .studio-tabs{padding:9px 12px;gap:5px}:root[data-pack] .studio-tabs>button{padding:8px 11px}
+ :root[data-pack] .cover-workspace{padding:27px 17px;gap:22px}.support-intro{padding:25px 0 30px;gap:18px;flex-direction:column}.support-page h2{font-size:25px}.support-page p{font-size:12px}.bitcoin-support{padding:22px 18px}.support-community{grid-template-columns:1fr;gap:30px}.support-community>div+div{border-top:1px solid var(--line);padding-top:28px}
+}
+@media(prefers-reduced-motion:reduce){.fluid-word,.room-thread path,:root[data-pack] .book-cover,:root[data-pack] .btn,:root[data-pack] .nav button{animation:none!important;transition:none!important;transform:none!important}}
+:root[data-pack].reduce-motion .fluid-word,:root[data-pack].reduce-motion .room-thread path,:root[data-pack].reduce-motion .book-cover{animation:none!important;transition:none!important;transform:none!important}
+@media print{.room-thread,.support-payments{display:none}.page{padding:0!important}.fluid-word{transform:none!important;filter:none!important;opacity:1!important}}
+
+/* Final shared state rules override legacy browser defaults consistently. */
+:root[data-pack] .tabs>button.active::after{content:none}
+:root[data-pack] a.btn{text-decoration:none}
+:root[data-pack] .section-eyebrow{letter-spacing:0;text-transform:none}
+:root[data-pack] body.zen .mobile-dock{display:none}
+:root[data-pack] .library-page>.overview{margin-top:0;border-top:0}

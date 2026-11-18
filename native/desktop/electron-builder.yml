@@ -1,0 +1,58 @@
+appId: com.muneebwanee.bookwiz
+productName: BookWiz
+copyright: Copyright © 2026 muneebwanee
+asar: true
+# The runtime uses Electron/Node built-ins and the already bundled web assets.
+# Root npm packages are build tools, not application dependencies.
+npmRebuild: false
+publish: []
+electronVersion: 45.3.2
+directories:
+  app: native/desktop/runtime
+  output: release
+  buildResources: native/desktop/icons
+files:
+  - main.cjs
+  - preload.cjs
+  - package.json
+  - web/**
+  - icon.png
+  - LICENSE
+  - THIRD_PARTY_NOTICES
+  - latex-engine.mjs
+  - local-services.mjs
+  # electron-builder collects production modules separately from this allowlist.
+  # Exclude that collection too, including PDF.js's optional native canvas addon.
+  - '!**/node_modules/**'
+afterPack: native/desktop/after-pack.cjs
+linux:
+  icon: native/desktop/icons/icon.png
+  category: Office
+  syncDesktopName: true
+  target:
+    - AppImage
+    - deb
+  artifactName: BookWiz-${version}-Linux-${arch}.${ext}
+  maintainer: muneebwanee <muneebwanee@users.noreply.github.com>
+win:
+  icon: native/desktop/icons/icon.ico
+  signAndEditExecutable: false
+  target: nsis
+  artifactName: BookWiz-${version}-Windows-Setup.${ext}
+nsis:
+  buildUniversalInstaller: true
+  oneClick: false
+  perMachine: false
+  allowToChangeInstallationDirectory: true
+  createDesktopShortcut: true
+  installerIcon: native/desktop/icons/icon.ico
+  uninstallerIcon: native/desktop/icons/icon.ico
+mac:
+  icon: native/desktop/icons/icon.icns
+  category: public.app-category.productivity
+  identity: null
+  target:
+    - target: dmg
+      arch:
+        - universal
+  artifactName: BookWiz-${version}-macOS.${ext}

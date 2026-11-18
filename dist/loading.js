@@ -1,0 +1,3 @@
+import {motionGraphic} from './motion.js';
+export function loadingHTML(label='Your model is writing',detail='Your finished passages stay saved as the next one takes shape.',{kind='pages'}={}){return `<div class="model-loading" role="status" aria-live="polite"><div class="loading-caption">${motionGraphic(kind,'loading-vector')}<div><strong>${label}</strong><p>${detail}</p></div><span class="loading-elapsed" data-loading-elapsed>0:00</span></div><div class="skeleton-lines" aria-hidden="true"><i></i><i></i><i></i><i></i></div></div>`;}
+export function updateLoadingClock(start){const s=Math.floor((Date.now()-start)/1000);document.querySelectorAll('[data-loading-elapsed]').forEach(el=>el.textContent=Math.floor(s/60)+':'+String(s%60).padStart(2,'0'));}

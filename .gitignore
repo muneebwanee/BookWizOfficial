@@ -1,0 +1,34 @@
+node_modules/
+.env*
+*.log
+*.tar.gz
+*.zip
+.DS_Store
+.agents/
+.codex/
+.claude/
+.taste-skill/
+.impeccable/*
+!.impeccable/design.json
+
+# Native build products and credentials
+build/
+release/
+.build-tools/
+*.keystore
+*.jks
+*.p12
+*.mobileprovision
+__pycache__/
+native/desktop/runtime/web/
+native/desktop/runtime/icon.png
+native/desktop/runtime/LICENSE
+native/desktop/runtime/THIRD_PARTY_NOTICES
+native/desktop/runtime/latex-engine.mjs
+native/desktop/runtime/local-services.mjs
+native/android/app/src/main/assets/web/
+native/apple/iOS/Web/
+native/apple/*.xcodeproj/
+
+# Keep the public platform source archives tracked.
+!/source-*.zip
