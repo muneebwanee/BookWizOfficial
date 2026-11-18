@@ -14,7 +14,11 @@ Build this edition directly from a clone of BookWizOfficial, using the repositor
 
 ## Your pocket studio
 
-The Android edition bundles the studio offline and adds system file opening, saving, printing, native speech, Back navigation, five home-screen widgets, and optional local writing reminders. Books and preferences stay on the device.
+The Android edition bundles the studio offline and adds system file opening, saving, printing, native speech, Back navigation, eight home-screen widgets, and optional local writing reminders. Books and preferences stay on the device.
+
+The widgets include a live clock, four writing shortcuts and a seven-day progress view. Each tap opens its named page or controls. See the [widget guide](../WIDGETS.md) for sizes, privacy and updating older placements.
+
+**PDF options** opens the native print/save sheet with the book’s chosen trim and margins. Use **Save as PDF** in that sheet. LaTeX source export remains available for a computer with XeLaTeX or Tectonic; Android PDF export does not require a localhost service.
 
 ## Downloads
 
