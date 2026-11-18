@@ -41,11 +41,14 @@ export async function publishRelease({target,root=process.cwd(),env=process.env,
  const checksums=[];
  for(const file of files){const content=await readFile(file);checksums.push(createHash('sha256').update(content).digest('hex')+'  '+path.basename(file));}
  await writeFile(path.join(directory,'SHA256SUMS.txt'),checksums.join('\n')+'\n');
+ let sourceManifest=null,sourceManifestText='';try{sourceManifestText=await readFile(path.join(root,'SOURCE-MANIFEST.json'),'utf8');sourceManifest=JSON.parse(sourceManifestText);}catch{}
+ const sourceMode=sourceManifest?.source_mode==='repository'?'repository':'archive';
  const sourceZip=path.resolve(root,'..','source-'+target+'.zip');let sourceSha256=null;
- try{sourceSha256=createHash('sha256').update(await readFile(sourceZip)).digest('hex');}catch{}
+ if(sourceMode==='archive')try{sourceSha256=createHash('sha256').update(await readFile(sourceZip)).digest('hex');}catch{}
+ const sourceManifestSha256=sourceManifest?createHash('sha256').update(sourceManifestText).digest('hex'):null;
  const signing=target==='android'?(env.BOOKWIZ_SIGNING_MODE==='owner'?'Owner Android key':'Development certificate'):
  ['ios','watchos','tvos'].includes(target)?(files.some(f=>f.includes(path.sep+'Apple-exports'+path.sep))?'Unsigned and owner-signed device IPA files':'Unsigned device IPA; signing and provisioning required for installation'):target==='macos'?'Unsigned; not notarized':target==='windows'?'Unsigned':null;
- await writeFile(path.join(directory,'BUILD-INFO.json'),JSON.stringify({application:'BookWiz',developer:'muneebwanee',version,target,architectures:['windows','macos'].includes(target)?['x64','arm64']:target==='linux'?['x64']:undefined,sourceSha256,repository,commit:env.GITHUB_SHA,run:env.GITHUB_RUN_ID,attempt:env.GITHUB_RUN_ATTEMPT,signing,packages:files.map(f=>path.basename(f))},null,2)+'\n');
+ await writeFile(path.join(directory,'BUILD-INFO.json'),JSON.stringify({application:'BookWiz',developer:'muneebwanee',version,target,architectures:['windows','macos'].includes(target)?['x64','arm64']:target==='linux'?['x64']:undefined,sourceMode,sourceSha256,sourceManifestSha256,repository,commit:env.GITHUB_SHA,run:env.GITHUB_RUN_ID,attempt:env.GITHUB_RUN_ATTEMPT,signing,packages:files.map(f=>path.basename(f))},null,2)+'\n');
  files.push(path.join(directory,'SHA256SUMS.txt'),path.join(directory,'BUILD-INFO.json'));
  const api=new URL('/repos/'+repository+'/releases',base).href;
  async function request(url,method,body,binary=false){

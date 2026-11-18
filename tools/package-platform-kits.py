@@ -15,7 +15,7 @@ PLATFORMS={
     'web':{'title':'Web','native':None,'prepare':None,'outputs':'Ready-to-host website ZIP, with index.html at its root','tools':['build-web.py']},
 }
 ROOT_FILES=['CITATION.cff','DESIGN.md','PRODUCT.md','package.json','package-lock.json','LICENSE','README.md','CONTRIBUTING.md','PRIVACY.md','TERMS.md','SUPPORT.md','THIRD_PARTY_NOTICES','CHANGELOG.md','.gitignore']
-COMMON_TOOLS=['sync-pdf-assets.mjs','prepare-native.mjs','latex-service.mjs','latex-engine.mjs','version-cache.mjs','ci-release.mjs','check-source.mjs','package-platform-kits.py']
+COMMON_TOOLS=['sync-source-archives.py','prepare-build-source.py','sync-pdf-assets.mjs','prepare-native.mjs','latex-service.mjs','latex-engine.mjs','version-cache.mjs','ci-release.mjs','check-source.mjs','package-platform-kits.py']
 IGNORED_NATIVE=['native/desktop/runtime/web/','native/desktop/runtime/latex-engine.mjs','native/desktop/runtime/local-services.mjs','native/android/app/src/main/assets/web/','native/apple/iOS/Web/']
 
 def repository_files(root=ROOT):
@@ -36,7 +36,8 @@ def source_commit(root=ROOT):
         except (OSError,json.JSONDecodeError):return None
 
 def readme(target,spec,root=ROOT):
-    return (root/'docs/platforms'/(target+'.md')).read_text()
+    source='docs/platforms/'+target+'.md'
+    return relocate_markdown_links((root/source).read_text(),source,'README.md')
 
 def relocate_markdown_links(text,source,destination):
     def target(href,image=False):
@@ -55,7 +56,7 @@ def selected_files(target,root=ROOT):
         if name.startswith(tuple(IGNORED_NATIVE)):continue
         if name.startswith('native/')and ('.xcodeproj/'in name or name.endswith(('.jks','.p12','.mobileprovision'))):continue
         if name.startswith('dist/downloads/'):continue
-        common=name in ROOT_FILES or name.startswith(('dist/','docs/','packaging/github/','LICENSES/','scripts/')) or (name.startswith('tests/')and name.endswith('.test.mjs'))or name in ['tools/'+x for x in COMMON_TOOLS]
+        common=name in ROOT_FILES or name.startswith(('dist/','docs/','packaging/github/','LICENSES/','scripts/')) or (name.startswith('tests/')and name.endswith('.test.mjs'))or name=='tests/source-archives.test.py'or name in ['tools/'+x for x in COMMON_TOOLS]
         own=(native and name.startswith('native/'+native+'/')) or name in ['tools/'+x for x in spec['tools']]
         if native=='apple'and name=='tests/apple-package.test.py':own=True
         if target=='android'and name=='tests/android-bundletool.test.py':own=True
