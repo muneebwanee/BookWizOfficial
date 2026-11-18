@@ -4,7 +4,7 @@
 
 **A writing room on your own terms.**
 
-[BookWizOfficial](https://github.com/muneebwanee/BookWizOfficial) · [Downloads](https://github.com/muneebwanee/BookWizOfficial/releases/latest) · [muneebwanee](https://github.com/muneebwanee)
+[BookWizOfficial](https://github.com/muneebwanee/BookWizOfficial) · [Downloads](https://github.com/muneebwanee/BookWizOfficial/releases) · [muneebwanee](https://github.com/muneebwanee)
 
 </div>
 
