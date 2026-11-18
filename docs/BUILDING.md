@@ -12,7 +12,7 @@
 
 ## The browser studio
 
-Use **Node.js 24**, npm, and Python 3. Extract the source archive for your platform and run these commands from the extracted folder containing `package.json`. The [official repository](https://github.com/muneebwanee/BookWizOfficial) contains separate source ZIPs; cloning it downloads those archives, which still need extraction.
+Use **Node.js 24**, npm, and Python 3. Clone the [official repository](https://github.com/muneebwanee/BookWizOfficial) and run these commands from its root, where `package.json`, `dist/`, `native/`, `tools/`, and `tests/` are already available. The retained platform ZIPs are optional distribution snapshots; contributors work directly in the editable tree.
 
 ```sh
 npm ci --ignore-scripts
@@ -76,11 +76,15 @@ Open the generated project in Xcode. **BookWiz-iOS** includes the Widgets extens
 ## Checks and source archives
 
 ```sh
+python3 scripts/check_docs.py
+python3 tests/docs.test.py
 python3 tests/android-bundletool.test.py
 python3 tests/apple-package.test.py
 python3 tests/platform-kits.test.py
 python3 tools/package-platform-kits.py --output ../BookWiz-platform-sources
 ```
+
+The documentation check validates local Markdown links and image references without contacting external websites. The committed star-history SVG and JSON are included in platform snapshots, so ordinary contributor checks do not require GitHub authentication. If regenerating the chart, run `gh auth login`, then `python3 scripts/gen_star_history.py` before checking or packaging the documentation.
 
 The archive command includes platform code, shared assets, tests, documentation, and source manifests. The [source guide](SOURCE_ARCHIVES.md) describes the layout. Refresh static cache hashes after changing web assets with `node tools/version-cache.mjs`.
 

@@ -1,44 +1,71 @@
 <div align="center">
 
-# Explore the source
+# One source. Every writing room.
 
-**Read it. Run it. Make a thoughtful contribution.**
+**Clone BookWiz, make a focused change, and contribute directly.**
 
-[BookWizOfficial](https://github.com/muneebwanee/BookWizOfficial) · [Downloads](https://github.com/muneebwanee/BookWizOfficial/releases) · [muneebwanee](https://github.com/muneebwanee)
+[BookWizOfficial](https://github.com/muneebwanee/BookWizOfficial) · [Build guide](BUILDING.md) · [Contributing](../CONTRIBUTING.md)
 
 </div>
 
 ---
 
-The official source lives at [muneebwanee/BookWizOfficial](https://github.com/muneebwanee/BookWizOfficial). GitHub forks for study and non-commercial upstream contributions follow the [project license](../LICENSE).
+The repository contains the full editable source tree **and** the existing platform ZIPs. A normal clone gives contributors the application, native hosts, build tools, tests, documentation, screenshots, and source archives together. There is no extra extraction step before working on the code.
 
-## Pick the scope
+## Find your place
 
-| Archive | Contents |
+| Path | What lives here |
 | :--- | :--- |
-| `source-android.zip` | The shared studio and Android host. |
-| `source-ios.zip` / `source-watchos.zip` / `source-tvos.zip` | The shared studio and Apple project, including its related targets. |
-| `source-windows.zip` / `source-macos.zip` / `source-linux.zip` | The shared studio and desktop host. |
-| `source-web.zip` | The browser studio without native hosts or installer downloads. |
+| `dist/` | Shared browser writing studio, modules, styles, icons, fonts, and offline assets. This is editable application source. |
+| `native/android/` | Android host and its platform resources. |
+| `native/apple/` | iPhone/iPad, Widgets, Apple Watch, and Apple TV targets. |
+| `native/desktop/` | Windows, macOS, and Linux desktop host and packaging configuration. |
+| `tools/` | Build, export, compiler, cache, and platform packaging tools. |
+| `tests/` | Application and packaging regression tests. |
+| `scripts/` | Repository utilities, including the self-hosted star-history generator and archive importer. |
+| `docs/` | Contributor guides, platform notes, and documentation assets. |
+| `packaging/github/` | Build-workflow templates used by the platform source packager. |
+| `.github/workflows/` | Active repository workflows, including the retained release builds. |
+| `SOURCE-ORIGINS.json` | The source archives and hashes used to assemble the editable tree. |
 
-## After extraction
+## Start from a clone
 
-Choose an edition from the repository's source ZIPs. GitHub's automatic “Source code” download contains the repository layout, including these archives; extract the chosen `source-*.zip` inside it to reach the application source.
+```sh
+git clone https://github.com/muneebwanee/BookWizOfficial.git
+cd BookWizOfficial
+npm ci --ignore-scripts
+npm run check
+npm test
+python3 -m http.server 4173 --directory dist --bind 127.0.0.1
+```
 
-The archive root contains `README.md`, `package.json`, `dist/`, `docs/`, `tools/`, and `tests/`, plus the relevant `native/` directory. `SOURCE-MANIFEST.json` identifies the platform, source commit, and checksum of every included file. The public studio guide is retained under `docs/STUDIO_README.md` in platform editions.
+Open **http://localhost:4173**. Use the [build guide](BUILDING.md) for a native edition.
 
-Follow [Building BookWiz](BUILDING.md) to run a local copy or compile an edition. Build automation lives under `packaging/github/`; matching workflow files are also provided alongside platform archives. These are source and build definitions, rather than application installers.
+## The retained ZIPs
 
-## What stays out
+| Archive | Distribution snapshot |
+| :--- | :--- |
+| `source-android.zip` | Shared studio and Android host. |
+| `source-ios.zip`, `source-watchos.zip`, `source-tvos.zip` | Shared studio and the related Apple targets. |
+| `source-windows.zip`, `source-macos.zip`, `source-linux.zip` | Shared studio and desktop host. |
+| `source-web.zip` | Browser studio without native hosts. |
 
-Source archives exclude manuscripts, API keys, signing identities, local browser data, dependency caches, generated native web copies, and downloaded installers. They use ordinary DEFLATE ZIP compression and include the required third-party notices.
+The ZIPs remain available for the existing release workflows and people who prefer a platform-specific snapshot. The initial addition of editable source leaves every ZIP byte for byte intact. Existing releases, tags, and release assets are retained.
 
-Share an improvement through a pull request to the official project. [Contributing →](../CONTRIBUTING.md)
+Contributors should change the editable files and submit a pull request. Maintainers can produce refreshed platform snapshots when preparing a release:
+
+```sh
+npm run package:source
+```
+
+This writes new archives and matching build files to `build/platform-sources/`. It does not replace the checked-in ZIPs or publish a release. Review and copy the intended snapshots into the repository as part of a release change; the existing ZIP-based release workflows still use the archives at the repository root.
+
+Each platform snapshot contains a `SOURCE-MANIFEST.json` with its target and file hashes. `scripts/import_platform_sources.py` can validate and add missing editable files from all eight snapshots; it preserves existing editable files rather than overwriting contributors' work.
+
+## Code and content
+
+`*.py`, `*.sh`, and other source files are **BWNCL**. `*.md` documentation, wordlists, regex catalogs, and rubrics are **CC BY 4.0**. Third-party licenses remain intact. [Read the boundary →](LICENSING.md)
 
 ---
 
-<div align="center">
-
-BookWiz by **muneebwanee** · [Back to the project](https://github.com/muneebwanee/BookWizOfficial)
-
-</div>
+**BookWiz · by muneebwanee**
