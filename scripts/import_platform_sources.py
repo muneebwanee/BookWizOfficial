@@ -73,6 +73,8 @@ def merged_sources(root: Path) -> tuple[dict, dict, dict]:
         'vendor:pdf': 'node tools/sync-pdf-assets.mjs',
         'build': 'python3 tools/build-web.py',
         'package:source': 'python3 tools/package-platform-kits.py --output build/platform-sources',
+        'prepare:release': 'python3 tools/release-version.py --prepare',
+        'check:version': 'python3 tools/release-version.py --check',
         'sync:source': 'python3 tools/sync-source-archives.py',
         'check:archives': 'python3 tools/sync-source-archives.py --check',
     }
