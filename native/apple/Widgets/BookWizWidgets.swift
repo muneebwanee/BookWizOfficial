@@ -1,12 +1,12 @@
 import SwiftUI
 import WidgetKit
 
-struct ShelfEntry: TimelineEntry {let date:Date;let title:String;let words:Int;let today:Int;let goal:Int;let books:Int;let chapters:Int;let sessionEnd:Date?}
+struct ShelfEntry: TimelineEntry {let date:Date;let title:String;let words:Int;let today:Int;let goal:Int;let books:Int;let chapters:Int;let sessionEnd:Date?;let projectId:String;let chapterId:String}
 struct ShelfProvider:TimelineProvider {
-    func placeholder(in context:Context)->ShelfEntry {ShelfEntry(date:Date(),title:"BookWiz",words:0,today:0,goal:500,books:0,chapters:0,sessionEnd:nil)}
+    func placeholder(in context:Context)->ShelfEntry {ShelfEntry(date:Date(),title:"BookWiz",words:0,today:0,goal:500,books:0,chapters:0,sessionEnd:nil,projectId:"",chapterId:"")}
     func getSnapshot(in context:Context,completion:@escaping(ShelfEntry)->Void){completion(read())}
     func getTimeline(in context:Context,completion:@escaping(Timeline<ShelfEntry>)->Void){completion(Timeline(entries:[read()],policy:.after(Date().addingTimeInterval(1800))))}
-    private func read()->ShelfEntry {let d=UserDefaults(suiteName:"group.com.muneebwanee.bookwiz")?.dictionary(forKey:"BookWizWidgetData") ?? [:];return ShelfEntry(date:Date(),title:d["title"] as? String ?? "Your writing room",words:d["wordCount"] as? Int ?? 0,today:Calendar.current.isDateInToday(Date(timeIntervalSince1970:(d["snapshotAt"] as? Double ?? 0)/1000)) ? (d["today"] as? Int ?? 0):0,goal:max(1,d["goal"] as? Int ?? 500),books:d["books"] as? Int ?? 0,chapters:d["chapters"] as? Int ?? 0,sessionEnd:(d["sessionEndsAt"] as? Double).flatMap{$0>0 ? Date(timeIntervalSince1970:$0/1000):nil})}
+    private func read()->ShelfEntry {let d=UserDefaults(suiteName:"group.com.muneebwanee.bookwiz")?.dictionary(forKey:"BookWizWidgetData") ?? [:];return ShelfEntry(date:Date(),title:d["title"] as? String ?? "Your writing room",words:d["wordCount"] as? Int ?? 0,today:Calendar.current.isDateInToday(Date(timeIntervalSince1970:(d["snapshotAt"] as? Double ?? 0)/1000)) ? (d["today"] as? Int ?? 0):0,goal:max(1,d["goal"] as? Int ?? 500),books:d["books"] as? Int ?? 0,chapters:d["chapters"] as? Int ?? 0,sessionEnd:(d["sessionEndsAt"] as? Double).flatMap{$0>0 ? Date(timeIntervalSince1970:$0/1000):nil},projectId:d["projectId"] as? String ?? "",chapterId:d["chapterId"] as? String ?? "")}
 }
 struct ShelfFace:View {
     let entry:ShelfEntry;let mode:String
@@ -14,6 +14,11 @@ struct ShelfFace:View {
     var title:String {switch mode {case "goal":return "Today’s page";case "capture":return "Catch a thought";case "session":return "Writing time";case "library":return "Your bookshelf";default:return entry.title}}
     var icon:String {switch mode {case "goal":return "text.word.spacing";case "capture":return "square.and.pencil";case "session":return "timer";case "library":return "books.vertical";default:return "book.closed"}}
     private var accent:Color {scheme == .dark ? Color(red:0.86,green:0.60,blue:0.49) : Color(red:0.59,green:0.29,blue:0.22)}
+    private var destination:URL? {
+        var url=URLComponents();url.scheme="bookwiz";url.host="widget";url.path="/"+mode
+        if mode=="resume" {url.queryItems=[URLQueryItem(name:"projectId",value:entry.projectId),URLQueryItem(name:"chapterId",value:entry.chapterId)]}
+        return url.url
+    }
     var body:some View {
         VStack(alignment:.leading,spacing:10) {
             HStack {
@@ -46,7 +51,7 @@ struct ShelfFace:View {
             }
         }
         .containerBackground(for:.widget){scheme == .dark ? Color(red:0.09,green:0.10,blue:0.11) : Color(red:0.98,green:0.97,blue:0.94)}
-        .widgetURL(URL(string:"bookwiz://widget/"+mode))
+        .widgetURL(destination)
         .accessibilityElement(children:.combine)
     }
 }
