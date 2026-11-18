@@ -1,0 +1,781 @@
+# Adds editable source from the existing verified ZIPs; preserves all downloads and releases.
+name: Add full source
+'on':
+  workflow_dispatch: {}
+  push:
+    paths:
+    - .github/workflows/add-full-source.yml
+permissions:
+  contents: write
+concurrency:
+  group: bookwiz-add-full-source
+  cancel-in-progress: false
+jobs:
+  import:
+    if: github.repository == 'muneebwanee/BookWizOfficial' && github.ref_name == github.event.repository.default_branch
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+    - uses: actions/checkout@v7.0.1
+      with:
+        ref: ${{ github.event.repository.default_branch }}
+    - name: Record the existing repository files
+      run: |
+        python3 - <<'PY'
+        import hashlib, json, os, subprocess
+        from pathlib import Path
+        allowed = {'README.md', 'CONTRIBUTING.md', 'LICENSE', 'TERMS.md', '.gitignore', 'SOURCE-ORIGINS.json',
+                   'docs/BUILDING.md', 'docs/SOURCE_ARCHIVES.md', 'docs/STUDIO_README.md',
+                   'docs/assets/star-history.svg', 'docs/assets/star-history.json', 'tools/package-platform-kits.py'}
+        for platform in ['android', 'ios', 'watchos', 'tvos', 'windows', 'macos', 'linux', 'web']:
+            allowed.update([f'README-{platform}.md', f'docs/platforms/{platform}.md'])
+        names = subprocess.check_output(['git', 'ls-files', '-z']).decode().split('\0')
+        hashes = {name: hashlib.sha256(Path(name).read_bytes()).hexdigest() for name in names if name and name not in allowed}
+        destination = Path(os.environ['RUNNER_TEMP']) / 'bookwiz-preserved-files.json'
+        destination.write_text(json.dumps(hashes))
+        print(f'Recorded {len(hashes)} existing files to preserve, including source ZIPs and release workflows.')
+        PY
+    - name: Add the unified editable source, guides and licensing scope
+      run: "set -euo pipefail\nmkdir -p scripts tests docs LICENSES\nif [ ! -e 'LICENSES/BWNCL-1.0.txt' ]; then\n\
+        cat > 'LICENSES/BWNCL-1.0.txt.bookwiz-new' <<'BOOKWIZ_FILE_f3f66adc6de01dde'\nBookWiz Non-Commercial License\
+        \ 1.0\nBWNCL 1.0\n\nBWNCL 1.0 · Copyright © 2026 muneebwanee. All rights reserved except as granted below.\n\
+        \n\n## Permissions\nYou may inspect and study the source, run BookWiz privately for personal non-commercial\
+        \ use, and make private modifications. You may submit patches and contributions to the official BookWiz\
+        \ repository designated by muneebwanee. You may share the minimum source excerpts necessary for a contribution\
+        \ or a good-faith security report.\n\nYou may create a GitHub fork of github.com/muneebwanee/BookWizOfficial\
+        \ for study and non-commercial upstream contributions. Retain copyright, license and third-party notices,\
+        \ and identify the official project. This permission does not extend to unofficial packaged releases, commercial\
+        \ hosting, resale or rebranding.\n\n\n## Restrictions\nExcept for the GitHub contribution forks permitted\
+        \ above, you may not distribute, mirror, sublicense, or publish standalone copies of BookWiz or modified\
+        \ versions, including source or packaged builds, without prior written permission from muneebwanee. You\
+        \ may not sell, rent, license for payment, rebrand for resale, host as a commercial service, bundle for\
+        \ commercial gain, or commercially exploit the software. Attribution does not waive these restrictions.\
+        \ You may not imply endorsement or remove copyright and license notices.\n\n\n## Your books are excluded\n\
+        This license governs the software, not works created with it. You retain 100% of your rights in your written\
+        \ works and may publish, sell, license, and distribute them commercially. BookWiz claims no royalty or ownership\
+        \ in your output. Third-party content and model terms remain separate.\n\n\n## Contributions\nBy submitting\
+        \ an upstream contribution, you confirm you have the right to do so and grant muneebwanee a perpetual, worldwide,\
+        \ non-exclusive, royalty-free right to use, modify, reproduce, and distribute that contribution as part\
+        \ of official BookWiz releases. You retain copyright in your contribution.\n\n\n## Third-party components\n\
+        Third-party libraries, fonts, and tools retain their own licenses. BWNCL does not narrow their independent\
+        \ permissions. See THIRD_PARTY_NOTICES in the source distribution.\n\n\n## Termination and disclaimer\n\
+        Permissions terminate upon breach. Stop using and remove unauthorized copies. The software is provided AS\
+        \ IS, without warranty of any kind, to the maximum extent permitted by law. The author is not liable for\
+        \ claims or damages arising from use. No trademark right or patent license is granted. If any clause is\
+        \ unenforceable, the remaining clauses continue to apply.\n\nFor additional permissions, contact github.com/muneebwanee.\
+        \ This is a source-available license and is not an OSI-approved open-source license.\nBOOKWIZ_FILE_f3f66adc6de01dde\n\
+        mv -f -- 'LICENSES/BWNCL-1.0.txt.bookwiz-new' 'LICENSES/BWNCL-1.0.txt'\nfi\nif [ ! -e 'LICENSES/CC-BY-4.0.txt'\
+        \ ]; then\ncat > 'LICENSES/CC-BY-4.0.txt.bookwiz-new' <<'BOOKWIZ_FILE_d557539df68e771c'\nCreative Commons\
+        \ Attribution 4.0 International\n\n Creative Commons Corporation (“Creative Commons”) is not a law firm\
+        \ and does not provide legal services or legal advice. Distribution of Creative Commons public licenses\
+        \ does not create a lawyer-client or other relationship. Creative Commons makes its licenses and related\
+        \ information available on an “as-is” basis. Creative Commons gives no warranties regarding its licenses,\
+        \ any material licensed under their terms and conditions, or any related information. Creative Commons disclaims\
+        \ all liability for damages resulting from their use to the fullest extent possible.\n\nUsing Creative Commons\
+        \ Public Licenses\n\nCreative Commons public licenses provide a standard set of terms and conditions that\
+        \ creators and other rights holders may use to share original works of authorship and other material subject\
+        \ to copyright and certain other rights specified in the public license below. The following considerations\
+        \ are for informational purposes only, are not exhaustive, and do not form part of our licenses.\n\nConsiderations\
+        \ for licensors: Our public licenses are intended for use by those authorized to give the public permission\
+        \ to use material in ways otherwise restricted by copyright and certain other rights. Our licenses are irrevocable.\
+        \ Licensors should read and understand the terms and conditions of the license they choose before applying\
+        \ it. Licensors should also secure all rights necessary before applying our licenses so that the public\
+        \ can reuse the material as expected. Licensors should clearly mark any material not subject to the license.\
+        \ This includes other CC-licensed material, or material used under an exception or limitation to copyright.\
+        \ More considerations for licensors.\n\nConsiderations for the public: By using one of our public licenses,\
+        \ a licensor grants the public permission to use the licensed material under specified terms and conditions.\
+        \ If the licensor’s permission is not necessary for any reason–for example, because of any applicable exception\
+        \ or limitation to copyright–then that use is not regulated by the license. Our licenses grant only permissions\
+        \ under copyright and certain other rights that a licensor has authority to grant. Use of the licensed material\
+        \ may still be restricted for other reasons, including because others have copyright or other rights in\
+        \ the material. A licensor may make special requests, such as asking that all changes be marked or described.\
+        \ Although not required by our licenses, you are encouraged to respect those requests where reasonable.\
+        \ More considerations for the public.\n\nCreative Commons Attribution 4.0 International Public License\n\
+        \nBy exercising the Licensed Rights (defined below), You accept and agree to be bound by the terms and conditions\
+        \ of this Creative Commons Attribution 4.0 International Public License (\"Public License\"). To the extent\
+        \ this Public License may be interpreted as a contract, You are granted the Licensed Rights in consideration\
+        \ of Your acceptance of these terms and conditions, and the Licensor grants You such rights in consideration\
+        \ of benefits the Licensor receives from making the Licensed Material available under these terms and conditions.\n\
+        \nSection 1 – Definitions.\n\n     a.\tAdapted Material means material subject to Copyright and Similar\
+        \ Rights that is derived from or based upon the Licensed Material and in which the Licensed Material is\
+        \ translated, altered, arranged, transformed, or otherwise modified in a manner requiring permission under\
+        \ the Copyright and Similar Rights held by the Licensor. For purposes of this Public License, where the\
+        \ Licensed Material is a musical work, performance, or sound recording, Adapted Material is always produced\
+        \ where the Licensed Material is synched in timed relation with a moving image.\n\n     b.\tAdapter's License\
+        \ means the license You apply to Your Copyright and Similar Rights in Your contributions to Adapted Material\
+        \ in accordance with the terms and conditions of this Public License.\n\n     c.\tCopyright and Similar\
+        \ Rights means copyright and/or similar rights closely related to copyright including, without limitation,\
+        \ performance, broadcast, sound recording, and Sui Generis Database Rights, without regard to how the rights\
+        \ are labeled or categorized. For purposes of this Public License, the rights specified in Section 2(b)(1)-(2)\
+        \ are not Copyright and Similar Rights.\n\n     d.\tEffective Technological Measures means those measures\
+        \ that, in the absence of proper authority, may not be circumvented under laws fulfilling obligations under\
+        \ Article 11 of the WIPO Copyright Treaty adopted on December 20, 1996, and/or similar international agreements.\n\
+        \n     e.\tExceptions and Limitations means fair use, fair dealing, and/or any other exception or limitation\
+        \ to Copyright and Similar Rights that applies to Your use of the Licensed Material.\n\n     f.\tLicensed\
+        \ Material means the artistic or literary work, database, or other material to which the Licensor applied\
+        \ this Public License.\n\n     g.\tLicensed Rights means the rights granted to You subject to the terms\
+        \ and conditions of this Public License, which are limited to all Copyright and Similar Rights that apply\
+        \ to Your use of the Licensed Material and that the Licensor has authority to license.\n\n     h.\tLicensor\
+        \ means the individual(s) or entity(ies) granting rights under this Public License.\n\n     i.\tShare means\
+        \ to provide material to the public by any means or process that requires permission under the Licensed\
+        \ Rights, such as reproduction, public display, public performance, distribution, dissemination, communication,\
+        \ or importation, and to make material available to the public including in ways that members of the public\
+        \ may access the material from a place and at a time individually chosen by them.\n\n     j.\tSui Generis\
+        \ Database Rights means rights other than copyright resulting from Directive 96/9/EC of the European Parliament\
+        \ and of the Council of 11 March 1996 on the legal protection of databases, as amended and/or succeeded,\
+        \ as well as other essentially equivalent rights anywhere in the world.\n\n     k.\tYou means the individual\
+        \ or entity exercising the Licensed Rights under this Public License. Your has a corresponding meaning.\n\
+        \nSection 2 – Scope.\n\n     a.\tLicense grant.\n\n          1. Subject to the terms and conditions of this\
+        \ Public License, the Licensor hereby grants You a worldwide, royalty-free, non-sublicensable, non-exclusive,\
+        \ irrevocable license to exercise the Licensed Rights in the Licensed Material to:\n\n               A.\
+        \ reproduce and Share the Licensed Material, in whole or in part; and\n\n               B. produce, reproduce,\
+        \ and Share Adapted Material.\n\n          2. Exceptions and Limitations. For the avoidance of doubt, where\
+        \ Exceptions and Limitations apply to Your use, this Public License does not apply, and You do not need\
+        \ to comply with its terms and conditions.\n\n          3. Term. The term of this Public License is specified\
+        \ in Section 6(a).\n\n          4. Media and formats; technical modifications allowed. The Licensor authorizes\
+        \ You to exercise the Licensed Rights in all media and formats whether now known or hereafter created, and\
+        \ to make technical modifications necessary to do so. The Licensor waives and/or agrees not to assert any\
+        \ right or authority to forbid You from making technical modifications necessary to exercise the Licensed\
+        \ Rights, including technical modifications necessary to circumvent Effective Technological Measures. For\
+        \ purposes of this Public License, simply making modifications authorized by this Section 2(a)(4) never\
+        \ produces Adapted Material.\n\n          5. Downstream recipients.\n\n               A. Offer from the\
+        \ Licensor – Licensed Material. Every recipient of the Licensed Material automatically receives an offer\
+        \ from the Licensor to exercise the Licensed Rights under the terms and conditions of this Public License.\n\
+        \n               B. No downstream restrictions. You may not offer or impose any additional or different\
+        \ terms or conditions on, or apply any Effective Technological Measures to, the Licensed Material if doing\
+        \ so restricts exercise of the Licensed Rights by any recipient of the Licensed Material.\n\n          6.\
+        \  No endorsement. Nothing in this Public License constitutes or may be construed as permission to assert\
+        \ or imply that You are, or that Your use of the Licensed Material is, connected with, or sponsored, endorsed,\
+        \ or granted official status by, the Licensor or others designated to receive attribution as provided in\
+        \ Section 3(a)(1)(A)(i).\n\nb. Other rights.\n\n          1. Moral rights, such as the right of integrity,\
+        \ are not licensed under this Public License, nor are publicity, privacy, and/or other similar personality\
+        \ rights; however, to the extent possible, the Licensor waives and/or agrees not to assert any such rights\
+        \ held by the Licensor to the limited extent necessary to allow You to exercise the Licensed Rights, but\
+        \ not otherwise.\n\n          2. Patent and trademark rights are not licensed under this Public License.\n\
+        \n          3. To the extent possible, the Licensor waives any right to collect royalties from You for the\
+        \ exercise of the Licensed Rights, whether directly or through a collecting society under any voluntary\
+        \ or waivable statutory or compulsory licensing scheme. In all other cases the Licensor expressly reserves\
+        \ any right to collect such royalties.\n\nSection 3 – License Conditions.\n\nYour exercise of the Licensed\
+        \ Rights is expressly made subject to the following conditions.\n\n     a.\tAttribution.\n\n          1.\
+        \ If You Share the Licensed Material (including in modified form), You must:\n\n               A. retain\
+        \ the following if it is supplied by the Licensor with the Licensed Material:\n\n                    i.\
+        \ identification of the creator(s) of the Licensed Material and any others designated to receive attribution,\
+        \ in any reasonable manner requested by the Licensor (including by pseudonym if designated);\n\n       \
+        \             ii. a copyright notice;\n\n                    iii. a notice that refers to this Public License;\n\
+        \n                    iv.\ta notice that refers to the disclaimer of warranties;\n\n                   \
+        \ v. a URI or hyperlink to the Licensed Material to the extent reasonably practicable;\n\n             \
+        \  B. indicate if You modified the Licensed Material and retain an indication of any previous modifications;\
+        \ and\n\n               C. indicate the Licensed Material is licensed under this Public License, and include\
+        \ the text of, or the URI or hyperlink to, this Public License.\n\n          2. You may satisfy the conditions\
+        \ in Section 3(a)(1) in any reasonable manner based on the medium, means, and context in which You Share\
+        \ the Licensed Material. For example, it may be reasonable to satisfy the conditions by providing a URI\
+        \ or hyperlink to a resource that includes the required information.\n\n          3. If requested by the\
+        \ Licensor, You must remove any of the information required by Section 3(a)(1)(A) to the extent reasonably\
+        \ practicable.\n\n          4. If You Share Adapted Material You produce, the Adapter's License You apply\
+        \ must not prevent recipients of the Adapted Material from complying with this Public License.\n\nSection\
+        \ 4 – Sui Generis Database Rights.\n\nWhere the Licensed Rights include Sui Generis Database Rights that\
+        \ apply to Your use of the Licensed Material:\n\n     a.\tfor the avoidance of doubt, Section 2(a)(1) grants\
+        \ You the right to extract, reuse, reproduce, and Share all or a substantial portion of the contents of\
+        \ the database;\n\n     b.\tif You include all or a substantial portion of the database contents in a database\
+        \ in which You have Sui Generis Database Rights, then the database in which You have Sui Generis Database\
+        \ Rights (but not its individual contents) is Adapted Material; and\n\n     c.\tYou must comply with the\
+        \ conditions in Section 3(a) if You Share all or a substantial portion of the contents of the database.\n\
+        For the avoidance of doubt, this Section 4 supplements and does not replace Your obligations under this\
+        \ Public License where the Licensed Rights include other Copyright and Similar Rights.\n\nSection 5 – Disclaimer\
+        \ of Warranties and Limitation of Liability.\n\n     a.\tUnless otherwise separately undertaken by the Licensor,\
+        \ to the extent possible, the Licensor offers the Licensed Material as-is and as-available, and makes no\
+        \ representations or warranties of any kind concerning the Licensed Material, whether express, implied,\
+        \ statutory, or other. This includes, without limitation, warranties of title, merchantability, fitness\
+        \ for a particular purpose, non-infringement, absence of latent or other defects, accuracy, or the presence\
+        \ or absence of errors, whether or not known or discoverable. Where disclaimers of warranties are not allowed\
+        \ in full or in part, this disclaimer may not apply to You.\n\n     b.\tTo the extent possible, in no event\
+        \ will the Licensor be liable to You on any legal theory (including, without limitation, negligence) or\
+        \ otherwise for any direct, special, indirect, incidental, consequential, punitive, exemplary, or other\
+        \ losses, costs, expenses, or damages arising out of this Public License or use of the Licensed Material,\
+        \ even if the Licensor has been advised of the possibility of such losses, costs, expenses, or damages.\
+        \ Where a limitation of liability is not allowed in full or in part, this limitation may not apply to You.\n\
+        \n     c.\tThe disclaimer of warranties and limitation of liability provided above shall be interpreted\
+        \ in a manner that, to the extent possible, most closely approximates an absolute disclaimer and waiver\
+        \ of all liability.\n\nSection 6 – Term and Termination.\n\n     a.\tThis Public License applies for the\
+        \ term of the Copyright and Similar Rights licensed here. However, if You fail to comply with this Public\
+        \ License, then Your rights under this Public License terminate automatically.\n\n     b.\tWhere Your right\
+        \ to use the Licensed Material has terminated under Section 6(a), it reinstates:\n\n          1. automatically\
+        \ as of the date the violation is cured, provided it is cured within 30 days of Your discovery of the violation;\
+        \ or\n\n          2. upon express reinstatement by the Licensor.\n\n     c.\tFor the avoidance of doubt,\
+        \ this Section 6(b) does not affect any right the Licensor may have to seek remedies for Your violations\
+        \ of this Public License.\n\n     d.\tFor the avoidance of doubt, the Licensor may also offer the Licensed\
+        \ Material under separate terms or conditions or stop distributing the Licensed Material at any time; however,\
+        \ doing so will not terminate this Public License.\n\n     e.\tSections 1, 5, 6, 7, and 8 survive termination\
+        \ of this Public License.\n\nSection 7 – Other Terms and Conditions.\n\n     a.\tThe Licensor shall not\
+        \ be bound by any additional or different terms or conditions communicated by You unless expressly agreed.\n\
+        \n     b.\tAny arrangements, understandings, or agreements regarding the Licensed Material not stated herein\
+        \ are separate from and independent of the terms and conditions of this Public License.\n\nSection 8 – Interpretation.\n\
+        \n     a.\tFor the avoidance of doubt, this Public License does not, and shall not be interpreted to, reduce,\
+        \ limit, restrict, or impose conditions on any use of the Licensed Material that could lawfully be made\
+        \ without permission under this Public License.\n\n     b.\tTo the extent possible, if any provision of\
+        \ this Public License is deemed unenforceable, it shall be automatically reformed to the minimum extent\
+        \ necessary to make it enforceable. If the provision cannot be reformed, it shall be severed from this Public\
+        \ License without affecting the enforceability of the remaining terms and conditions.\n\n     c.\tNo term\
+        \ or condition of this Public License will be waived and no failure to comply consented to unless expressly\
+        \ agreed to by the Licensor.\n\n     d.\tNothing in this Public License constitutes or may be interpreted\
+        \ as a limitation upon, or waiver of, any privileges and immunities that apply to the Licensor or You, including\
+        \ from the legal processes of any jurisdiction or authority.\n\nCreative Commons is not a party to its public\
+        \ licenses. Notwithstanding, Creative Commons may elect to apply one of its public licenses to material\
+        \ it publishes and in those instances will be considered the “Licensor.” Except for the limited purpose\
+        \ of indicating that material is shared under a Creative Commons public license or as otherwise permitted\
+        \ by the Creative Commons policies published at creativecommons.org/policies, Creative Commons does not\
+        \ authorize the use of the trademark “Creative Commons” or any other trademark or logo of Creative Commons\
+        \ without its prior written consent including, without limitation, in connection with any unauthorized modifications\
+        \ to any of its public licenses or any other arrangements, understandings, or agreements concerning use\
+        \ of licensed material. For the avoidance of doubt, this paragraph does not form part of the public licenses.\n\
+        \nCreative Commons may be contacted at creativecommons.org.\nBOOKWIZ_FILE_d557539df68e771c\nmv -f -- 'LICENSES/CC-BY-4.0.txt.bookwiz-new'\
+        \ 'LICENSES/CC-BY-4.0.txt'\nfi\nif [ ! -e 'docs/LICENSING.md' ]; then\ncat > 'docs/LICENSING.md.bookwiz-new'\
+        \ <<'BOOKWIZ_FILE_53c5ba42e6a82015'\n<div align=\"center\">\n\n# Code, content, and credit\n\n**A clear\
+        \ boundary for building and contributing to BookWiz.**\n\n[BookWiz](../README.md) · [Contributing](../CONTRIBUTING.md)\
+        \ · [Project license](../LICENSE)\n\n</div>\n\n---\n\nBookWiz is created and maintained by **[muneebwanee](https://github.com/muneebwanee)**.\
+        \ First-party code and first-party reference content have different licenses:\n\n| Material | License |\n\
+        | :--- | :--- |\n| `*.py`, `*.sh`, JavaScript, TypeScript, Swift, Java, HTML, CSS, build definitions, tests,\
+        \ and other source files | **[BookWiz Non-Commercial License · BWNCL](../LICENSES/BWNCL-1.0.txt)** |\n|\
+        \ `*.md` documentation, wordlists, regex catalogs, and rubrics | **[Creative Commons Attribution 4.0 International\
+        \ · CC BY 4.0](../LICENSES/CC-BY-4.0.txt)** |\n| The generated documentation chart and its aggregate data\
+        \ in `docs/assets/star-history.*` | **CC BY 4.0** |\n| Third-party libraries, fonts, datasets, notices,\
+        \ and other third-party material | Their original licenses and attribution requirements |\n\nThe content\
+        \ category is determined by its role, not only its extension. A standalone wordlist, regex catalog, or rubric\
+        \ remains CC BY 4.0 when stored as JSON, YAML, CSV, or plain text. The code that reads or processes that\
+        \ resource remains BWNCL. Regex expressions embedded in application code do not change that code's license.\n\
+        \n## Contributing code\n\nBWNCL permits inspection, private non-commercial use and modifications, and GitHub\
+        \ forks for study and non-commercial upstream contributions. Its rules for distribution, commercial use,\
+        \ attribution, and contribution grants remain in the [full code license](../LICENSES/BWNCL-1.0.txt). BWNCL\
+        \ is a source-available license rather than an OSI-approved open-source license.\n\nSubmit code changes\
+        \ against the editable source tree in the repository. The retained platform source ZIPs are distribution\
+        \ snapshots. Contributors do not need to unpack or rebuild those ZIPs to propose a source change.\n\n##\
+        \ Reusing documentation and catalogs\n\nCC BY 4.0 permits sharing and adaptation, including commercial reuse,\
+        \ with appropriate attribution, a license link, and an indication of changes. A useful attribution identifies\
+        \ **BookWiz by muneebwanee**, links the [official repository](https://github.com/muneebwanee/BookWizOfficial),\
+        \ and links [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).\n\nDocumentation and catalog contributions\
+        \ are submitted under CC BY 4.0. Code contributions use BWNCL and its contribution grant. Contributors keep\
+        \ their copyright. Do not submit material you cannot license on those terms.\n\n## Existing archives and\
+        \ notices\n\nThe scope notice in the root [LICENSE](../LICENSE) also grants CC BY 4.0 for the corresponding\
+        \ first-party documentation, wordlists, regex catalogs, and rubrics inside the retained `source-*.zip` snapshots.\
+        \ That scope notice takes precedence over a broader BWNCL description in an older embedded license. The\
+        \ archives themselves do not need to be modified for this grant to apply.\n\nThird-party permissions are\
+        \ preserved. Neither BookWiz license replaces an upstream license or removes a notice. Read [THIRD_PARTY_NOTICES](../THIRD_PARTY_NOTICES)\
+        \ and the component's own license before reusing third-party material. The unmodified legal texts in `LICENSES/`\
+        \ retain their respective legal notices.\n\nYour original books and manuscripts remain yours. These repository\
+        \ licenses do not claim ownership of them.\n\n---\n\n**BookWiz · by muneebwanee**\nBOOKWIZ_FILE_53c5ba42e6a82015\n\
+        mv -f -- 'docs/LICENSING.md.bookwiz-new' 'docs/LICENSING.md'\nfi\ncat > 'docs/SOURCE_ARCHIVES.md.bookwiz-new'\
+        \ <<'BOOKWIZ_FILE_66a82470ce7e4dbb'\n<div align=\"center\">\n\n# One source. Every writing room.\n\n**Clone\
+        \ BookWiz, make a focused change, and contribute directly.**\n\n[BookWizOfficial](https://github.com/muneebwanee/BookWizOfficial)\
+        \ · [Build guide](BUILDING.md) · [Contributing](../CONTRIBUTING.md)\n\n</div>\n\n---\n\nThe repository contains\
+        \ the full editable source tree **and** the existing platform ZIPs. A normal clone gives contributors the\
+        \ application, native hosts, build tools, tests, documentation, screenshots, and source archives together.\
+        \ There is no extra extraction step before working on the code.\n\n## Find your place\n\n| Path | What lives\
+        \ here |\n| :--- | :--- |\n| `dist/` | Shared browser writing studio, modules, styles, icons, fonts, and\
+        \ offline assets. This is editable application source. |\n| `native/android/` | Android host and its platform\
+        \ resources. |\n| `native/apple/` | iPhone/iPad, Widgets, Apple Watch, and Apple TV targets. |\n| `native/desktop/`\
+        \ | Windows, macOS, and Linux desktop host and packaging configuration. |\n| `tools/` | Build, export, compiler,\
+        \ cache, and platform packaging tools. |\n| `tests/` | Application and packaging regression tests. |\n|\
+        \ `scripts/` | Repository utilities, including the self-hosted star-history generator and archive importer.\
+        \ |\n| `docs/` | Contributor guides, platform notes, and documentation assets. |\n| `packaging/github/`\
+        \ | Build-workflow templates used by the platform source packager. |\n| `.github/workflows/` | Active repository\
+        \ workflows, including the retained release builds. |\n| `SOURCE-ORIGINS.json` | The source archives and\
+        \ hashes used to assemble the editable tree. |\n\n## Start from a clone\n\n```sh\ngit clone https://github.com/muneebwanee/BookWizOfficial.git\n\
+        cd BookWizOfficial\nnpm ci --ignore-scripts\nnpm run check\nnpm test\npython3 -m http.server 4173 --directory\
+        \ dist --bind 127.0.0.1\n```\n\nOpen **http://localhost:4173**. Use the [build guide](BUILDING.md) for a\
+        \ native edition.\n\n## The retained ZIPs\n\n| Archive | Distribution snapshot |\n| :--- | :--- |\n| `source-android.zip`\
+        \ | Shared studio and Android host. |\n| `source-ios.zip`, `source-watchos.zip`, `source-tvos.zip` | Shared\
+        \ studio and the related Apple targets. |\n| `source-windows.zip`, `source-macos.zip`, `source-linux.zip`\
+        \ | Shared studio and desktop host. |\n| `source-web.zip` | Browser studio without native hosts. |\n\nThe\
+        \ ZIPs remain available for the existing release workflows and people who prefer a platform-specific snapshot.\
+        \ The initial addition of editable source leaves every ZIP byte for byte intact. Existing releases, tags,\
+        \ and release assets are retained.\n\nContributors should change the editable files and submit a pull request.\
+        \ Maintainers can produce refreshed platform snapshots when preparing a release:\n\n```sh\nnpm run package:source\n\
+        ```\n\nThis writes new archives and matching build files to `build/platform-sources/`. It does not replace\
+        \ the checked-in ZIPs or publish a release. Review and copy the intended snapshots into the repository as\
+        \ part of a release change; the existing ZIP-based release workflows still use the archives at the repository\
+        \ root.\n\nEach platform snapshot contains a `SOURCE-MANIFEST.json` with its target and file hashes. `scripts/import_platform_sources.py`\
+        \ can validate and add missing editable files from all eight snapshots; it preserves existing editable files\
+        \ rather than overwriting contributors' work.\n\n## Code and content\n\n`*.py`, `*.sh`, and other source\
+        \ files are **BWNCL**. `*.md` documentation, wordlists, regex catalogs, and rubrics are **CC BY 4.0**. Third-party\
+        \ licenses remain intact. [Read the boundary →](LICENSING.md)\n\n---\n\n**BookWiz · by muneebwanee**\nBOOKWIZ_FILE_66a82470ce7e4dbb\n\
+        mv -f -- 'docs/SOURCE_ARCHIVES.md.bookwiz-new' 'docs/SOURCE_ARCHIVES.md'\nif [ ! -e 'docs/STAR_HISTORY.md'\
+        \ ]; then\ncat > 'docs/STAR_HISTORY.md.bookwiz-new' <<'BOOKWIZ_FILE_eb21c261a905a7d2'\n<div align=\"center\"\
+        >\n\n# A room, growing together\n\n**BookWiz's star-history chart is generated here and hosted here.**\n\
+        \n[BookWiz](../README.md) · [Star the repository](https://github.com/muneebwanee/BookWizOfficial/stargazers)\
+        \ · [Contribute](../CONTRIBUTING.md)\n\n</div>\n\n---\n\n![BookWiz star history](assets/star-history.svg)\n\
+        \nThe README uses `docs/assets/star-history.svg`, stored in this repository. No external chart service renders\
+        \ or hosts it. `docs/assets/star-history.json` contains the aggregate data used for the image.\n\n## Regenerate\
+        \ the chart\n\nInstall [GitHub CLI](https://cli.github.com/), then authenticate once:\n\n```sh\ngh auth\
+        \ login\npython3 scripts/gen_star_history.py\n```\n\nThe generator uses Python's standard library and GitHub\
+        \ CLI. It requests every page of timestamped stargazers, validates the response, groups stars by UTC date,\
+        \ and writes the SVG and aggregate JSON. It does not store usernames or user IDs in the generated files.\
+        \ An authenticated `GH_TOKEN` can be used instead of interactive login in automation.\n\n## Daily refresh\n\
+        \n`.github/workflows/star-history.yml` runs each day at **06:17 UTC** and can also be started with **Actions\
+        \ → Star history → Run workflow**. It regenerates the chart with the repository's `GITHUB_TOKEN`, then commits\
+        \ only the chart and its aggregate JSON to the default branch when they change. GitHub may delay scheduled\
+        \ runs. Branch rules that prohibit direct bot commits also apply to this workflow.\n\nThe workflow uses\
+        \ a concurrency group and checks out the default branch even for a manual run. Its commit step refuses to\
+        \ overwrite a newer change to the same generated files. It does not modify source ZIPs, screenshots, videos,\
+        \ tags, or releases.\n\n## What the line represents\n\nThe line shows **current stargazers grouped by their\
+        \ recorded star dates**. A repository with no stars displays an honest empty state. Someone who later removes\
+        \ their star is no longer present in GitHub's current stargazer list, so the chart is not a complete historical\
+        \ record of stars that have since been removed.\n\nCounts are checked against GitHub's repository metadata.\
+        \ If the list changes during pagination or GitHub returns incomplete data, the generator retries and then\
+        \ leaves the previous chart in place if it still cannot obtain a consistent snapshot.\n\n---\n\nThe generator\
+        \ is **BWNCL** code. This guide, the generated SVG, and its aggregate data are **CC BY 4.0**. [Licensing\
+        \ details →](LICENSING.md)\nBOOKWIZ_FILE_eb21c261a905a7d2\nmv -f -- 'docs/STAR_HISTORY.md.bookwiz-new' 'docs/STAR_HISTORY.md'\n\
+        fi\nif [ ! -e 'scripts/gen_star_history.py' ]; then\ncat > 'scripts/gen_star_history.py.bookwiz-new' <<'BOOKWIZ_FILE_f5165fd4a4203a0c'\n\
+        #!/usr/bin/env python3\n\"\"\"Render BookWiz's repository-hosted star history. Run gh auth login first.\"\
+        \"\"\nfrom __future__ import annotations\n\nimport argparse\nfrom collections import Counter\nfrom datetime\
+        \ import datetime, timezone\nfrom html import escape\nimport json\nimport math\nfrom pathlib import Path\n\
+        import re\nimport shutil\nimport subprocess\nimport sys\nimport tempfile\nimport time\n\nROOT = Path(__file__).resolve().parents[1]\n\
+        DEFAULT_REPO = 'muneebwanee/BookWizOfficial'\n\n\ndef gh_json(endpoint: str, *, paginate: bool = False):\n\
+        \    command = ['gh', 'api', '-H', 'Accept: application/vnd.github.star+json',\n               '-H', 'X-GitHub-Api-Version:\
+        \ 2022-11-28', endpoint]\n    if paginate:\n        command += ['--paginate']\n    for attempt in range(3):\n\
+        \        result = subprocess.run(command, capture_output=True, text=True, timeout=180)\n        if result.returncode\
+        \ == 0:\n            if not paginate:\n                return json.loads(result.stdout)\n            # gh\
+        \ --paginate emits one JSON array per page. Decode each array\n            # without requiring the newer\
+        \ --slurp option.\n            decoder, text, pages = json.JSONDecoder(), result.stdout.strip(), []\n  \
+        \          while text:\n                page, end = decoder.raw_decode(text)\n                pages.append(page)\n\
+        \                text = text[end:].lstrip()\n            return pages\n        transient = any(code in result.stderr\
+        \ for code in ['HTTP 429', 'HTTP 500', 'HTTP 502', 'HTTP 503', 'HTTP 504'])\n        if transient and attempt\
+        \ < 2:\n            time.sleep(2 ** attempt)\n            continue\n        raise RuntimeError('GitHub could\
+        \ not return the star data. Check gh auth status and API rate limits. ' + result.stderr.strip()[:350])\n\
+        \n\ndef utc_date(value: str):\n    stamp = datetime.fromisoformat(value.replace('Z', '+00:00'))\n    if\
+        \ stamp.tzinfo is None:\n        raise ValueError('A GitHub timestamp is missing its time zone.')\n    return\
+        \ stamp.astimezone(timezone.utc).date()\n\n\ndef make_snapshot(repository: dict, pages: list, now: datetime)\
+        \ -> dict:\n    if repository.get('full_name') is None or not isinstance(pages, list):\n        raise ValueError('Invalid\
+        \ repository or paginated star response.')\n    created = utc_date(repository['created_at'])\n    today\
+        \ = now.astimezone(timezone.utc).date()\n    if created > today:\n        raise ValueError('The repository\
+        \ creation date is in the future.')\n    people = {}\n    for page in pages:\n        if not isinstance(page,\
+        \ list):\n            raise ValueError('Expected an array for each GitHub stargazer page.')\n        for\
+        \ star in page:\n            if not isinstance(star, dict) or 'starred_at' not in star or not isinstance(star.get('user'),\
+        \ dict) or not isinstance(star['user'].get('id'), int):\n                raise ValueError('GitHub did not\
+        \ return timestamped stargazers.')\n            day = utc_date(star['starred_at'])\n            if not created\
+        \ <= day <= today:\n                raise ValueError('A star date falls outside this repository snapshot.')\n\
+        \            identity = star['user']['id']\n            if identity in people and people[identity] != day:\n\
+        \                raise ValueError('The stargazer list changed during pagination; rerun to get a consistent\
+        \ snapshot.')\n            people[identity] = day\n    counts = Counter(people.values())\n    running =\
+        \ 0\n    daily = []\n    for day, count in sorted(counts.items()):\n        running += count\n        daily.append({'date':\
+        \ day.isoformat(), 'stars': running})\n    reported = repository.get('stargazers_count')\n    if not isinstance(reported,\
+        \ int) or reported < 0 or reported != len(people):\n        raise ValueError('The repository count and timestamped\
+        \ stargazer list differ. Rerun after the API settles; the previous chart has been preserved.')\n    return\
+        \ {\n        'schema': 1,\n        'repository': repository['full_name'],\n        'created_at': repository['created_at'],\n\
+        \        'updated_at': now.astimezone(timezone.utc).isoformat(timespec='seconds').replace('+00:00', 'Z'),\n\
+        \        'basis': 'current-stargazers-by-star-date',\n        'stars': len(people),\n        'daily': daily,\n\
+        \    }\n\n\ndef nice_ceiling(value: int) -> tuple[int, int]:\n    if value <= 4:\n        return max(value,\
+        \ 1), 1\n    rough = value / 4\n    scale = 10 ** math.floor(math.log10(rough))\n    step = next(x for x\
+        \ in [1, 2, 5, 10] if x * scale >= rough) * scale\n    return int(math.ceil(value / step) * step), int(step)\n\
+        \n\ndef render_svg(snapshot: dict) -> str:\n    created = utc_date(snapshot['created_at'])\n    today =\
+        \ utc_date(snapshot['updated_at'])\n    span = max((today - created).days, 1)\n    left, right, top, bottom\
+        \ = 78, 898, 161, 329\n    maximum, step = nice_ceiling(snapshot['stars'])\n    x = lambda day: left + ((day\
+        \ - created).days / span) * (right - left)\n    y = lambda count: bottom - count / maximum * (bottom - top)\n\
+        \    path = f'M {left:.2f} {bottom:.2f}'\n    previous = 0\n    for record in snapshot['daily']:\n     \
+        \   day = utc_date(record['date'] + 'T00:00:00Z')\n        px = x(day)\n        path += f' H {px:.2f} V\
+        \ {y(record[\"stars\"]):.2f}'\n        previous = record['stars']\n    path += f' H {x(today):.2f}'\n  \
+        \  floor_path = path + f' L {x(today):.2f} {bottom} L {left} {bottom} Z'\n    rows = []\n    for value in\
+        \ range(0, maximum + 1, step):\n        py = y(value)\n        rows.append(f'<line x1=\"{left}\" y1=\"{py:.2f}\"\
+        \ x2=\"{right}\" y2=\"{py:.2f}\" class=\"grid\"/><text x=\"{left-18}\" y=\"{py+4:.2f}\" text-anchor=\"end\"\
+        \ class=\"axis\">{value:,}</text>')\n    labels = [(created, 'start')]\n    if today != created:\n     \
+        \   labels.append((today, 'end'))\n    for day, anchor in labels:\n        rows.append(f'<text x=\"{x(day):.2f}\"\
+        \ y=\"356\" text-anchor=\"{anchor}\" class=\"axis\">{day.strftime(\"%d %b %Y\")}</text>')\n    repository\
+        \ = escape(snapshot['repository'])\n    stars = f'{snapshot[\"stars\"]:,}'\n    description = escape(f'{stars}\
+        \ current stargazers for {snapshot[\"repository\"]}, grouped by the date they starred. Updated {today.isoformat()}\
+        \ UTC. Historical unstars are not available from this snapshot.')\n    empty = '<text x=\"488\" y=\"244\"\
+        \ text-anchor=\"middle\" class=\"empty\">Be part of the first chapter.</text>' if not snapshot['stars']\
+        \ else ''\n    return f'''<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 960 414\" width=\"960\"\
+        \ height=\"414\" role=\"img\" aria-labelledby=\"title description\">\n<title id=\"title\">BookWiz star history</title><desc\
+        \ id=\"description\">{description}</desc>\n<defs><linearGradient id=\"area\" x1=\"0\" y1=\"0\" x2=\"0\"\
+        \ y2=\"1\"><stop offset=\"0\" stop-color=\"#b45642\" stop-opacity=\".19\"/><stop offset=\"1\" stop-color=\"\
+        #b45642\" stop-opacity=\".015\"/></linearGradient></defs>\n<style>.paper{{fill:#fbf8f0;stroke:#dedbd2}}text{{font-family:system-ui,-apple-system,BlinkMacSystemFont,\"\
+        Segoe UI\",sans-serif;fill:#243e48}}.eyebrow{{font-size:10px;letter-spacing:2px;fill:#69736b}}.headline{{font-family:Georgia,serif;font-size:29px}}.number{{font-size:35px;font-weight:650;letter-spacing:-1px}}.muted{{font-size:11px;fill:#6e766e}}.axis{{font-size:10px;fill:#727970}}.grid{{stroke:#e1dfd6;stroke-width:1;stroke-dasharray:3\
+        \ 6}}.empty{{font-family:Georgia,serif;font-size:19px;fill:#788075}}.line{{fill:none;stroke:#b45642;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}}@media(prefers-color-scheme:dark){{.paper{{fill:#17272f;stroke:#38474c}}text{{fill:#f3ece0}}.eyebrow,.muted,.axis{{fill:#b9c2bc}}.grid{{stroke:#394b51}}.empty{{fill:#b1bdb6}}.line{{stroke:#e0aa8c}}}}</style>\n\
+        <rect x=\".5\" y=\".5\" width=\"959\" height=\"413\" rx=\"23\" class=\"paper\"/>\n<text x=\"39\" y=\"38\"\
+        \ class=\"eyebrow\">BOOKWIZ / COMMUNITY</text>\n<text x=\"39\" y=\"79\" class=\"headline\">A room, growing\
+        \ together.</text>\n<text x=\"40\" y=\"106\" class=\"muted\">{repository}</text>\n<text x=\"903\" y=\"71\"\
+        \ text-anchor=\"end\" class=\"number\">{stars}</text>\n<text x=\"901\" y=\"94\" text-anchor=\"end\" class=\"\
+        muted\">{'star' if snapshot['stars']==1 else 'stars'}</text>\n{''.join(rows)}\n<path d=\"{floor_path}\"\
+        \ fill=\"url(#area)\"/><path d=\"{path}\" class=\"line\"/>\n<circle cx=\"{x(today):.2f}\" cy=\"{y(previous):.2f}\"\
+        \ r=\"4.5\" fill=\"#b45642\"/>{empty}\n<text x=\"40\" y=\"388\" class=\"muted\">Current stargazers, by star\
+        \ date · self-hosted</text>\n<text x=\"903\" y=\"388\" text-anchor=\"end\" class=\"muted\">Updated {today.isoformat()}\
+        \ UTC</text>\n</svg>\n'''\n\n\ndef atomic_write(destination: Path, data: str):\n    destination.parent.mkdir(parents=True,\
+        \ exist_ok=True)\n    with tempfile.NamedTemporaryFile('w', encoding='utf-8', dir=destination.parent, delete=False)\
+        \ as handle:\n        temporary = Path(handle.name)\n        handle.write(data)\n    temporary.chmod(0o644)\n\
+        \    temporary.replace(destination)\n\n\ndef main(argv=None):\n    parser = argparse.ArgumentParser(description=__doc__)\n\
+        \    parser.add_argument('--repo', default=DEFAULT_REPO)\n    parser.add_argument('--output', type=Path,\
+        \ default=ROOT / 'docs/assets/star-history.svg')\n    parser.add_argument('--data', type=Path, default=ROOT\
+        \ / 'docs/assets/star-history.json')\n    args = parser.parse_args(argv)\n    if not re.fullmatch(r'[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+',\
+        \ args.repo):\n        parser.error('--repo must be an owner/repository name.')\n    if shutil.which('gh')\
+        \ is None:\n        raise RuntimeError('Install GitHub CLI, then run gh auth login before regenerating the\
+        \ chart.')\n    snapshot = None\n    for attempt in range(3):\n        repository = gh_json(f'repos/{args.repo}')\n\
+        \        if repository.get('full_name', '').casefold() != args.repo.casefold():\n            raise ValueError('GitHub\
+        \ returned a different repository.')\n        if repository.get('stargazers_count') == 0:\n            pages\
+        \ = [[]]\n        else:\n            pages = gh_json(f'repos/{args.repo}/stargazers?per_page=100', paginate=True)\n\
+        \            repository = gh_json(f'repos/{args.repo}')\n        try:\n            snapshot = make_snapshot(repository,\
+        \ pages, datetime.now(timezone.utc))\n            break\n        except ValueError as error:\n         \
+        \   if attempt == 2:\n                raise error\n            time.sleep(1)\n    svg = render_svg(snapshot)\n\
+        \    atomic_write(args.data, json.dumps(snapshot, indent=2) + '\\n')\n    atomic_write(args.output, svg)\n\
+        \    print(f'Refreshed {args.output}: {snapshot[\"stars\"]} stars; timestamps and chart stored in the repository.')\n\
+        \    return 0\n\n\nif __name__ == '__main__':\n    try:\n        raise SystemExit(main())\n    except (RuntimeError,\
+        \ ValueError, OSError, subprocess.SubprocessError) as error:\n        print(f'Star history: {error}', file=sys.stderr)\n\
+        \        raise SystemExit(1)\nBOOKWIZ_FILE_f5165fd4a4203a0c\nmv -f -- 'scripts/gen_star_history.py.bookwiz-new'\
+        \ 'scripts/gen_star_history.py'\nfi\nif [ ! -e 'scripts/import_platform_sources.py' ]; then\ncat > 'scripts/import_platform_sources.py.bookwiz-new'\
+        \ <<'BOOKWIZ_FILE_a5e8e124dd2e4c90'\n#!/usr/bin/env python3\n\"\"\"Add one editable source tree from BookWiz's\
+        \ platform ZIPs, without changing them.\"\"\"\nfrom __future__ import annotations\n\nimport argparse\nimport\
+        \ hashlib\nimport json\nfrom pathlib import Path, PurePosixPath\nimport stat\nimport tempfile\nimport zipfile\n\
+        \nPLATFORMS = ('android', 'ios', 'watchos', 'tvos', 'windows', 'macos', 'linux', 'web')\nRESOLVED = {'README.md',\
+        \ 'package.json', 'SOURCE-MANIFEST.json'}\n\n\ndef read_archive(path: Path, platform: str) -> tuple[dict,\
+        \ dict]:\n    with zipfile.ZipFile(path) as archive:\n        entries = archive.infolist()\n        if len(entries)\
+        \ > 10000 or sum(e.file_size for e in entries) > 256 * 1024 * 1024:\n            raise ValueError(f'{path.name}:\
+        \ archive exceeds the source size limit.')\n        names = set()\n        for entry in entries:\n     \
+        \       name, parts = entry.filename, PurePosixPath(entry.filename)\n            if name in names or parts.is_absolute()\
+        \ or '..' in parts.parts or '\\\\' in name or ':' in name or stat.S_ISLNK(entry.external_attr >> 16) or\
+        \ entry.is_dir():\n                raise ValueError(f'{path.name}: unsafe or duplicate source path: {name}')\n\
+        \            if parts.parts[0] in {'.git', '.github', 'node_modules'}:\n                raise ValueError(f'{path.name}:\
+        \ unexpected source path: {name}')\n            names.add(name)\n        manifest = json.loads(archive.read('SOURCE-MANIFEST.json'))\n\
+        \        if manifest.get('platform') != platform or not isinstance(manifest.get('files'), dict):\n     \
+        \       raise ValueError(f'{path.name}: platform manifest does not match.')\n        if names != set(manifest['files'])\
+        \ | {'SOURCE-MANIFEST.json'}:\n            raise ValueError(f'{path.name}: archive contents differ from\
+        \ the manifest.')\n        files = {}\n        for name in names - {'SOURCE-MANIFEST.json'}:\n         \
+        \   data = archive.read(name)\n            if hashlib.sha256(data).hexdigest() != manifest['files'][name]:\n\
+        \                raise ValueError(f'{path.name}: checksum mismatch: {name}')\n            files[name] =\
+        \ data\n    return files, manifest\n\n\ndef merged_sources(root: Path) -> tuple[dict, dict, dict]:\n   \
+        \ union, origins, packages = {}, {}, {}\n    for platform in PLATFORMS:\n        path = root / f'source-{platform}.zip'\n\
+        \        files, manifest = read_archive(path, platform)\n        package = json.loads(files['package.json'])\n\
+        \        packages[platform] = package\n        origins[platform] = {'archive': path.name, 'sha256': hashlib.sha256(path.read_bytes()).hexdigest(),\
+        \ 'files': len(files), 'version': manifest.get('version')}\n        for name, data in files.items():\n \
+        \           if name in RESOLVED:\n                continue\n            if name in union and union[name]\
+        \ != data:\n                raise ValueError(f'The platform archives disagree about shared source: {name}.\
+        \ Resolve this before importing.')\n            union.setdefault(name, data)\n    reference = dict(packages['android'])\n\
+        \    reference.pop('scripts', None)\n    for platform, package in packages.items():\n        compare = dict(package)\n\
+        \        compare.pop('scripts', None)\n        if compare != reference:\n            raise ValueError(f'{platform}\
+        \ has different package metadata or dependencies; resolve the difference before importing.')\n    package\
+        \ = dict(packages['android'])\n    package['scripts'] = {\n        'check': 'node tools/check-source.mjs',\n\
+        \        'test': 'node --test tests/*.test.mjs',\n        'compiler': 'node tools/latex-service.mjs',\n\
+        \        'native:prepare': 'node tools/prepare-native.mjs',\n        'native:android': 'python3 tools/build-android.py\
+        \ && python3 tools/build-aab.py',\n        'native:desktop': 'npm run native:prepare && electron-builder\
+        \ --config native/desktop/electron-builder.yml --publish never',\n        'vendor:pdf': 'node tools/sync-pdf-assets.mjs',\n\
+        \        'build': 'python3 tools/build-web.py',\n        'package:source': 'python3 tools/package-platform-kits.py\
+        \ --output build/platform-sources',\n    }\n    union['package.json'] = (json.dumps(package, indent=2) +\
+        \ '\\n').encode()\n    return union, origins, package\n\n\ndef write_new(path: Path, data: bytes):\n   \
+        \ path.parent.mkdir(parents=True, exist_ok=True)\n    with tempfile.NamedTemporaryFile(dir=path.parent,\
+        \ delete=False) as handle:\n        temporary = Path(handle.name)\n        handle.write(data)\n    temporary.chmod(0o644)\n\
+        \    temporary.replace(path)\n\n\ndef import_sources(root: Path) -> dict:\n    root = root.resolve()\n \
+        \   union, origins, package = merged_sources(root)\n    # Read and validate every archive before creating\
+        \ or changing any source file.\n    created, kept, identical = [], [], []\n    for name, data in sorted(union.items()):\n\
+        \        if name == '.gitignore':\n            continue\n        path = root / name\n        if path.is_symlink()\
+        \ or not path.resolve().is_relative_to(root):\n            raise ValueError(f'The source destination is\
+        \ not a regular repository path: {name}')\n        if path.exists():\n            if not path.is_file():\n\
+        \                raise ValueError(f'The source destination is already a directory: {name}')\n          \
+        \  (identical if path.read_bytes() == data else kept).append(name)\n            continue\n        created.append(name)\n\
+        \    for name in created:\n        write_new(root / name, union[name])\n    ignore = root / '.gitignore'\n\
+        \    text = ignore.read_text() if ignore.exists() else union.get('.gitignore', b'').decode()\n    rules\
+        \ = '\\n# Keep the public platform source archives tracked.\\n!/source-*.zip\\n'\n    if '!/source-*.zip'\
+        \ not in text:\n        write_new(ignore, (text.rstrip() + '\\n' + rules).encode())\n    origin = {'format':\
+        \ 1, 'application': 'BookWiz', 'layout': 'one shared editable tree', 'archives': origins}\n    write_new(root\
+        \ / 'SOURCE-ORIGINS.json', (json.dumps(origin, indent=2) + '\\n').encode())\n    return {**origin, 'created':\
+        \ created, 'preserved_existing': kept}\n\n\ndef main():\n    parser = argparse.ArgumentParser(description=__doc__)\n\
+        \    parser.add_argument('--root', type=Path, default=Path(__file__).resolve().parents[1])\n    args = parser.parse_args()\n\
+        \    report = import_sources(args.root)\n    print(f'Added {len(report[\"created\"])} editable files. All\
+        \ eight source ZIPs and existing repository files were preserved.')\n\n\nif __name__ == '__main__':\n  \
+        \  main()\nBOOKWIZ_FILE_a5e8e124dd2e4c90\nmv -f -- 'scripts/import_platform_sources.py.bookwiz-new' 'scripts/import_platform_sources.py'\n\
+        fi\nif [ ! -e 'tests/platform-kits.test.py' ]; then\ncat > 'tests/platform-kits.test.py.bookwiz-new' <<'BOOKWIZ_FILE_7aa0e52d56d665a9'\n\
+        \"\"\"Verify source archives and build definitions, target isolation, manifests and regeneration.\"\"\"\n\
+        import hashlib,importlib.util,json,pathlib,posixpath,re,subprocess,tempfile,unittest,zipfile\nROOT=pathlib.Path(__file__).resolve().parents[1]\n\
+        spec=importlib.util.spec_from_file_location('kits',ROOT/'tools/package-platform-kits.py');kits=importlib.util.module_from_spec(spec);spec.loader.exec_module(kits)\n\
+        \nclass PlatformKits(unittest.TestCase):\n    def test_all_archives_are_self_contained_and_platform_specific(self):\n\
+        \        for target,meta in kits.PLATFORMS.items():\n            with self.subTest(target=target):\n   \
+        \             files=kits.selected_files(target)\n                manifest=json.loads(files['SOURCE-MANIFEST.json'])\n\
+        \                self.assertEqual(manifest['platform'],target)\n                self.assertEqual(set(files)-{'SOURCE-MANIFEST.json'},set(manifest['files']))\n\
+        \                for name,digest in manifest['files'].items():self.assertEqual(hashlib.sha256(files[name]).hexdigest(),digest)\n\
+        \                native={name.split('/')[1]for name in files if name.startswith('native/')}\n          \
+        \      self.assertEqual(native,{meta['native']}if meta['native']else set())\n                self.assertTrue(all(not\
+        \ name.endswith(('.jks','.p12','.keystore','.mobileprovision'))for name in files))\n                self.assertIn('LICENSE',files);self.assertIn('PRIVACY.md',files);self.assertIn('tools/ci-release.mjs',files)\n\
+        \                if target=='android':\n                    self.assertIn('tools/android_bundletool.py',files)\n\
+        \                    self.assertIn('tests/android-bundletool.test.py',files)\n                    self.assertIn(b'from\
+        \ android_bundletool import ensure_bundletool',files['tools/build-aab.py'])\n                self.assertEqual(json.loads(files['package.json'])['scripts']['check'],'node\
+        \ tools/check-source.mjs')\n                for name,content in files.items():\n                    if not\
+        \ name.endswith('.md'):continue\n                    text=re.sub(r'```.*?```','',content.decode(),flags=re.S)\n\
+        \                    for href in re.findall(r'\\]\\(([^)\\s]+)\\)',text):\n                        if re.match(r'^(?:[A-Za-z][A-Za-z0-9+.-]*:|#)',href):continue\n\
+        \                        linked=posixpath.normpath(posixpath.join(posixpath.dirname(name),href.split('#')[0]))\n\
+        \                        self.assertIn(linked,set(files),(target,name,href))\n                studio=files['docs/STUDIO_README.md'].decode()\n\
+        \                if 'screenshots/'in (ROOT/'README.md').read_text():\n                    self.assertIn('https://github.com/muneebwanee/BookWizOfficial/blob/HEAD/screenshots/README.md',studio)\n\
+        \                    self.assertIn('https://raw.githubusercontent.com/muneebwanee/BookWizOfficial/HEAD/screenshots/',studio)\n\
+        \                self.assertFalse(any(name.startswith('screenshots/')for name in files))\n    def test_markdown_relocation_preserves_payment_and_other_absolute_uri_schemes(self):\n\
+        \        text='[Support](bitcoin:bc1qfixture?label=BookWiz) [Email](mailto:writer@example.test) [Guide](GETTING_STARTED.md)\
+        \ <a href=\"bitcoin:bc1qfixture\">Bitcoin</a>'\n        relocated=kits.relocate_markdown_links(text,'docs/BUILDING.md','README.md')\n\
+        \        self.assertIn('](bitcoin:bc1qfixture?label=BookWiz)',relocated)\n        self.assertIn('](mailto:writer@example.test)',relocated)\n\
+        \        self.assertIn('](docs/GETTING_STARTED.md)',relocated)\n        self.assertIn('href=\"bitcoin:bc1qfixture\"\
+        ',relocated)\n    def test_web_source_has_no_nested_installers_and_uses_portable_download_links(self):\n\
+        \        files=kits.selected_files('web');self.assertFalse(any(n.startswith('dist/downloads/')for n in files));self.assertIn(b'bundledAndroid=false',files['dist/devices.js'])\n\
+        \        with tempfile.TemporaryDirectory()as temp:\n            output=pathlib.Path(temp)/'source-web.zip';kits.make_zip(output,files);self.assertLess(output.stat().st_size,8*1024*1024)\n\
+        \            self.assertEqual(output.stat().st_mode&0o777,0o644)\n    def test_extraction_and_regeneration_use_only_the_source_zip(self):\n\
+        \        # Workflow extraction code is deliberately stdlib-only; no app source is checked out outside the\
+        \ ZIP.\n        import yaml\n        for target in kits.PLATFORMS:\n            with self.subTest(target=target),tempfile.TemporaryDirectory(prefix='bookwiz-pair-')as\
+        \ temp:\n                root=pathlib.Path(temp);files=kits.selected_files(target);source=root/('source-'+target+'.zip');kits.make_zip(source,files)\n\
+        \                workflow=yaml.safe_load((ROOT/'packaging/github'/('build-'+target+'.yml')).read_text())\n\
+        \                step=next(x for x in workflow['jobs']['build']['steps']if x.get('name')=='Verify the source\
+        \ archive')\n                subprocess.run(['bash','-c',step['run']],cwd=root,check=True,capture_output=True)\n\
+        \                self.assertTrue((root/'bookwiz/package.json').is_file())\n                subprocess.run(['node','tools/check-source.mjs'],cwd=root/'bookwiz',check=True,capture_output=True)\n\
+        \                if target=='web':\n                    before=(root/'bookwiz/dist/sw.js').read_bytes()\n\
+        \                    subprocess.run(['node','tools/version-cache.mjs'],cwd=root/'bookwiz',check=True,capture_output=True)\n\
+        \                    self.assertEqual(before,(root/'bookwiz/dist/sw.js').read_bytes())\n               \
+        \ if target in ['android','web']:\n                    subprocess.run(['python3','tools/package-platform-kits.py','--target',target,'--output',str(root/'regenerated')],cwd=root/'bookwiz',check=True,capture_output=True)\n\
+        \                    self.assertTrue((root/'regenerated'/('source-'+target+'.zip')).is_file())\n    def\
+        \ test_corrupted_or_wrong_source_is_rejected_before_building(self):\n        import yaml\n        workflow=yaml.safe_load((ROOT/'packaging/github/build-android.yml').read_text());step=next(x\
+        \ for x in workflow['jobs']['build']['steps']if x.get('name')=='Verify the source archive')\n        for\
+        \ scenario in ['wrong-target','corrupt','traversal']:\n            with self.subTest(scenario=scenario),tempfile.TemporaryDirectory()as\
+        \ temp:\n                root=pathlib.Path(temp);files=kits.selected_files('web'if scenario=='wrong-target'else'android')\n\
+        \                if scenario=='corrupt':files['dist/app.js']+=b'changed'\n                if scenario=='traversal':files['..\\\
+        \\outside.txt']=b'bad'\n                kits.make_zip(root/'source-android.zip',files)\n               \
+        \ result=subprocess.run(['bash','-c',step['run']],cwd=root,capture_output=True)\n                self.assertNotEqual(result.returncode,0)\n\
+        \                self.assertFalse((root/'outside.txt').exists())\n    def test_web_output_has_a_hostable_root(self):\n\
+        \        with tempfile.TemporaryDirectory()as temp:\n            root=pathlib.Path(temp)\n            kits.make_zip(root/'source-web.zip',kits.selected_files('web'))\n\
+        \            with zipfile.ZipFile(root/'source-web.zip')as archive:archive.extractall(root/'site')\n   \
+        \         subprocess.run(['python3','tools/build-web.py'],cwd=root/'site',check=True,capture_output=True)\n\
+        \            output=next((root/'site/release').glob('*.zip'))\n            with zipfile.ZipFile(output)as\
+        \ archive:\n                self.assertIn('index.html',archive.namelist());self.assertIn('sw.js',archive.namelist());self.assertIn('LICENSE',archive.namelist())\n\
+        \                self.assertEqual(archive.read('app.js'),(ROOT/'dist/app.js').read_bytes())\n          \
+        \      self.assertFalse(any(name.startswith('dist/')for name in archive.namelist()))\n    def test_android_version_metadata_is_shared_by_apk_and_aab(self):\n\
+        \        import os\n        from unittest.mock import patch\n        module=importlib.util.spec_from_file_location('android_version',ROOT/'tools/android_version.py');version=importlib.util.module_from_spec(module);module.loader.exec_module(version)\n\
+        \        with patch.dict(os.environ,{'BOOKWIZ_VERSION_CODE':'100101','BOOKWIZ_VERSION_NAME':'1.2.3'}):self.assertEqual(version.version_info(ROOT),('100101','1.2.3'))\n\
+        \        with patch.dict(os.environ,{'BOOKWIZ_VERSION_CODE':'999999999999'}):\n            with self.assertRaises(ValueError):version.version_info(ROOT)\n\
+        \nif __name__=='__main__':unittest.main()\nBOOKWIZ_FILE_7aa0e52d56d665a9\nmv -f -- 'tests/platform-kits.test.py.bookwiz-new'\
+        \ 'tests/platform-kits.test.py'\nfi\nif [ ! -e 'tests/source-import.test.py' ]; then\ncat > 'tests/source-import.test.py.bookwiz-new'\
+        \ <<'BOOKWIZ_FILE_60ff54447dc255e3'\n\"\"\"Source import preserves repository files and rejects inconsistent\
+        \ archives.\"\"\"\nimport hashlib\nimport importlib.util\nimport json\nfrom pathlib import Path\nimport\
+        \ tempfile\nimport unittest\nimport zipfile\n\nROOT = Path(__file__).resolve().parents[1]\nspec = importlib.util.spec_from_file_location('source_import',\
+        \ ROOT / 'scripts/import_platform_sources.py')\nsource = importlib.util.module_from_spec(spec)\nspec.loader.exec_module(source)\n\
+        \n\ndef make_archive(folder, platform, changes=None, corrupt=False):\n    package = {'name': 'bookwiz',\
+        \ 'version': '1.0.0', 'dependencies': {}, 'scripts': {'test': 'platform script'}}\n    native = 'apple'\
+        \ if platform in ['ios', 'watchos', 'tvos'] else 'desktop' if platform in ['windows', 'macos', 'linux']\
+        \ else 'android'\n    files = {'README.md': platform.encode(), 'package.json': json.dumps(package).encode(),\
+        \ '.gitignore': b'node_modules/\\n*.zip\\n', 'dist/app.js': b'export const room = true;'}\n    if platform\
+        \ != 'web':\n        files[f'native/{native}/host.txt'] = native.encode()\n    files.update(changes or {})\n\
+        \    manifest = {'platform': platform, 'version': '1.0.0', 'files': {n: hashlib.sha256(b).hexdigest() for\
+        \ n, b in files.items()}}\n    if corrupt:\n        files['dist/app.js'] += b'corrupt'\n    with zipfile.ZipFile(folder\
+        \ / f'source-{platform}.zip', 'w') as archive:\n        for name, data in files.items():\n            archive.writestr(name,\
+        \ data)\n        archive.writestr('SOURCE-MANIFEST.json', json.dumps(manifest))\n\n\nclass SourceImport(unittest.TestCase):\n\
+        \    def test_all_platforms_share_one_tree_and_archives_stay_unchanged(self):\n        with tempfile.TemporaryDirectory()\
+        \ as temp:\n            root = Path(temp)\n            for platform in source.PLATFORMS:\n             \
+        \   make_archive(root, platform)\n            before = {p.name: hashlib.sha256(p.read_bytes()).hexdigest()\
+        \ for p in root.glob('*.zip')}\n            (root / 'README.md').write_text('my published README and video')\n\
+        \            (root / 'screenshots').mkdir()\n            (root / 'screenshots/original.mp4').write_bytes(b'original\
+        \ film')\n            source.import_sources(root)\n            self.assertTrue(all((root / f'native/{target}/host.txt').is_file()\
+        \ for target in ['android', 'apple', 'desktop']))\n            self.assertEqual((root / 'README.md').read_text(),\
+        \ 'my published README and video')\n            self.assertEqual((root / 'screenshots/original.mp4').read_bytes(),\
+        \ b'original film')\n            self.assertEqual(before, {p.name: hashlib.sha256(p.read_bytes()).hexdigest()\
+        \ for p in root.glob('*.zip')})\n            self.assertIn('!/source-*.zip', (root / '.gitignore').read_text())\n\
+        \            package = json.loads((root / 'package.json').read_text())\n            self.assertIn('native:android',\
+        \ package['scripts'])\n            self.assertIn('native:desktop', package['scripts'])\n            self.assertIn('build',\
+        \ package['scripts'])\n\n    def test_repeat_import_preserves_editable_changes_and_origin_record(self):\n\
+        \        with tempfile.TemporaryDirectory() as temp:\n            root = Path(temp)\n            for platform\
+        \ in source.PLATFORMS:\n                make_archive(root, platform)\n            source.import_sources(root)\n\
+        \            origins = (root / 'SOURCE-ORIGINS.json').read_bytes()\n            (root / 'dist/app.js').write_text('a\
+        \ contribution')\n            report = source.import_sources(root)\n            self.assertEqual((root /\
+        \ 'dist/app.js').read_text(), 'a contribution')\n            self.assertIn('dist/app.js', report['preserved_existing'])\n\
+        \            self.assertEqual(origins, (root / 'SOURCE-ORIGINS.json').read_bytes())\n\n    def test_unsafe_corrupt_or_disagreeing_sources_fail_before_writing(self):\n\
+        \        for case in ['corrupt', 'traversal', 'conflict', 'wrong-target', 'workflow-path']:\n          \
+        \  with self.subTest(case=case), tempfile.TemporaryDirectory() as temp:\n                root = Path(temp)\n\
+        \                for platform in source.PLATFORMS:\n                    changes = None\n               \
+        \     if platform == 'web':\n                        changes = {'../outside.txt': b'bad'} if case == 'traversal'\
+        \ else {'.github/workflows/evil.yml': b'bad'} if case == 'workflow-path' else {'dist/app.js': b'different'}\
+        \ if case == 'conflict' else None\n                    make_archive(root, platform, changes, corrupt=case\
+        \ == 'corrupt' and platform == 'web')\n                if case == 'wrong-target':\n                    (root\
+        \ / 'source-web.zip').write_bytes((root / 'source-android.zip').read_bytes())\n                with self.assertRaises(ValueError):\n\
+        \                    source.import_sources(root)\n                self.assertFalse((root / 'dist').exists())\n\
+        \                self.assertFalse((root.parent / 'outside.txt').exists())\n\n\nif __name__ == '__main__':\n\
+        \    unittest.main()\nBOOKWIZ_FILE_60ff54447dc255e3\nmv -f -- 'tests/source-import.test.py.bookwiz-new'\
+        \ 'tests/source-import.test.py'\nfi\nif [ ! -e 'tests/star-history.test.py' ]; then\ncat > 'tests/star-history.test.py.bookwiz-new'\
+        \ <<'BOOKWIZ_FILE_055edf40e8208f15'\n\"\"\"Regression checks for real star snapshots and the repository-hosted\
+        \ SVG.\"\"\"\nfrom datetime import datetime, timezone\nimport importlib.util\nimport json\nfrom pathlib\
+        \ import Path\nimport tempfile\nimport unittest\nfrom unittest.mock import patch\nimport xml.etree.ElementTree\
+        \ as ET\n\nROOT = Path(__file__).resolve().parents[1]\nspec = importlib.util.spec_from_file_location('star_history',\
+        \ ROOT / 'scripts/gen_star_history.py')\nstars = importlib.util.module_from_spec(spec)\nspec.loader.exec_module(stars)\n\
+        NOW = datetime(2026, 11, 18, 12, tzinfo=timezone.utc)\n\n\ndef repository(count):\n    return {'full_name':\
+        \ 'muneebwanee/BookWizOfficial', 'created_at': '2026-11-17T00:00:00Z', 'stargazers_count': count}\n\n\n\
+        def star(identity, stamp='2026-11-17T05:00:00Z'):\n    return {'starred_at': stamp, 'user': {'id': identity,\
+        \ 'login': 'not-stored'}}\n\n\nclass StarHistory(unittest.TestCase):\n    def test_empty_repository_has_no_invented_growth(self):\n\
+        \        snapshot = stars.make_snapshot(repository(0), [[]], NOW)\n        svg = stars.render_svg(snapshot)\n\
+        \        self.assertEqual(snapshot['daily'], [])\n        self.assertEqual(snapshot['stars'], 0)\n     \
+        \   self.assertIn('Be part of the first chapter.', svg)\n        self.assertNotIn('NaN', svg)\n        ET.fromstring(svg)\n\
+        \n    def test_pagination_is_deduplicated_and_only_aggregate_dates_are_saved(self):\n        snapshot =\
+        \ stars.make_snapshot(repository(3), [[star(1), star(2)], [star(2), star(3, '2026-11-18T01:00:00Z')]], NOW)\n\
+        \        self.assertEqual(snapshot['daily'], [{'date': '2026-11-17', 'stars': 2}, {'date': '2026-11-18',\
+        \ 'stars': 3}])\n        text = json.dumps(snapshot)\n        self.assertNotIn('login', text)\n        self.assertNotIn('not-stored',\
+        \ text)\n        self.assertEqual(snapshot['basis'], 'current-stargazers-by-star-date')\n\n    def test_invalid_or_inconsistent_api_data_is_rejected(self):\n\
+        \        for pages in [[['bad']], [[{'user': {'id': 1}}]], [[star(1, '2026-11-16T00:00:00Z')]], [[star(1,\
+        \ '2026-11-19T00:00:00Z')]], [[star(1), star(1, '2026-11-18T01:00:00Z')]]]:\n            with self.subTest(pages=pages),\
+        \ self.assertRaises(ValueError):\n                stars.make_snapshot(repository(1), pages, NOW)\n     \
+        \   with self.assertRaises(ValueError):\n            stars.make_snapshot(repository(2), [[star(1)]], NOW)\n\
+        \n    def test_cli_handles_multiple_json_pages_without_slurp(self):\n        class Result:\n           \
+        \ returncode = 0\n            stdout = '[{\"starred_at\":\"one\"}]\\n[]\\n'\n        with patch.object(stars.subprocess,\
+        \ 'run', return_value=Result()) as command:\n            pages = stars.gh_json('repos/example/project/stargazers?per_page=100',\
+        \ paginate=True)\n            self.assertEqual(pages, [[{'starred_at': 'one'}], []])\n            self.assertIn('--paginate',\
+        \ command.call_args.args[0])\n            self.assertNotIn('--slurp', command.call_args.args[0])\n\n   \
+        \ def test_zero_star_generation_uses_metadata_and_works_without_star_pages(self):\n        with tempfile.TemporaryDirectory()\
+        \ as temp:\n            svg, data = Path(temp) / 'chart.svg', Path(temp) / 'chart.json'\n            with\
+        \ patch.object(stars.shutil, 'which', return_value='/usr/bin/gh'), patch.object(stars, 'gh_json', return_value=repository(0))\
+        \ as api:\n                stars.main(['--output', str(svg), '--data', str(data)])\n            self.assertEqual(api.call_count,\
+        \ 1)\n            self.assertEqual(json.loads(data.read_text())['stars'], 0)\n            ET.fromstring(svg.read_text())\n\
+        \n    def test_api_failure_keeps_existing_generated_files(self):\n        with tempfile.TemporaryDirectory()\
+        \ as temp:\n            svg, data = Path(temp) / 'chart.svg', Path(temp) / 'chart.json'\n            svg.write_text('old\
+        \ svg')\n            data.write_text('old data')\n            with patch.object(stars.shutil, 'which', return_value='/usr/bin/gh'),\
+        \ patch.object(stars, 'gh_json', side_effect=RuntimeError('offline')):\n                with self.assertRaises(RuntimeError):\n\
+        \                    stars.main(['--output', str(svg), '--data', str(data)])\n            self.assertEqual(svg.read_text(),\
+        \ 'old svg')\n            self.assertEqual(data.read_text(), 'old data')\n\n    def test_small_and_large_charts_are_valid_self_contained_svg(self):\n\
+        \        for count in [1, 4, 23, 10001]:\n            with self.subTest(count=count):\n                snapshot\
+        \ = stars.make_snapshot(repository(count), [[star(i) for i in range(count)]], NOW)\n                svg\
+        \ = stars.render_svg(snapshot)\n                ET.fromstring(svg)\n                self.assertNotIn('<script',\
+        \ svg)\n                self.assertNotIn('https://', svg)\n                self.assertNotIn('NaN', svg)\n\
+        \                self.assertIn(f'{count:,}', svg)\n\n\nif __name__ == '__main__':\n    unittest.main()\n\
+        BOOKWIZ_FILE_055edf40e8208f15\nmv -f -- 'tests/star-history.test.py.bookwiz-new' 'tests/star-history.test.py'\n\
+        fi\npython3 - <<'BOOKWIZ_UPGRADE'\n\"\"\"Apply the contributor-facing metadata changes after the verified\
+        \ source import.\"\"\"\nfrom pathlib import Path\n\n\ndef write(path, text):\n    from scripts.import_platform_sources\
+        \ import write_new\n    write_new(path, text.encode('utf-8'))\n\n\ndef replace_once(text, old, new, label):\n\
+        \    if new in text:\n        return text\n    if text.count(old) != 1:\n        raise RuntimeError('Could\
+        \ not locate the expected ' + label + '. Review the current document before applying this update.')\n  \
+        \  return text.replace(old, new, 1)\n\n\ndef upgrade(root):\n    root = Path(root)\n    from scripts.import_platform_sources\
+        \ import import_sources\n    report = import_sources(root)\n\n    # The code license is kept verbatim; this\
+        \ scope grant determines which\n    # first-party files it covers, including copies in retained archives.\n\
+        \    bwncl = (root / 'LICENSES/BWNCL-1.0.txt').read_text()\n    scope = '''BookWiz repository licensing\
+        \ scope\nCopyright (c) 2026 muneebwanee\n\nCODE — BWNCL 1.0\n*.py, *.sh, and other first-party source files,\
+        \ including application code,\nnative hosts, build definitions, scripts and tests, are licensed under the\n\
+        BookWiz Non-Commercial License reproduced below and in LICENSES/BWNCL-1.0.txt.\n\nCONTENT — CC BY 4.0\n\
+        First-party *.md documentation, wordlists, regex catalogs, and rubrics are\nlicensed under Creative Commons\
+        \ Attribution 4.0 International. The license\ntext is in LICENSES/CC-BY-4.0.txt and at:\nhttps://creativecommons.org/licenses/by/4.0/\n\
+        \nStandalone wordlists, regex catalogs, and rubrics retain this content license\nwhen represented as text,\
+        \ JSON, YAML, CSV, or another data format. Code that\nprocesses the content remains BWNCL. Regex expressions\
+        \ embedded in application\ncode do not change that code's license. Documentation's generated star-history\n\
+        SVG and aggregate JSON in docs/assets/ are CC BY 4.0.\n\nThis CC BY 4.0 grant also covers the corresponding\
+        \ first-party content inside\nthe retained source-*.zip snapshots. This scope notice takes precedence over\n\
+        a broader description of BWNCL's scope in a snapshot's embedded license.\n\nThird-party components, fonts,\
+        \ datasets, notices and legal texts retain their\noriginal licenses and notices. Neither BookWiz license\
+        \ supersedes them.\nYour original books and manuscripts are excluded from these repository terms.\n\nSee\
+        \ docs/LICENSING.md and THIRD_PARTY_NOTICES for the boundary and attribution.\n\n--------------------------------------------------------------------------\n\
+        CODE LICENSE — BOOKWIZ NON-COMMERCIAL LICENSE\n--------------------------------------------------------------------------\n\
+        \n'''\n    write(root / 'LICENSE', scope + bwncl)\n\n    readme = (root / 'README.md').read_text()\n   \
+        \ readme = replace_once(readme,\n        '[![License](https://img.shields.io/badge/license-BWNCL-596957?style=flat-square)](LICENSE)',\n\
+        \        '[![Code license](https://img.shields.io/badge/code-BWNCL-596957?style=flat-square)](LICENSE)\\\
+        n[![Content license](https://img.shields.io/badge/content-CC_BY_4.0-596957?style=flat-square)](LICENSES/CC-BY-4.0.txt)',\n\
+        \        'README license badge')\n    readme = replace_once(readme,\n        'The browser studio uses JavaScript\
+        \ modules and locally bundled assets. Native hosts add their platform features around the shared writing\
+        \ room.',\n        'The full source for every platform lives in this repository. The browser studio uses\
+        \ JavaScript modules and locally bundled assets; `native/android/`, `native/apple/`, and `native/desktop/`\
+        \ contain the platform hosts. Clone once and contribute directly. The platform ZIPs remain available as\
+        \ distribution snapshots.',\n        'README source introduction')\n    readme = replace_once(readme,\n\
+        \        'cd BookWizOfficial\\npython3 -m zipfile -e source-web.zip bookwiz-web\\ncd bookwiz-web\\nnpm ci\
+        \ --ignore-scripts\\npython3 -m http.server',\n        'cd BookWizOfficial\\nnpm ci --ignore-scripts\\nnpm\
+        \ run check\\nnpm test\\npython3 -m http.server',\n        'README clone commands')\n    additions = '''<!--\
+        \ bookwiz-contributor-source:start -->\n## Star history\n\n![BookWiz star history](docs/assets/star-history.svg)\n\
+        \nThis chart is **self-hosted**. Regenerate it with `python3 scripts/gen_star_history.py` after `gh auth\
+        \ login`. It refreshes automatically each day via `.github/workflows/star-history.yml`. [How the chart works\
+        \ →](docs/STAR_HISTORY.md)\n\n## Code and content licenses\n\n**`*.py`, `*.sh`, and other source files:\
+        \ BWNCL.** **`*.md` documentation, wordlists, regex catalogs, and rubrics: CC BY 4.0.** Third-party licenses\
+        \ and notices remain intact. Your original books remain yours.\n\n[Code license](LICENSES/BWNCL-1.0.txt)\
+        \ · [CC BY 4.0](LICENSES/CC-BY-4.0.txt) · [Scope and attribution](docs/LICENSING.md)\n<!-- bookwiz-contributor-source:end\
+        \ -->\n\n'''\n    if '<!-- bookwiz-contributor-source:start -->' not in readme:\n        readme = replace_once(readme,\
+        \ '## Keep the room open\\n', additions + '## Keep the room open\\n', 'README support section')\n    write(root\
+        \ / 'README.md', readme)\n\n    contributing = (root / 'CONTRIBUTING.md').read_text()\n    contributing\
+        \ = replace_once(contributing,\n        '2. Extract the relevant `source-*.zip` archive into a working folder,\
+        \ then install its dependencies and follow the [build guide](docs/BUILDING.md). Edition changes should include\
+        \ the updated source archive.',\n        '2. Clone your fork and work directly in the repository: `dist/`\
+        \ contains the shared studio, and `native/` contains every platform host. Install dependencies and follow\
+        \ the [build guide](docs/BUILDING.md). Submit editable source changes; maintainers refresh distribution\
+        \ ZIPs when preparing releases.',\n        'contribution setup step')\n    contributing = replace_once(contributing,\n\
+        \        'GitHub forks for study and non-commercial upstream contributions are permitted under [BWNCL 1.0](LICENSE).\
+        \ Preserve attribution and third-party notices. The permission to fork does not grant a right to publish\
+        \ unofficial installers, sell the software, or rebrand it. Contributions use the grant described in the\
+        \ license; contributors retain their own copyright.',\n        'Code, including `*.py`, `*.sh`, and other\
+        \ source files, is [BWNCL](LICENSES/BWNCL-1.0.txt). Markdown documentation, wordlists, regex catalogs, and\
+        \ rubrics are [CC BY 4.0](LICENSES/CC-BY-4.0.txt). Submit each contribution under the license that applies\
+        \ to that material and retain required notices. Contributors retain their own copyright. GitHub forks for\
+        \ study and non-commercial upstream code contributions follow BWNCL; content reuse follows CC BY 4.0. [Read\
+        \ the exact boundary →](docs/LICENSING.md)',\n        'contribution license paragraph')\n    write(root\
+        \ / 'CONTRIBUTING.md', contributing)\n\n    for platform in ['android', 'ios', 'watchos', 'tvos', 'windows',\
+        \ 'macos', 'linux', 'web']:\n        old = f'These instructions apply to the extracted `source-{platform}.zip`\
+        \ edition. Open its folder containing `package.json` before running build commands.'\n        new = f'Build\
+        \ this edition directly from a clone of BookWizOfficial, using the repository root that contains `package.json`.\
+        \ The optional `source-{platform}.zip` snapshot also contains a self-contained edition for people who prefer\
+        \ an archive.'\n        for relative in [f'README-{platform}.md', f'docs/platforms/{platform}.md']:\n  \
+        \          path = root / relative\n            text = replace_once(path.read_text(), old, new, relative\
+        \ + ' source setup')\n            if platform == 'web':\n                text = replace_once(text,\n   \
+        \                 '`dist/` contains the studio. This archive excludes native hosts and downloaded installers.',\n\
+        \                    '`dist/` contains the studio. The full repository also includes every native host;\
+        \ the separate web source snapshot omits those hosts and downloaded installers.',\n                    relative\
+        \ + ' web source scope')\n            write(path, text)\n\n    building = (root / 'docs/BUILDING.md').read_text()\n\
+        \    building = replace_once(building,\n        \"Use **Node.js 24**, npm, and Python 3. Extract the source\
+        \ archive for your platform and run these commands from the extracted folder containing `package.json`.\
+        \ The [official repository](https://github.com/muneebwanee/BookWizOfficial) contains separate source ZIPs;\
+        \ cloning it downloads those archives, which still need extraction.\",\n        'Use **Node.js 24**, npm,\
+        \ and Python 3. Clone the [official repository](https://github.com/muneebwanee/BookWizOfficial) and run\
+        \ these commands from its root, where `package.json`, `dist/`, `native/`, `tools/`, and `tests/` are already\
+        \ available. The retained platform ZIPs are optional distribution snapshots; contributors work directly\
+        \ in the editable tree.',\n        'build guide setup')\n    write(root / 'docs/BUILDING.md', building)\n\
+        \n    terms = (root / 'TERMS.md').read_text()\n    if '## Code and documentation licenses' not in terms:\n\
+        \        notice = '\\n## Code and documentation licenses\\n\\n`*.py`, `*.sh`, and other first-party source\
+        \ files are BWNCL. `*.md` documentation, wordlists, regex catalogs, and rubrics are CC BY 4.0. These grants\
+        \ also apply to corresponding first-party files inside the retained source ZIPs. Third-party licenses remain\
+        \ separate. See [Licensing](docs/LICENSING.md), the [code license](LICENSES/BWNCL-1.0.txt), and [CC BY 4.0](LICENSES/CC-BY-4.0.txt).\\\
+        n'\n        before, marker, footer = terms.rpartition('\\n---\\n\\n<div align=\"center\">')\n        terms\
+        \ = before + notice + marker + footer if marker else terms + notice\n    write(root / 'TERMS.md', terms)\n\
+        \n    packager = (root / 'tools/package-platform-kits.py').read_text()\n    packager = replace_once(packager,\n\
+        \        \"name.startswith(('dist/','docs/','packaging/github/'))\",\n        \"name.startswith(('dist/','docs/','packaging/github/','LICENSES/','scripts/'))\"\
+        ,\n        'platform source license inclusion')\n    write(root / 'tools/package-platform-kits.py', packager)\n\
+        \    # Keep the standalone studio guide in step with the published README.\n    import importlib.util\n\
+        \    spec = importlib.util.spec_from_file_location('bookwiz_packager', root / 'tools/package-platform-kits.py')\n\
+        \    module = importlib.util.module_from_spec(spec)\n    spec.loader.exec_module(module)\n    write(root\
+        \ / 'docs/STUDIO_README.md', module.relocate_markdown_links(readme, 'README.md', 'docs/STUDIO_README.md'))\n\
+        \    print(f'Editable source added: {len(report[\"created\"])} files; current ZIPs, release workflows, video\
+        \ links, and other published files retained.')\n\n\nif __name__ == '__main__':\n    upgrade(Path.cwd())\n\
+        BOOKWIZ_UPGRADE\n"
+    - uses: actions/setup-node@v7.1.0
+      with:
+        node-version: '24'
+        cache: npm
+    - uses: actions/setup-python@v7.1.0
+      with:
+        python-version: '3.12'
+    - name: Install build and test dependencies
+      run: |
+        npm ci --ignore-scripts
+        python3 -m pip install 'PyYAML>=6.0.2,<7'
+    - name: Verify the editable application and repository tools
+      run: |
+        npm run check
+        npm test
+        python3 tests/source-import.test.py
+        python3 tests/star-history.test.py
+        python3 tests/apple-package.test.py
+        python3 tests/android-bundletool.test.py
+        python3 tests/platform-kits.test.py
+    - name: Generate the first repository-hosted star chart
+      run: python3 scripts/gen_star_history.py
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Verify that existing downloads and release definitions were preserved
+      run: |
+        python3 - <<'PY'
+        import hashlib, json, os
+        from pathlib import Path
+        hashes = json.loads((Path(os.environ['RUNNER_TEMP']) / 'bookwiz-preserved-files.json').read_text())
+        for name, checksum in hashes.items():
+            path = Path(name)
+            if not path.is_file() or hashlib.sha256(path.read_bytes()).hexdigest() != checksum:
+                raise SystemExit('An existing protected file changed: ' + name)
+        print('Existing source ZIPs, release workflows, icons, screenshots, videos and other protected files are unchanged.')
+        PY
+    - name: Commit the editable source and contributor updates
+      run: |
+        git add -- dist native tools tests scripts docs LICENSE LICENSES package.json package-lock.json .gitignore SOURCE-ORIGINS.json README.md CONTRIBUTING.md TERMS.md README-*.md
+        if git diff --cached --quiet; then
+          exit 0
+        fi
+        git config user.name 'github-actions[bot]'
+        git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+        git commit -m 'Add editable source for every platform, licensing scope and self-hosted star history'
+        git fetch origin "$DEFAULT_BRANCH"
+        git rebase "origin/$DEFAULT_BRANCH"
+        git push origin "HEAD:refs/heads/$DEFAULT_BRANCH"
+      env:
+        DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
