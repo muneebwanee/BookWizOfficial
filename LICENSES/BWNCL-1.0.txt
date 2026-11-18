@@ -1,0 +1,32 @@
+BookWiz Non-Commercial License 1.0
+BWNCL 1.0
+
+BWNCL 1.0 · Copyright © 2026 muneebwanee. All rights reserved except as granted below.
+
+
+## Permissions
+You may inspect and study the source, run BookWiz privately for personal non-commercial use, and make private modifications. You may submit patches and contributions to the official BookWiz repository designated by muneebwanee. You may share the minimum source excerpts necessary for a contribution or a good-faith security report.
+
+You may create a GitHub fork of github.com/muneebwanee/BookWizOfficial for study and non-commercial upstream contributions. Retain copyright, license and third-party notices, and identify the official project. This permission does not extend to unofficial packaged releases, commercial hosting, resale or rebranding.
+
+
+## Restrictions
+Except for the GitHub contribution forks permitted above, you may not distribute, mirror, sublicense, or publish standalone copies of BookWiz or modified versions, including source or packaged builds, without prior written permission from muneebwanee. You may not sell, rent, license for payment, rebrand for resale, host as a commercial service, bundle for commercial gain, or commercially exploit the software. Attribution does not waive these restrictions. You may not imply endorsement or remove copyright and license notices.
+
+
+## Your books are excluded
+This license governs the software, not works created with it. You retain 100% of your rights in your written works and may publish, sell, license, and distribute them commercially. BookWiz claims no royalty or ownership in your output. Third-party content and model terms remain separate.
+
+
+## Contributions
+By submitting an upstream contribution, you confirm you have the right to do so and grant muneebwanee a perpetual, worldwide, non-exclusive, royalty-free right to use, modify, reproduce, and distribute that contribution as part of official BookWiz releases. You retain copyright in your contribution.
+
+
+## Third-party components
+Third-party libraries, fonts, and tools retain their own licenses. BWNCL does not narrow their independent permissions. See THIRD_PARTY_NOTICES in the source distribution.
+
+
+## Termination and disclaimer
+Permissions terminate upon breach. Stop using and remove unauthorized copies. The software is provided AS IS, without warranty of any kind, to the maximum extent permitted by law. The author is not liable for claims or damages arising from use. No trademark right or patent license is granted. If any clause is unenforceable, the remaining clauses continue to apply.
+
+For additional permissions, contact github.com/muneebwanee. This is a source-available license and is not an OSI-approved open-source license.
