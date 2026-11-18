@@ -22,12 +22,14 @@ I built **BookWiz** to keep the whole life of a book in one thoughtful place: an
 
 Your library lives on your device. Start writing without an account, keep your tools close, and connect a model of your choice when you want another perspective. There is no BookWiz cloud library, public feed, or application telemetry.
 
-## The writing room, in motion
+<div align="center">
 
-| The editorial film | From a thought to a book |
-| :--- | :--- |
-| **72 seconds** · A quiet room for ambitious books. | **60 seconds** · The library, the writing room, the world, and the finished pages. |
-| [Watch the editorial film →](screenshots/BookWiz%20Explained.mp4) | [Watch the creator film →](screenshots/original.mp4) |
+  <h2>BookWiz in motion</h2>
+
+https://github.com/user-attachments/assets/76da7785-d02f-4031-969a-5ec14177726c
+
+  
+</div>
 
 ## A closer look
 
