@@ -40,6 +40,10 @@ BookWiz is intended for writers aged 16 and older; this is product guidance rath
 
 Use [Support](SUPPORT.md) for questions and reports. Provider connections and generated text can be removed locally. Material changes to these terms will be dated. The software remains governed by its license and third-party notices.
 
+## Code and documentation licenses
+
+`*.py`, `*.sh`, and other first-party source files are BWNCL. `*.md` documentation, wordlists, regex catalogs, and rubrics are CC BY 4.0. These grants also apply to corresponding first-party files inside the retained source ZIPs. Third-party licenses remain separate. See [Licensing](docs/LICENSING.md), the [code license](LICENSES/BWNCL-1.0.txt), and [CC BY 4.0](LICENSES/CC-BY-4.0.txt).
+
 ---
 
 <div align="center">

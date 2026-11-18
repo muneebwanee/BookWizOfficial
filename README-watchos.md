@@ -10,7 +10,7 @@
 
 ---
 
-These instructions apply to the extracted `source-watchos.zip` edition. Open its folder containing `package.json` before running build commands.
+Build this edition directly from a clone of BookWizOfficial, using the repository root that contains `package.json`. The optional `source-watchos.zip` snapshot also contains a self-contained edition for people who prefer an archive.
 
 ## A companion to your writing room
 
