@@ -10,7 +10,7 @@
 
 ---
 
-These instructions apply to the extracted `source-web.zip` edition. Open its folder containing `package.json` before running build commands.
+Build this edition directly from a clone of BookWizOfficial, using the repository root that contains `package.json`. The optional `source-web.zip` snapshot also contains a self-contained edition for people who prefer an archive.
 
 ## The browser studio
 
@@ -27,7 +27,7 @@ Open **http://localhost:4173**. Browser storage belongs to that address. JSON ba
 
 ## This source edition
 
-`dist/` contains the studio. This archive excludes native hosts and downloaded installers. `python3 tools/build-web.py` creates a web ZIP with `index.html` at its root for an HTTPS static host. The Apps page links to official Releases.
+`dist/` contains the studio. The full repository also includes every native host; the separate web source snapshot omits those hosts and downloaded installers. `python3 tools/build-web.py` creates a web ZIP with `index.html` at its root for an HTTPS static host. The Apps page links to official Releases.
 
 ## Draft Flow
 
