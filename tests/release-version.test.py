@@ -30,6 +30,15 @@ class VersionTests(unittest.TestCase):
    root=Path(temp);fixture(root);version.prepare(root);p=root/'package.json';d=json.loads(p.read_text());d['version']='1.1.0';p.write_text(json.dumps(d));self.assertEqual(version.prepare(root)['version'],'1.1.0')
    d=json.loads((root/'native/desktop/runtime/package.json').read_text());d['version']='1.0.0';(root/'native/desktop/runtime/package.json').write_text(json.dumps(d))
    with self.assertRaises(ValueError):version.check(root)
+ def test_windows_crlf_checkouts_keep_the_same_fingerprint_and_binary_changes_are_detected(self):
+  with tempfile.TemporaryDirectory()as temp:
+   root=Path(temp);fixture(root);(root/'dist/style.css').write_bytes(b'body {color:black;}\n')
+   (root/'dist/font.ttf').write_bytes(b'font\0\r\ndata');version.prepare(root);fingerprint=version.fingerprint(root)
+   for path in root.rglob('*'):
+    if path.is_file()and path.suffix in ['.json','.yml','.cff','.css','.js']:path.write_bytes(path.read_bytes().replace(b'\n',b'\r\n'))
+   self.assertEqual(version.fingerprint(root),fingerprint);version.check(root)
+   (root/'dist/font.ttf').write_bytes(b'font\0\ndata')
+   with self.assertRaises(ValueError):version.check(root)
  def test_dispatches_all_platforms_from_exactly_one_version_tag(self):
   calls=[];sha='a'*40
   def request(method,path,data=None):
@@ -43,9 +52,21 @@ class VersionTests(unittest.TestCase):
   calls=[];sha='a'*40
   def request(method,path,data=None):
    if '/git/ref/'in path:return {'object':{'sha':sha,'type':'commit'}}
-   if method=='GET':return {'workflow_runs':[{'head_sha':sha,'status':'completed','conclusion':'failure'if'android'in path else'success'}]}
+   if '/artifacts?'in path:
+    target=releases.PLATFORMS[int(path.split('/runs/')[1].split('/')[0])-1];return {'artifacts':[{'name':'BookWiz-packages-'+target+'-'+str(releases.PLATFORMS.index(target)+1),'expired':False}]}
+   if method=='GET'and '/workflows/'in path:
+    target=path.split('build-')[1].split('.yml')[0];return {'workflow_runs':[{'id':releases.PLATFORMS.index(target)+1,'head_sha':sha,'status':'completed','conclusion':'failure'if target=='android'else'success'}]}
+   if method=='GET':return None
    calls.append(path)
   releases.dispatch('owner/repo',sha,'1.0.1','fp',request);self.assertEqual(len(calls),1);self.assertIn('build-android.yml',calls[0])
+ def test_expired_or_missing_artifacts_rebuild_successful_editions_before_publication(self):
+  calls=[];sha='a'*40
+  def request(method,path,data=None):
+   if '/git/ref/'in path:return {'object':{'sha':sha,'type':'commit'}}
+   if method=='GET'and '/workflows/'in path:return {'workflow_runs':[{'id':1,'head_sha':sha,'status':'completed','conclusion':'success'}]}
+   if method=='GET':return {'artifacts':[]}
+   calls.append(path)
+  releases.dispatch('owner/repo',sha,'1.0.2','fp',request);self.assertEqual(len(calls),8)
  def test_an_existing_version_cannot_be_reused_for_different_source(self):
   def request(method,path,data=None):
    if '/git/ref/'in path:return {'object':{'sha':'b'*40,'type':'commit'}}

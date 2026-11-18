@@ -51,8 +51,8 @@ test('a literary polish with no connection opens a visible model chooser, and se
  assert.match(document.querySelector('#dialog-title').textContent,/model for your revision/);assert.ok(document.querySelector('[data-action=connect-text-model]'));assert.equal(requests,0);
  await click('[data-action=connect-text-model]');assert.equal(document.querySelector('#dialog').open,false);assert.ok(document.querySelector('#providers'));
 });
-test('Android has eight widget choices, private per-book routes, and seven dated progress counts without chapter text',()=>{
- assert.equal(androidWidgetKinds.length,8);const state=JSON.parse(localStorage.getItem('bookwiz-v1'));
+test('Android has nine widget choices, private per-book routes, and seven dated progress counts without chapter text',()=>{
+ assert.equal(androidWidgetKinds.length,9);const state=JSON.parse(localStorage.getItem('bookwiz-v1'));
  const data=widgetSnapshot(state,state.projects[0],'2026-11-18');assert.equal(data.booksList.length,2);assert.equal(data.days.length,7);assert.equal(data.booksList[0].projectId,'book-0');assert.equal(data.booksList[0].title,'Book 1');
  assert.doesNotMatch(JSON.stringify(data),/Sea Remembers|What the tide|morning the sea|manuscript|endpoint|credential/);
 });
@@ -62,4 +62,10 @@ test('a connected literary polish asks for sharing and produces a reviewable pro
  await shortcut({action:'publish',projectId:'book-0'});const original=JSON.parse(localStorage.getItem('bookwiz-v1')).projects[0].chapters[0].text;
  await click('[data-action=publication-review]');await click('[data-action=polish-book]');assert.match(document.querySelector('#dialog-title').textContent,/Share with your AI/);assert.equal(requests,0);
  await click('[data-action=approve-ai]');await pause();const book=JSON.parse(localStorage.getItem('bookwiz-v1')).projects[0];assert.equal(requests,1);assert.equal(book.chapters[0].text,original);assert.equal(book.proposals.length,1);assert.match(document.querySelector('#dialog').textContent,/carefully revised passage/);
+});
+
+test('compact section and chapter selectors preserve the draft and open the requested page',async()=>{
+ await click('[data-route="studio"]');const section=document.querySelector('#studio-section');assert.ok(section);section.value='notes';section.dispatchEvent(new Event('change',{bubbles:true}));await pause();assert.ok(document.querySelector('#studio-section'));assert.equal(document.querySelector('#editor'),null);
+ document.querySelector('#studio-section').value='draft';document.querySelector('#studio-section').dispatchEvent(new Event('change',{bubbles:true}));await pause();assert.ok(document.querySelector('.mobile-editor-tools'));const chapter=document.querySelector('#mobile-chapter');assert.ok(chapter);const expected=chapter.options[chapter.options.length-1].textContent.replace(/^\d+ · /,'');chapter.value=chapter.options[chapter.options.length-1].value;chapter.dispatchEvent(new Event('change',{bubbles:true}));await pause();assert.equal(document.querySelector('#chapter-title').value,expected);
+ window.BookWizHost.scheduleReminders=()=>{};window.dispatchEvent(new CustomEvent('bookwiz-widget-action',{detail:{action:'reminders'}}));await pause();assert.equal(document.querySelector('.reminder-settings').open,true);
 });
