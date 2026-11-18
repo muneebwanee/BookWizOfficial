@@ -4,7 +4,7 @@
 
 **For readers who want to explore the source and contributors with a change in mind.**
 
-[BookWizOfficial](https://github.com/muneebwanee/BookWizOfficial) · [Downloads](https://github.com/muneebwanee/BookWizOfficial/releases) · [muneebwanee](https://github.com/muneebwanee)
+[BookWizOfficial](https://github.com/muneebwanee/BookWizOfficial) · [Downloads](https://github.com/muneebwanee/BookWizOfficial/releases/latest) · [muneebwanee](https://github.com/muneebwanee)
 
 </div>
 
@@ -75,9 +75,11 @@ Open the generated project in Xcode. **BookWiz-iOS** includes the Widgets extens
 
 ## Release the checked-out edits
 
-The central **Refresh source archives** workflow prepares one patch version, updates all version metadata and source archives, creates an immutable `bookwiz-v<version>` tag, and dispatches all editions from that exact commit. A new source update advances `1.0.1` to `1.0.2`; unchanged-source rebuilds retain their version. `release-state.json` records the prepared source fingerprint.
+The central **Refresh source archives** workflow prepares one patch version, updates all version metadata and source archives, creates an immutable `bookwiz-v<version>` tag, and dispatches all editions from that exact commit. A new source update advances `1.0.2` to `1.0.3`; unchanged-source rebuilds retain their version. `release-state.json` records the prepared source fingerprint.
 
-Include the hidden `.github/workflows/` directory when uploading, alongside the matching `packaging/github/` templates. Upload the entire change in one commit. The central workflow requires Contents and Actions write permissions. ZIP-only builds keep verified extraction; full repositories use the prepared editable source. Run **Refresh source archives** manually to retry cancelled/failed editions. Successful or running editions are skipped by the dispatcher.
+Include the hidden `.github/workflows/` directory when uploading, alongside the matching `packaging/github/` templates. Upload the entire change in one commit. The central workflow requires Contents and Actions write permissions. ZIP-only builds keep verified extraction; full repositories use the prepared editable source. Run **Refresh source archives** manually to retry cancelled/failed editions. Running editions and available successful artifacts are reused; missing or expired artifacts are rebuilt.
+
+Once all eight platform artifacts are ready, **Publish current downloads** verifies and publishes one version page. Only after that succeeds does it remove older generated release pages and duplicate editions. Git commits and source tags remain. Platform jobs upload artifacts instead of creating separate public releases. The collector uses Actions read access and the publisher uses Contents write access. A standalone ZIP-only build produces a downloadable Actions artifact; publication of the combined official release requires the full repository.
 
 ## Checks and source archives
 

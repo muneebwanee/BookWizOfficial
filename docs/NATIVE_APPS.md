@@ -30,9 +30,9 @@ Apple archive validation checks device-platform markers and all slices of a univ
 
 ## Android widgets and PDF
 
-Android offers eight widget providers with separate layouts and default sizes. Current-book and bookshelf links carry opaque book/chapter IDs; capture, goal, timer, weekly progress and publishing shortcuts open their own controls. Startup delivery waits until the studio has registered its listeners, including when the app was closed. See [Widgets](WIDGETS.md).
+Android offers nine widget providers with separate layouts and default sizes. Current-book and bookshelf links carry opaque book/chapter IDs; capture, goal, timer, weekly progress and publishing shortcuts open their own controls. Startup delivery waits until the studio has registered its listeners, including when the app was closed. See [Widgets](WIDGETS.md).
 
-Native Android PDF export passes the chosen trim to the system print service as a custom media size, uses no extra system margin, and keeps the book’s own CSS margins. The print document omits screen proof wrappers and embeds bundled fonts. iOS also uses its native print sheet. Mobile PDF options explain LaTeX source export separately from the native PDF engine.
+Native Android PDF export passes the chosen trim to the system print service as a custom media size, uses no extra system margin, and keeps the book’s own CSS margins. The print document omits screen proof wrappers and embeds bundled fonts. The native adapter reflows to the actual paper selected by the service, keeping readable type and the book’s margins when a service falls back to Letter. It does not shrink a trim-sized page into the center of the larger sheet. iOS also uses its native print sheet. Mobile PDF options explain LaTeX source export separately from the native PDF engine.
 
 ## Desktop packages
 

@@ -13,7 +13,7 @@ Created by **[muneebwanee](https://github.com/muneebwanee)**.
 [![Code license](https://img.shields.io/badge/code-BWNCL-596957?style=flat-square)](../LICENSE)
 [![Content license](https://img.shields.io/badge/content-CC_BY_4.0-596957?style=flat-square)](../LICENSES/CC-BY-4.0.txt)
 
-**[Get BookWiz](https://github.com/muneebwanee/BookWizOfficial/releases)** · [Explore the gallery](https://github.com/muneebwanee/BookWizOfficial/blob/HEAD/screenshots/README.md) · [Your first book](GETTING_STARTED.md) · [Support the project](../SUPPORT.md#support-the-project)
+**[Get BookWiz](https://github.com/muneebwanee/BookWizOfficial/releases/latest)** · [Explore the gallery](https://github.com/muneebwanee/BookWizOfficial/blob/HEAD/screenshots/README.md) · [Your first book](GETTING_STARTED.md) · [Support the project](../SUPPORT.md#support-the-project)
 
 </div>
 
@@ -60,7 +60,7 @@ Three original reading samples are included. Read them, edit them, or clear a sp
 
 ## Choose your edition
 
-All official application downloads are in **[GitHub Releases](https://github.com/muneebwanee/BookWizOfficial/releases)**. The [download guide](RELEASE.md) explains the package for each device.
+All official application downloads are in **[GitHub Releases](https://github.com/muneebwanee/BookWizOfficial/releases/latest)**. The [download guide](RELEASE.md) explains the package for each device.
 
 | Edition | Package | Made for |
 | :--- | :--- | :--- |

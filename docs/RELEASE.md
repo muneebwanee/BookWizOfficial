@@ -4,13 +4,13 @@
 
 **A small set of files, with a clear purpose for each.**
 
-[BookWizOfficial](https://github.com/muneebwanee/BookWizOfficial) · [Downloads](https://github.com/muneebwanee/BookWizOfficial/releases) · [muneebwanee](https://github.com/muneebwanee)
+[BookWizOfficial](https://github.com/muneebwanee/BookWizOfficial) · [Downloads](https://github.com/muneebwanee/BookWizOfficial/releases/latest) · [muneebwanee](https://github.com/muneebwanee)
 
 </div>
 
 ---
 
-**BookWiz** is created and maintained by **muneebwanee**. Official downloads live under [BookWizOfficial Releases](https://github.com/muneebwanee/BookWizOfficial/releases). Choose the release for your device and the package below.
+**BookWiz** is created and maintained by **muneebwanee**. Official downloads live under [BookWizOfficial Releases](https://github.com/muneebwanee/BookWizOfficial/releases/latest). Open the current release and choose the download for your device in its table.
 
 ## Choose the application
 
@@ -31,9 +31,9 @@ The Watch companion is inside the paired iPhone application. A tvOS IPA belongs 
 
 ## How new releases arrive
 
-A source update on the default branch prepares the next patch version and dispatches all editions from one immutable version tag. The current update is **1.0.1**; subsequent updates become **1.0.2**, **1.0.3**, and so on. Rebuilding unchanged source keeps its version. Package metadata and the version embedded in each application are updated together before building.
+A source update on the default branch prepares the next patch version and dispatches all editions from one immutable version tag. The current update is **1.0.2**; subsequent source updates become **1.0.3**, **1.0.4**, and so on. Rebuilding unchanged source keeps its version. Package metadata and the version embedded in each application are updated together before building.
 
-**Refresh source archives** refreshes the eight source ZIPs, README files and checksums, then explicitly starts the platform builds. Previously published releases remain available. If a platform fails or is cancelled, run the central workflow again to retry it; successful/running builds for the same prepared commit are skipped. Manual creation of a release on GitHub does not itself bump application version files.
+**Refresh source archives** refreshes the eight source ZIPs, README files and checksums, then explicitly starts the platform builds. **Publish current downloads** waits for successful, verified packages from all eight editions, publishes one **BookWiz VERSION** download page, and removes older generated release pages and same-version duplicates only after the replacement is complete. Failed builds keep the existing downloads available. Git commits and source tags are retained. If a platform fails or is cancelled, run the central workflow again to retry it; successful/running builds for the same prepared commit are skipped. Manual creation of a release on GitHub does not itself bump application version files.
 
 [Source and automation guide](SOURCE_ARCHIVES.md) · [Build guide](BUILDING.md)
 

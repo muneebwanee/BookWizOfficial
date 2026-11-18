@@ -65,11 +65,11 @@ The first command updates the root downloads in place; the second verifies that 
 
 ## Automatic releases and patch versions
 
-Commit the complete update to the default branch. **Refresh source archives** first prepares one shared release version, synchronizes its metadata and archives, then commits the generated files. It pins that prepared commit to an immutable tag such as `bookwiz-v1.0.1` and dispatches all eight platform builds from that tag. Every edition therefore reports the same app version and builds the same prepared source, even if another upload advances the default branch.
+Commit the complete update to the default branch. **Refresh source archives** first prepares one shared release version, synchronizes its metadata and archives, then commits the generated files. It pins that prepared commit to an immutable tag such as `bookwiz-v1.0.2` and dispatches all eight platform builds from that tag. Every edition therefore reports the same app version and builds the same prepared source, even if another upload advances the default branch.
 
-A new source update increments the patch number: `1.0.1`, `1.0.2`, `1.0.3`. Rebuilding unchanged source keeps its version. An explicit higher minor or major version in `package.json` is respected. `release-state.json` records the source fingerprint and Apple build counter. Package metadata, the npm lockfile, Electron runtime, Apple project and citation metadata are synchronized together. Android retains its separate, increasing install version code.
+A new source update increments the patch number: `1.0.2`, `1.0.3`, `1.0.4`. Rebuilding unchanged source keeps its version. An explicit higher minor or major version in `package.json` is respected. `release-state.json` records the source fingerprint and Apple build counter. Package metadata, the npm lockfile, Electron runtime, Apple project and citation metadata are synchronized together. Android retains its separate, increasing install version code.
 
-The dispatcher skips builds already running or successful for the pinned commit and retries failed or cancelled editions on another preparation run. Ordinary pushes to standalone platform workflows are reserved for ZIP-only repositories; full repositories use the central preparation job, avoiding old-version builds racing the version update. Previously published releases remain available.
+The dispatcher skips builds already running, available successful artifacts, or an already published combined version. It rebuilds successful editions whose artifacts expired and retries failed or cancelled editions on another preparation run. Ordinary pushes to standalone platform workflows are reserved for ZIP-only repositories; full repositories use the central preparation job, avoiding old-version builds racing the version update. **Publish current downloads** waits for successful, verified packages from all eight editions, publishes one **BookWiz VERSION** download page, and removes older generated release pages and same-version duplicates only after the replacement is complete. Failed builds keep the existing downloads available. Git commits and source tags are retained.
 
 Star-history data refreshes update source downloads without incrementing the app version or publishing another set of application builds. The generated commit uses `GITHUB_TOKEN`; the central job explicitly dispatches the intended builds because bot pushes do not emit ordinary push-triggered Actions. Workflow permissions include **Contents: write** for generated commits/tags and **Actions: write** for dispatch.
 
@@ -84,3 +84,9 @@ For a full local checkout, `npm run prepare:release` synchronizes version metada
 ---
 
 **BookWiz · by muneebwanee**
+
+## One current download page
+
+Platform jobs prepare checksummed artifacts without creating public release pages. **Publish current downloads** collects successful builds of the same prepared commit, verifies their package checksums and GitHub upload digests, and publishes one `bookwiz-vVERSION` release containing all eight editions. Reruns reuse the same page. Older generated releases and duplicate pages are deleted only after the complete new version is public; unrelated releases and source tags are retained.
+
+If a platform fails, run **Refresh source archives** again to retry that edition. When all builds are green, **Publish current downloads** runs automatically; it can also be started manually to retry publication or cleanup. Failed uploads retain an unpublished draft and the previous public downloads. Keep both the active workflow files and their packaging templates current.
