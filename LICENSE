@@ -1,3 +1,37 @@
+BookWiz repository licensing scope
+Copyright (c) 2026 muneebwanee
+
+CODE — BWNCL 1.0
+*.py, *.sh, and other first-party source files, including application code,
+native hosts, build definitions, scripts and tests, are licensed under the
+BookWiz Non-Commercial License reproduced below and in LICENSES/BWNCL-1.0.txt.
+
+CONTENT — CC BY 4.0
+First-party *.md documentation, wordlists, regex catalogs, and rubrics are
+licensed under Creative Commons Attribution 4.0 International. The license
+text is in LICENSES/CC-BY-4.0.txt and at:
+https://creativecommons.org/licenses/by/4.0/
+
+Standalone wordlists, regex catalogs, and rubrics retain this content license
+when represented as text, JSON, YAML, CSV, or another data format. Code that
+processes the content remains BWNCL. Regex expressions embedded in application
+code do not change that code's license. Documentation's generated star-history
+SVG and aggregate JSON in docs/assets/ are CC BY 4.0.
+
+This CC BY 4.0 grant also covers the corresponding first-party content inside
+the retained source-*.zip snapshots. This scope notice takes precedence over
+a broader description of BWNCL's scope in a snapshot's embedded license.
+
+Third-party components, fonts, datasets, notices and legal texts retain their
+original licenses and notices. Neither BookWiz license supersedes them.
+Your original books and manuscripts are excluded from these repository terms.
+
+See docs/LICENSING.md and THIRD_PARTY_NOTICES for the boundary and attribution.
+
+--------------------------------------------------------------------------
+CODE LICENSE — BOOKWIZ NON-COMMERCIAL LICENSE
+--------------------------------------------------------------------------
+
 BookWiz Non-Commercial License 1.0
 BWNCL 1.0
 

@@ -10,7 +10,8 @@ A private writing studio for the idea, the manuscript, and the finished pages.<b
 Created by **[muneebwanee](https://github.com/muneebwanee)**.
 
 [![Stars](https://img.shields.io/github/stars/muneebwanee/BookWizOfficial?style=flat-square&color=b45642)](https://github.com/muneebwanee/BookWizOfficial/stargazers)
-[![License](https://img.shields.io/badge/license-BWNCL-596957?style=flat-square)](LICENSE)
+[![Code license](https://img.shields.io/badge/code-BWNCL-596957?style=flat-square)](LICENSE)
+[![Content license](https://img.shields.io/badge/content-CC_BY_4.0-596957?style=flat-square)](LICENSES/CC-BY-4.0.txt)
 
 **[Get BookWiz](https://github.com/muneebwanee/BookWizOfficial/releases)** · [Explore the gallery](screenshots/README.md) · [Your first book](docs/GETTING_STARTED.md) · [Support the project](SUPPORT.md#support-the-project)
 
@@ -103,14 +104,14 @@ BookWiz is created and maintained by **[muneebwanee](https://github.com/muneebwa
 
 **[Meet the contributors](https://github.com/muneebwanee/BookWizOfficial/graphs/contributors)** · [Contribution guide](CONTRIBUTING.md) · [Report a problem](https://github.com/muneebwanee/BookWizOfficial/issues/new)
 
-The browser studio uses JavaScript modules and locally bundled assets. Native hosts add their platform features around the shared writing room.
+The full source for every platform lives in this repository. The browser studio uses JavaScript modules and locally bundled assets; `native/android/`, `native/apple/`, and `native/desktop/` contain the platform hosts. Clone once and contribute directly. The platform ZIPs remain available as distribution snapshots.
 
 ```sh
 git clone https://github.com/muneebwanee/BookWizOfficial.git
 cd BookWizOfficial
-python3 -m zipfile -e source-web.zip bookwiz-web
-cd bookwiz-web
 npm ci --ignore-scripts
+npm run check
+npm test
 python3 -m http.server 4173 --directory dist --bind 127.0.0.1
 ```
 
@@ -119,6 +120,20 @@ Open **http://localhost:4173**. [Build and test the source →](docs/BUILDING.md
 ## Cite BookWiz
 
 For a report, course or research project, use the repository’s [citation metadata](CITATION.cff). GitHub’s **Cite this repository** action provides formatted citations for BookWiz by **muneebwanee**.
+
+<!-- bookwiz-contributor-source:start -->
+## Star history
+
+![BookWiz star history](docs/assets/star-history.svg)
+
+This chart is **self-hosted**. Regenerate it with `python3 scripts/gen_star_history.py` after `gh auth login`. It refreshes automatically each day via `.github/workflows/star-history.yml`. [How the chart works →](docs/STAR_HISTORY.md)
+
+## Code and content licenses
+
+**`*.py`, `*.sh`, and other source files: BWNCL.** **`*.md` documentation, wordlists, regex catalogs, and rubrics: CC BY 4.0.** Third-party licenses and notices remain intact. Your original books remain yours.
+
+[Code license](LICENSES/BWNCL-1.0.txt) · [CC BY 4.0](LICENSES/CC-BY-4.0.txt) · [Scope and attribution](docs/LICENSING.md)
+<!-- bookwiz-contributor-source:end -->
 
 ## Keep the room open
 
