@@ -114,17 +114,27 @@ class PlatformKits(unittest.TestCase):
                 template=yaml.safe_load((ROOT/'packaging/github'/('build-'+target+'.yml')).read_text())
                 self.assertEqual(active,template)
                 paths=active['on']['push']['paths']
-                for name in ['dist/app.js','tools/sync-source-archives.py','docs/WIDGETS.md','package.json','source-'+target+'.zip']:
-                    self.assertTrue(any(fnmatch.fnmatchcase(name,p)for p in paths),(target,name))
-                if meta['native']:
-                    self.assertTrue(any(fnmatch.fnmatchcase('native/'+meta['native']+'/host.txt',p)for p in paths))
+                self.assertIn('source-'+target+'.zip',paths)
+                self.assertEqual(active['jobs']['build']['needs'],'source-mode')
+                central=yaml.safe_load((ROOT/'.github/workflows/sync-source-archives.yml').read_text())
+                for name in ['dist/app.js','tools/release-version.py','docs/WIDGETS.md','package.json']:
+                    self.assertTrue(any(fnmatch.fnmatchcase(name,p)for p in central['on']['push']['paths']if not p.startswith('!')),(target,name))
+                mode=active['jobs']['source-mode']['steps'][-1]['run']
+                with tempfile.TemporaryDirectory()as temp:
+                    root=pathlib.Path(temp);(root/'tools').mkdir();[(root/'native'/n).mkdir(parents=True,exist_ok=True)for n in ['android','apple','desktop']];(root/'package.json').write_text('{}');(root/'tools/prepare-build-source.py').write_text('')
+                    import os
+                    output=root/'output'
+                    subprocess.run(['bash','-c',mode],cwd=root,env={**os.environ,'GITHUB_OUTPUT':str(output),'BOOKWIZ_EVENT':'push','BOOKWIZ_REF_TYPE':'branch'},check=True,capture_output=True)
+                    self.assertEqual(output.read_text().strip(),'build=false')
+                    output.unlink();subprocess.run(['bash','-c',mode],cwd=root,env={**os.environ,'GITHUB_OUTPUT':str(output),'BOOKWIZ_EVENT':'workflow_dispatch','BOOKWIZ_REF_TYPE':'tag'},check=True,capture_output=True)
+                    self.assertEqual(output.read_text().strip(),'build=true')
                 self.assertIn('workflow_dispatch',active['on'])
                 self.assertIn('default_branch',active['jobs']['build']['if'])
 
     def test_archive_automation_follows_trusted_bot_jobs_without_following_itself(self):
         import yaml
         workflow=yaml.safe_load((ROOT/'.github/workflows/sync-source-archives.yml').read_text())
-        self.assertEqual(workflow['permissions']['contents'],'write')
+        self.assertEqual(workflow['permissions']['contents'],'write');self.assertEqual(workflow['permissions']['actions'],'write')
         self.assertEqual(set(workflow['on']['workflow_run']['workflows']),{'Star history','Add full source'})
         self.assertNotIn(workflow['name'],workflow['on']['workflow_run']['workflows'])
         self.assertIn('head_repository.full_name == github.repository',workflow['jobs']['refresh']['if'])

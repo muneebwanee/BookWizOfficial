@@ -1,5 +1,6 @@
 """Regression checks for real star snapshots and the repository-hosted SVG."""
 from datetime import datetime, timezone
+import os,shutil,subprocess
 import importlib.util
 import json
 from pathlib import Path
@@ -88,6 +89,25 @@ class StarHistory(unittest.TestCase):
                 self.assertNotIn('https://', svg)
                 self.assertNotIn('NaN', svg)
                 self.assertIn(f'{count:,}', svg)
+
+    def test_chart_push_retries_and_keeps_a_concurrent_source_edit(self):
+        git=shutil.which('git')
+        with tempfile.TemporaryDirectory()as temp:
+            root=Path(temp);remote=root/'remote.git';local=root/'runner';writer=root/'writer'
+            def run(*args,cwd=None):return subprocess.run([git,*args],cwd=cwd,check=True,capture_output=True,text=True)
+            run('init','--bare','--initial-branch=master',str(remote));run('clone',str(remote),str(local));(local/'scripts').mkdir()
+            (local/'scripts/gen_star_history.py').write_text("from pathlib import Path\np=Path('docs/assets');p.mkdir(parents=True,exist_ok=True)\ntext=Path('README.md').read_text()\n(p/'star-history.json').write_text(text)\n(p/'star-history.svg').write_text(text)\n")
+            (local/'README.md').write_text('initial');run('config','user.name','Fixture',cwd=local);run('config','user.email','fixture@example.test',cwd=local);run('add','.',cwd=local);run('commit','-m','initial',cwd=local);run('push','origin','master',cwd=local)
+            run('clone',str(remote),str(writer));run('config','user.name','Writer',cwd=writer);run('config','user.email','writer@example.test',cwd=writer);(writer/'README.md').write_text('concurrent source');run('add','README.md',cwd=writer);run('commit','-m','source upload',cwd=writer)
+            bin=root/'bin';bin.mkdir();marker=root/'pushed';wrapper=bin/'git'
+            wrapper.write_text('#!/bin/bash\nset -e\nif [[ "$1" == push && ! -e "$BOOKWIZ_TEST_MARKER" ]]; then\n touch "$BOOKWIZ_TEST_MARKER"\n "$BOOKWIZ_TEST_GIT" -C "$BOOKWIZ_TEST_WRITER" push origin master >/dev/null 2>&1\n exit 1\nfi\nexec "$BOOKWIZ_TEST_GIT" "$@"\n');wrapper.chmod(0o755)
+            lines=(ROOT/'.github/workflows/star-history.yml').read_text().splitlines();start=next(i for i,l in enumerate(lines)if 'name: Refresh and commit the chart with push retries'in l);run_line=next(i for i in range(start,len(lines))if lines[i].strip()=='run: |');indent=len(lines[run_line])-len(lines[run_line].lstrip())+2;body=[]
+            for line in lines[run_line+1:]:
+                if line.strip()and not line.startswith(' '*indent):break
+                body.append(line[indent:])
+            env={**os.environ,'PATH':str(bin)+os.pathsep+os.environ['PATH'],'DEFAULT_BRANCH':'master','BOOKWIZ_TEST_GIT':git,'BOOKWIZ_TEST_MARKER':str(marker),'BOOKWIZ_TEST_WRITER':str(writer)}
+            subprocess.run(['bash','-c','\n'.join(body)],cwd=local,env=env,check=True,capture_output=True,text=True)
+            self.assertTrue(marker.exists());self.assertEqual((local/'README.md').read_text(),'concurrent source');self.assertEqual((local/'docs/assets/star-history.svg').read_text(),'concurrent source')
 
 
 if __name__ == '__main__':

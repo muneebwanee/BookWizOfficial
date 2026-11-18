@@ -22,6 +22,8 @@ def fixture(root):
         dest=root/name;dest.parent.mkdir(parents=True,exist_ok=True);dest.write_text('# Fixture\n'if name.endswith('.md')else'fixture\n')
     (root/'.gitignore').write_text('*.zip\n!/source-*.zip\n__pycache__/\n')
     (root/'package.json').write_text(json.dumps({'name':'bookwiz','version':'1.0.0','scripts':{},'dependencies':{}}))
+    (root/'release-state.json').write_text('{}')
+    (root/'package-lock.json').write_text(json.dumps({'version':'1.0.0','packages':{'':{'version':'1.0.0'}}}))
     (root/'dist').mkdir();(root/'dist/app.js').write_text('export const edition="current";\n')
     (root/'dist/index.html').write_text('<!doctype html><title>BookWiz</title>')
     (root/'dist/sw.js').write_text("const CACHE='bookwiz-shell-old';\nconst ASSETS=[\"./\",\"./index.html\",\"./app.js\"];\n")
@@ -98,8 +100,9 @@ class SourceArchives(unittest.TestCase):
             folder=Path(temp);remote=folder/'remote.git';local=folder/'runner';other=folder/'writer'
             def run(*args,cwd=None,env=None):return subprocess.run([git,*args],cwd=cwd,env=env,check=True,capture_output=True,text=True)
             run('init','--bare','--initial-branch=master',str(remote));run('clone',str(remote),str(local));fixture(local)
-            for name in ['tools/sync-source-archives.py','tools/package-platform-kits.py','scripts/check_docs.py']:
+            for name in ['tools/sync-source-archives.py','tools/package-platform-kits.py','tools/release-version.py','scripts/check_docs.py']:
                 dest=local/name;dest.parent.mkdir(parents=True,exist_ok=True);shutil.copy2(ROOT/name,dest)
+            (local/'native/apple/project.yml').write_text('MARKETING_VERSION: \"1.0.0\"\nCURRENT_PROJECT_VERSION: 14\n');(local/'native/desktop/runtime').mkdir();(local/'native/desktop/runtime/package.json').write_text(json.dumps({'name':'bookwiz-desktop','version':'1.0.0'}))
             run('config','user.name','Fixture',cwd=local);run('config','user.email','fixture@example.test',cwd=local)
             sync.sync(local);run('add','.',cwd=local);run('commit','-m','initial',cwd=local);run('push','origin','master',cwd=local)
             run('clone',str(remote),str(other));run('config','user.name','Writer',cwd=other);run('config','user.email','writer@example.test',cwd=other)
@@ -111,11 +114,17 @@ class SourceArchives(unittest.TestCase):
             run('add','native/android/host.txt',cwd=other);run('commit','-m','concurrent source',cwd=other)
             wrappers=folder/'bin';wrappers.mkdir();marker=folder/'pushed';wrapper=wrappers/'git'
             wrapper.write_text('#!/bin/bash\nset -e\nif [[ "$1" == push && ! -e "$BOOKWIZ_TEST_MARKER" ]]; then\n touch "$BOOKWIZ_TEST_MARKER"\n "$BOOKWIZ_TEST_GIT" -C "$BOOKWIZ_TEST_WRITER" pull --no-rebase --no-edit origin master >/dev/null 2>&1\n "$BOOKWIZ_TEST_GIT" -C "$BOOKWIZ_TEST_WRITER" push origin master >/dev/null 2>&1\n exit 1\nfi\nexec "$BOOKWIZ_TEST_GIT" "$@"\n');wrapper.chmod(0o755)
-            workflow=(ROOT/'.github/workflows/sync-source-archives.yml').read_text();body=workflow.split('      - name: Refresh and commit only generated source downloads',1)[1].split('        run: |\n',1)[1]
-            env={**os.environ,'PATH':str(wrappers)+os.pathsep+os.environ['PATH'],'BOOKWIZ_BRANCH':'master','BOOKWIZ_TEST_MARKER':str(marker),'BOOKWIZ_TEST_GIT':git,'BOOKWIZ_TEST_WRITER':str(other)}
+            lines=(ROOT/'.github/workflows/sync-source-archives.yml').read_text().splitlines();start=next(i for i,l in enumerate(lines)if 'name: Refresh and commit only generated source downloads'in l)
+            run_line=next(i for i in range(start,len(lines))if lines[i].strip()=='run: |');indent=len(lines[run_line])-len(lines[run_line].lstrip())+2;body=[]
+            for line in lines[run_line+1:]:
+                if line.strip()and not line.startswith(' '*indent):break
+                body.append(line[indent:])
+            body='\n'.join(body)
+
+            env={**os.environ,'PATH':str(wrappers)+os.pathsep+os.environ['PATH'],'BOOKWIZ_BRANCH':'master','BOOKWIZ_PREPARE_RELEASE':'true','GITHUB_OUTPUT':str(folder/'outputs'),'BOOKWIZ_TEST_MARKER':str(marker),'BOOKWIZ_TEST_GIT':git,'BOOKWIZ_TEST_WRITER':str(other)}
             subprocess.run(['bash','-c',textwrap.dedent(body)],cwd=local,env=env,check=True,capture_output=True,text=True)
             self.assertTrue(marker.exists());self.assertEqual((local/'native/android/host.txt').read_text(),'concurrent writer edit');self.assertEqual((local/'dist/app.js').read_text(),'export const edition="runner source";')
-            self.assertEqual(sync.sync(local,check=True),[])
+            self.assertEqual(sync.sync(local,check=True),[]);self.assertEqual(json.loads((local/'package.json').read_text())['version'],'1.0.1');self.assertIn('commit=',(folder/'outputs').read_text())
             self.assertEqual(run('rev-parse','HEAD',cwd=local).stdout,run('rev-parse','refs/heads/master',cwd=remote).stdout)
 
 
