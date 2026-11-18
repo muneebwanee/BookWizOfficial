@@ -1,6 +1,6 @@
 {
   "name": "bookwiz",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": true,
   "type": "module",
   "author": "muneebwanee",
@@ -17,7 +17,9 @@
     "build": "python3 tools/build-web.py",
     "package:source": "python3 tools/package-platform-kits.py --output build/platform-sources",
     "sync:source": "python3 tools/sync-source-archives.py",
-    "check:archives": "python3 tools/sync-source-archives.py --check"
+    "check:archives": "python3 tools/sync-source-archives.py --check",
+    "prepare:release": "python3 tools/release-version.py --prepare",
+    "check:version": "python3 tools/release-version.py --check"
   },
   "dependencies": {
     "fflate": "^0.8.2",
