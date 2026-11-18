@@ -1,4 +1,4 @@
-name: BookWiz · Windows
+name: "BookWiz \xB7 Windows"
 'on':
   workflow_dispatch: {}
   push:
@@ -10,7 +10,7 @@ name: BookWiz · Windows
     - source-windows.zip
     - .github/workflows/build-windows.yml
 permissions:
-  contents: write
+  contents: read
 concurrency:
   group: bookwiz-windows-${{ github.ref }}
   cancel-in-progress: false
@@ -28,15 +28,22 @@ jobs:
       env:
         BOOKWIZ_EVENT: ${{ github.event_name }}
         BOOKWIZ_REF_TYPE: ${{ github.ref_type }}
-      run: |-
-        python3 - <<'PYMODE'
+      run: 'python3 - <<''PYMODE''
+
         import os
+
         from pathlib import Path
-        full=all(Path(p).exists()for p in ['package.json','tools/prepare-build-source.py','native/android','native/apple','native/desktop'])
-        run=not(full and os.environ['BOOKWIZ_EVENT']=='push' and os.environ['BOOKWIZ_REF_TYPE']!='tag')
-        with open(os.environ['GITHUB_OUTPUT'],'a')as f:f.write('build='+str(run).lower()+'\n')
-        print('This build was dispatched from prepared source.' if run else 'The central version-preparation workflow dispatches builds for this full repository.')
-        PYMODE
+
+        full=all(Path(p).exists()for p in [''package.json'',''tools/prepare-build-source.py'',''native/android'',''native/apple'',''native/desktop''])
+
+        run=not(full and os.environ[''BOOKWIZ_EVENT'']==''push'' and os.environ[''BOOKWIZ_REF_TYPE'']!=''tag'')
+
+        with open(os.environ[''GITHUB_OUTPUT''],''a'')as f:f.write(''build=''+str(run).lower()+''\n'')
+
+        print(''This build was dispatched from prepared source.'' if run else ''The central version-preparation
+        workflow dispatches builds for this full repository.'')
+
+        PYMODE'
   build:
     if: ${{ needs.source-mode.outputs.build == 'true' && (github.event_name == 'workflow_dispatch' ||
       github.ref_type == 'tag' || github.ref_name == github.event.repository.default_branch) }}
@@ -54,35 +61,27 @@ jobs:
       with:
         python-version: '3.12'
     - name: Verify the source archive
-      run: |
-        python - <<'PYEXTRACT'
-        import hashlib,json,pathlib,stat,zipfile
-        # Full-source repositories build the checked-out edits; ZIP-only uploads still work.
-        if pathlib.Path('tools/prepare-build-source.py').is_file() and pathlib.Path('package.json').is_file():
-            import subprocess,sys
-            if pathlib.Path('release-state.json').is_file()and all(pathlib.Path('native/'+n).is_dir()for n in ['android','apple','desktop']):subprocess.run([sys.executable,'tools/release-version.py','--check'],check=True)
-            subprocess.run([sys.executable,'tools/prepare-build-source.py','--target','windows','--output','bookwiz'],check=True)
-            raise SystemExit(0)
-        source=pathlib.Path('source-windows.zip')
-        if not source.is_file():raise SystemExit('Missing source-windows.zip at the repository root.')
-        output=pathlib.Path('bookwiz').resolve();seen=set()
-        with zipfile.ZipFile(source)as archive:
-            entries=archive.infolist()
-            if len(entries)>10000 or sum(x.file_size for x in entries)>256*1024*1024:raise SystemExit('The source archive exceeds the build limit.')
-            for entry in entries:
-                name=entry.filename;parts=pathlib.PurePosixPath(name)
-                if name in seen or parts.is_absolute() or '..'in parts.parts or '\\'in name or ':'in name or stat.S_ISLNK(entry.external_attr>>16):raise SystemExit('Unsafe source archive path: '+name)
-                seen.add(name)
-            manifest=json.loads(archive.read('SOURCE-MANIFEST.json'))
-            if manifest.get('platform')!='windows':raise SystemExit('Use the matching windows source ZIP and workflow.')
-            if seen!=set(manifest['files'])|{'SOURCE-MANIFEST.json'}:raise SystemExit('The archive contents differ from its source manifest. Regenerate the source ZIP after editing.')
-            for entry in entries:
-                data=archive.read(entry)
-                if entry.filename!='SOURCE-MANIFEST.json' and hashlib.sha256(data).hexdigest()!=manifest['files'][entry.filename]:raise SystemExit('Source checksum mismatch: '+entry.filename)
-                target=output/entry.filename;target.parent.mkdir(parents=True,exist_ok=True);target.write_bytes(data)
-        if not (output/'package.json').is_file():raise SystemExit('The source package does not contain package.json.')
-        print('Verified and unpacked '+source.name+' into bookwiz/.')
-        PYEXTRACT
+      run: "python - <<'PYEXTRACT'\nimport hashlib,json,pathlib,stat,zipfile\n# Full-source repositories\
+        \ build the checked-out edits; ZIP-only uploads still work.\nif pathlib.Path('tools/prepare-build-source.py').is_file()\
+        \ and pathlib.Path('package.json').is_file():\n    import subprocess,sys\n    if pathlib.Path('release-state.json').is_file()and\
+        \ all(pathlib.Path('native/'+n).is_dir()for n in ['android','apple','desktop']):subprocess.run([sys.executable,'tools/release-version.py','--check'],check=True)\n\
+        \    subprocess.run([sys.executable,'tools/prepare-build-source.py','--target','windows','--output','bookwiz'],check=True)\n\
+        \    raise SystemExit(0)\nsource=pathlib.Path('source-windows.zip')\nif not source.is_file():raise\
+        \ SystemExit('Missing source-windows.zip at the repository root.')\noutput=pathlib.Path('bookwiz').resolve();seen=set()\n\
+        with zipfile.ZipFile(source)as archive:\n    entries=archive.infolist()\n    if len(entries)>10000\
+        \ or sum(x.file_size for x in entries)>256*1024*1024:raise SystemExit('The source archive exceeds\
+        \ the build limit.')\n    for entry in entries:\n        name=entry.filename;parts=pathlib.PurePosixPath(name)\n\
+        \        if name in seen or parts.is_absolute() or '..'in parts.parts or '\\\\'in name or ':'in\
+        \ name or stat.S_ISLNK(entry.external_attr>>16):raise SystemExit('Unsafe source archive path:\
+        \ '+name)\n        seen.add(name)\n    manifest=json.loads(archive.read('SOURCE-MANIFEST.json'))\n\
+        \    if manifest.get('platform')!='windows':raise SystemExit('Use the matching windows source\
+        \ ZIP and workflow.')\n    if seen!=set(manifest['files'])|{'SOURCE-MANIFEST.json'}:raise SystemExit('The\
+        \ archive contents differ from its source manifest. Regenerate the source ZIP after editing.')\n\
+        \    for entry in entries:\n        data=archive.read(entry)\n        if entry.filename!='SOURCE-MANIFEST.json'\
+        \ and hashlib.sha256(data).hexdigest()!=manifest['files'][entry.filename]:raise SystemExit('Source\
+        \ checksum mismatch: '+entry.filename)\n        target=output/entry.filename;target.parent.mkdir(parents=True,exist_ok=True);target.write_bytes(data)\n\
+        if not (output/'package.json').is_file():raise SystemExit('The source package does not contain\
+        \ package.json.')\nprint('Verified and unpacked '+source.name+' into bookwiz/.')\nPYEXTRACT\n"
       working-directory: .
     - name: Check the bundled documentation
       run: python3 scripts/check_docs.py
@@ -106,14 +105,17 @@ jobs:
         --publish never
       env:
         CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+    - name: Verify packages and record release metadata
+      run: node tools/ci-release.mjs --target windows --prepare-only
     - uses: actions/upload-artifact@v7.0.2
       with:
-        name: BookWiz-Windows-${{ github.run_id }}
-        path: bookwiz/release/*.exe
+        name: BookWiz-packages-windows-${{ github.run_id }}
+        path: 'bookwiz/release/*.exe
+
+          bookwiz/release/SHA256SUMS.txt
+
+          bookwiz/release/BUILD-INFO.json'
         if-no-files-found: error
         retention-days: 14
-    - name: Publish packages and checksums to GitHub Releases
-      run: node tools/ci-release.mjs --target windows
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        overwrite: true
     needs: source-mode

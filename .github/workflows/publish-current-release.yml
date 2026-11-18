@@ -1,0 +1,52 @@
+name: Publish current downloads
+'on':
+  workflow_dispatch: {}
+  workflow_run:
+    workflows:
+    - BookWiz · Android
+    - BookWiz · iPhone-iPad-Watch
+    - BookWiz · Watch-companion
+    - BookWiz · Apple-TV
+    - BookWiz · Windows
+    - BookWiz · macOS
+    - BookWiz · Linux
+    - BookWiz · Web
+    types: [completed]
+permissions:
+  contents: write
+  actions: read
+concurrency:
+  group: bookwiz-current-downloads
+  cancel-in-progress: false
+jobs:
+  publish:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.workflow_run.conclusion == 'success' &&
+       github.event.workflow_run.head_repository.full_name == github.repository)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+    - uses: actions/checkout@v7.0.1
+      with:
+        ref: ${{ github.event.repository.default_branch }}
+        persist-credentials: false
+    - uses: actions/setup-python@v7.1.0
+      with:
+        python-version: '3.12'
+    - uses: actions/setup-node@v7.1.0
+      with:
+        node-version: '24'
+    - name: Check release source metadata
+      run: python3 tools/release-version.py --check
+    - name: Collect all eight builds from the prepared version
+      id: collect
+      run: python3 tools/collect-release-artifacts.py
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Publish one download page and remove superseded release pages
+      if: steps.collect.outputs.ready == 'true'
+      run: node tools/publish-current-release.mjs
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        BOOKWIZ_RELEASE_SHA: ${{ steps.collect.outputs.commit }}

@@ -16,9 +16,11 @@ name: Refresh source archives
     - THIRD_PARTY_NOTICES
     - CITATION.cff
     - .gitignore
+    - .gitattributes
     - packaging/github/**
     - .github/workflows/sync-source-archives.yml
     - .github/workflows/build-*.yml
+    - .github/workflows/publish-current-release.yml
   workflow_dispatch: {}
   workflow_run:
     workflows:
