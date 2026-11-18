@@ -18,8 +18,8 @@
 | :--- | :--- |
 | `BookWiz-{version}-Windows-Setup.exe` | One Windows installer containing x64 and ARM64 applications. It selects the correct one during installation. |
 | `BookWiz-{version}-macOS.dmg` | One universal Mac application for Intel and Apple Silicon. Open the disk image and move BookWiz to Applications. |
-| `BookWiz-{version}-Linux-x64.AppImage` | A portable Linux x64 application. |
-| `BookWiz-{version}-Linux-x64.deb` | Debian/Ubuntu-family installation. |
+| `BookWiz-{version}-Linux-x86_64.AppImage` | A portable Linux x64 application. |
+| `BookWiz-{version}-Linux-amd64.deb` | Debian/Ubuntu-family installation. |
 | `BookWiz-{version}-Android.apk` or `-development.apk` | Direct Android installation; the filename distinguishes the build's signing mode. |
 | `.aab` | The Android store bundle, rather than a file opened directly on a phone. |
 | `.ipa` | An Apple device package. Installation requires a signed, provisioned build for the device or distribution channel. |
@@ -31,7 +31,9 @@ The Watch companion is inside the paired iPhone application. A tvOS IPA belongs 
 
 ## How new releases arrive
 
-A source change on the default branch automatically starts the affected platform builds. Shared studio changes rebuild all editions; a native-host change rebuilds its corresponding editions. Checks and packaging must pass before a new release is published. **Refresh source archives** also keeps the eight root source ZIPs, platform README files and their checksums current. Its bot commit does not start duplicate builds. Existing releases remain available as history.
+A source update on the default branch prepares the next patch version and dispatches all editions from one immutable version tag. The current update is **1.0.1**; subsequent updates become **1.0.2**, **1.0.3**, and so on. Rebuilding unchanged source keeps its version. Package metadata and the version embedded in each application are updated together before building.
+
+**Refresh source archives** refreshes the eight source ZIPs, README files and checksums, then explicitly starts the platform builds. Previously published releases remain available. If a platform fails or is cancelled, run the central workflow again to retry it; successful/running builds for the same prepared commit are skipped. Manual creation of a release on GitHub does not itself bump application version files.
 
 [Source and automation guide](SOURCE_ARCHIVES.md) · [Build guide](BUILDING.md)
 

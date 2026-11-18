@@ -63,13 +63,19 @@ npm run check:archives
 
 The first command updates the root downloads in place; the second verifies that they match the editable source without writing. `npm run package:source` remains available for a separate distribution directory and combined source bundle. `scripts/import_platform_sources.py` is the bootstrap importer for ZIP-only repositories; it validates all eight archives and preserves existing editable work.
 
-## Automatic releases
+## Automatic releases and patch versions
 
-Commit the complete update to the repository's default branch. Shared application, package, tool, test, licensing and documentation edits automatically start the **BookWiz · Platform** builds. Native host edits start the corresponding platform editions. Each successful build publishes a new release using the current checked-out source through `tools/prepare-build-source.py`; previously published releases remain available.
+Commit the complete update to the default branch. **Refresh source archives** first prepares one shared release version, synchronizes its metadata and archives, then commits the generated files. It pins that prepared commit to an immutable tag such as `bookwiz-v1.0.1` and dispatches all eight platform builds from that tag. Every edition therefore reports the same app version and builds the same prepared source, even if another upload advances the default branch.
 
-Archive synchronization and release builds follow the same source push. The generated archive commit uses `GITHUB_TOKEN`, which does not start a second round of Actions. Platform ZIP-only uploads still build through checksum-verified extraction when the editable source tree is absent. **Run workflow** remains available for an explicit rebuild or archive refresh.
+A new source update increments the patch number: `1.0.1`, `1.0.2`, `1.0.3`. Rebuilding unchanged source keeps its version. An explicit higher minor or major version in `package.json` is respected. `release-state.json` records the source fingerprint and Apple build counter. Package metadata, the npm lockfile, Electron runtime, Apple project and citation metadata are synchronized together. Android retains its separate, increasing install version code.
 
-Keep active release definitions in `.github/workflows/` and their `packaging/github/` templates together. If GitHub rejects the archive bot's commit, the refresh action reports the failed push; repository write permissions and branch rules must permit that generated-file commit. Release publication still requires each platform's checks, build and configured signing to succeed. `BUILD-INFO.json` records the actual source commit, source mode and source-manifest checksum.
+The dispatcher skips builds already running or successful for the pinned commit and retries failed or cancelled editions on another preparation run. Ordinary pushes to standalone platform workflows are reserved for ZIP-only repositories; full repositories use the central preparation job, avoiding old-version builds racing the version update. Previously published releases remain available.
+
+Star-history data refreshes update source downloads without incrementing the app version or publishing another set of application builds. The generated commit uses `GITHUB_TOKEN`; the central job explicitly dispatches the intended builds because bot pushes do not emit ordinary push-triggered Actions. Workflow permissions include **Contents: write** for generated commits/tags and **Actions: write** for dispatch.
+
+Keep `.github/workflows/` and `packaging/github/` definitions together. The dot-prefixed `.github` folder is required; templates alone do not enable Actions. **Run workflow** on **Refresh source archives** prepares or retries the release. An individual platform workflow can rebuild a prepared tag. A build publishes only after its checks, packages and configured signing succeed. `BUILD-INFO.json` records its actual commit, version and source-manifest checksum.
+
+For a full local checkout, `npm run prepare:release` synchronizes version metadata, `npm run sync:source` refreshes downloads, and `npm run check:version` plus `npm run check:archives` verify the result. Merely creating a release in GitHub’s website does not change the version embedded in application files.
 
 ## Code and content
 

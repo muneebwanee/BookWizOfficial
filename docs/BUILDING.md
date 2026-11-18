@@ -75,7 +75,9 @@ Open the generated project in Xcode. **BookWiz-iOS** includes the Widgets extens
 
 ## Release the checked-out edits
 
-The platform release workflows use the current repository source when the editable tree is present. `tools/prepare-build-source.py` stages only the selected host, shared assets, tools and documentation, then creates its source manifest. Source changes pushed to the default branch automatically build the affected editions and publish new releases after their checks succeed. **Refresh source archives** separately updates all eight root ZIPs, platform READMEs, checksums, origin metadata and offline cache. Its generated commit does not start duplicate release builds. ZIP-only repositories retain verified extraction. Upload a complete change in one commit; keep `.github/workflows/build-*.yml` and the corresponding `packaging/github/` templates together. Manual **Run workflow** remains available.
+The central **Refresh source archives** workflow prepares one patch version, updates all version metadata and source archives, creates an immutable `bookwiz-v<version>` tag, and dispatches all editions from that exact commit. A new source update advances `1.0.1` to `1.0.2`; unchanged-source rebuilds retain their version. `release-state.json` records the prepared source fingerprint.
+
+Include the hidden `.github/workflows/` directory when uploading, alongside the matching `packaging/github/` templates. Upload the entire change in one commit. The central workflow requires Contents and Actions write permissions. ZIP-only builds keep verified extraction; full repositories use the prepared editable source. Run **Refresh source archives** manually to retry cancelled/failed editions. Successful or running editions are skipped by the dispatcher.
 
 ## Checks and source archives
 
@@ -86,6 +88,8 @@ python3 tests/android-bundletool.test.py
 python3 tests/apple-package.test.py
 python3 tests/platform-kits.test.py
 python3 tests/source-archives.test.py
+npm run prepare:release
+npm run check:version
 npm run sync:source
 npm run check:archives
 python3 tools/package-platform-kits.py --output ../BookWiz-platform-sources
