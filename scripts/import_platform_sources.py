@@ -73,6 +73,8 @@ def merged_sources(root: Path) -> tuple[dict, dict, dict]:
         'vendor:pdf': 'node tools/sync-pdf-assets.mjs',
         'build': 'python3 tools/build-web.py',
         'package:source': 'python3 tools/package-platform-kits.py --output build/platform-sources',
+        'sync:source': 'python3 tools/sync-source-archives.py',
+        'check:archives': 'python3 tools/sync-source-archives.py --check',
     }
     union['package.json'] = (json.dumps(package, indent=2) + '\n').encode()
     return union, origins, package
