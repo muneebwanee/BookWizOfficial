@@ -1,11 +1,11 @@
 export const widgetKinds=['Current book','Today’s page','Quick capture','Writing time','Bookshelf'];
-export const androidWidgetKinds=[...widgetKinds,'Clock & focus','Writing shortcuts','Weekly rhythm'];
+export const androidWidgetKinds=[...widgetKinds,'Clock & focus','Writing shortcuts','Weekly rhythm','A little inspiration'];
 export const readingFonts={'Lora':'Lora,Georgia,serif','Literata':'Literata,Georgia,serif','Source Serif':'SourceSerif,Georgia,serif','DM Sans':'"DM Sans",sans-serif','IBM Plex':'IBMPlex,sans-serif','System':'system-ui,sans-serif'};
 const safeId=value=>typeof value==='string'&&/^[A-Za-z0-9_-]{1,100}$/.test(value)?value:'';
 const wordCount=p=>(p?.chapters||[]).reduce((n,c)=>n+(String(c.text||'').replace(/<[^>]*>/g,' ').trim().match(/\S+/g)||[]).length,0);
 const amount=value=>Math.max(0,Math.min(1_000_000_000,Math.trunc(Number(value)||0)));
 export function widgetTarget(value){
- if(!value||!['resume','goal','capture','session','library','new-book','publish','weekly','clock'].includes(value.action))return null;
+ if(!value||!['resume','goal','capture','session','library','new-book','publish','weekly','clock','reminders'].includes(value.action))return null;
  return {action:value.action,projectId:safeId(value.projectId),chapterId:safeId(value.chapterId)};
 }
 export function widgetSnapshot(state,p,today){

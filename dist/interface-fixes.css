@@ -65,3 +65,40 @@
  :root[data-pack] #main.draft-workspace,:root[data-pack] .draft-workspace>.studio-shell,:root[data-pack] .draft-workspace .editor-column,:root[data-pack] .editor-scroll{display:block;height:auto;overflow:visible;padding-bottom:0}
  :root[data-pack] .draft-workspace .editor-bottom{display:none}
 }
+
+/* Small screens keep one chapter and its page in view. */
+.sr-only{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip-path:inset(50%);white-space:nowrap!important;border:0!important}
+.mobile-studio-picker,.mobile-book-tools,.mobile-chapter-picker,.mobile-editor-tools{display:none}
+.studio-book-menu{display:grid;gap:10px}
+@media(max-width:600px){
+ :root[data-pack] #main .studio-tabs{display:flex;flex-wrap:nowrap;padding:5px 12px;gap:8px;min-height:54px;overflow:visible;border-bottom:1px solid var(--line)}
+ :root[data-pack] #main .studio-tabs>button,:root[data-pack] #main .studio-tabs>.studio-tools{display:none}
+ .mobile-studio-picker{display:block;flex:1;min-width:0}
+ :root[data-pack] #main .mobile-studio-picker select{width:100%;height:44px;min-height:44px;margin:0;padding:8px 34px 8px 12px;border:1px solid var(--line);border-radius:12px;font-size:13px;background-color:var(--surface);color:var(--ink)}
+ .mobile-book-tools{display:block;flex:none}
+ :root[data-pack] #main .mobile-book-tools .btn{min-height:44px;padding:8px 12px;font-size:12px}
+ :root[data-pack] #main .mobile-chapter-picker{display:flex;align-items:center;gap:6px;flex:none;padding:3px 12px;border-bottom:1px solid var(--line)}
+ .mobile-chapter-picker label{flex:1;min-width:0}
+ :root[data-pack] #main .mobile-chapter-picker select{width:100%;height:40px;min-height:40px;border:0;padding:6px 28px 6px 2px;font-size:12px;background-color:transparent;overflow:hidden;text-overflow:ellipsis}
+ :root[data-pack] #main .mobile-chapter-picker .btn{padding:6px 9px;min-height:40px;font-size:11px}
+ :root[data-pack] #main.draft-workspace .chapter-panel{display:none}
+ :root[data-pack] #main.draft-workspace .editor-toolbar{display:block;padding:3px 12px;border-bottom:1px solid var(--line);overflow:visible;z-index:5;position:relative}
+ :root[data-pack] #main.draft-workspace .editor-toolbar>.row{display:none}
+ :root[data-pack] #main .mobile-editor-tools{display:flex;align-items:center;gap:3px;min-width:0}
+ :root[data-pack] #main .mobile-editor-tools>button{display:grid;place-items:center;min-width:44px;min-height:40px;padding:7px;border-radius:9px}
+ .mobile-editor-tools .icon{width:18px;height:18px}
+ :root[data-pack] #main .editor-tool-menu{position:relative;margin-inline-start:auto}
+ :root[data-pack] #main .editor-tool-menu>summary{display:flex;align-items:center;gap:6px;list-style:none;min-height:40px;padding:7px 10px;border-radius:9px;font-size:12px}
+ .editor-tool-menu>summary::-webkit-details-marker{display:none}
+ :root[data-pack] #main .editor-tool-options{position:absolute;inset-inline-end:0;top:calc(100% + 6px);display:grid;grid-template-columns:repeat(2,minmax(0,1fr));width:min(300px,calc(100vw - 32px));max-height:55dvh;overflow:auto;padding:8px;gap:4px;border:1px solid var(--line);border-radius:16px;background:var(--paper);box-shadow:0 10px 35px #0003}
+ :root[data-pack] #main .editor-tool-options button,:root[data-pack] #main .editor-tool-options .btn{display:flex;align-items:center;justify-content:flex-start;gap:7px;text-align:start;min-width:0;min-height:44px;padding:8px;font-size:12px;white-space:normal}
+ :root[data-pack] #main .editor-scroll .editor-paper{padding:20px 24px 38px}
+ :root[data-pack] #main .editor-paper .chapter-kicker{margin-bottom:8px;font-size:9px}
+ :root[data-pack] #main .editor-title{font-size:clamp(21px,5.3vw,27px);line-height:1.4;margin-bottom:18px}
+ :root[data-pack] #main .manuscript{font-size:16px;line-height:1.85;min-height:160px}
+ :root[data-pack] #main .editor-bottom{gap:5px;padding:7px 14px 9px}
+ :root[data-pack] #main .editor-bottom>div:first-child{font-size:10px}
+ :root[data-pack] #main .editor-bottom>.row>.btn{min-height:40px;padding-block:7px;font-size:12px}
+ :root[data-pack] #main .workspace-navigation{min-height:40px;padding-block:2px}
+ :root[data-pack][data-keyboard-open] #main .mobile-chapter-picker,:root[data-pack] body.zen #main .mobile-chapter-picker,:root[data-pack] body.zen #main .mobile-editor-tools{display:none}
+}
