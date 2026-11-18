@@ -28,6 +28,12 @@ Each of the five widgets has a default-constructible `Widget` type and a shared 
 
 Apple archive validation checks device-platform markers and all slices of a universal Watch executable. A device archive and a simulator build are different artifacts. Bundle IDs are `com.muneebwanee.bookwiz`, `.widgets`, `.watchkitapp`, and `com.muneebwanee.bookwiz.tv`.
 
+## Android widgets and PDF
+
+Android offers eight widget providers with separate layouts and default sizes. Current-book and bookshelf links carry opaque book/chapter IDs; capture, goal, timer, weekly progress and publishing shortcuts open their own controls. Startup delivery waits until the studio has registered its listeners, including when the app was closed. See [Widgets](WIDGETS.md).
+
+Native Android PDF export passes the chosen trim to the system print service as a custom media size, uses no extra system margin, and keeps the book’s own CSS margins. The print document omits screen proof wrappers and embeds bundled fonts. iOS also uses its native print sheet. Mobile PDF options explain LaTeX source export separately from the native PDF engine.
+
 ## Desktop packages
 
 Windows has one NSIS installer containing x64 and ARM64 payloads. macOS has one universal DMG containing the Intel and Apple Silicon application. Linux retains AppImage and DEB because they serve different installation workflows.

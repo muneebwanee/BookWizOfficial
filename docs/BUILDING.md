@@ -73,6 +73,10 @@ python3 tools/check-apple-project.py --project native/apple/BookWiz.xcodeproj
 
 Open the generated project in Xcode. **BookWiz-iOS** includes the Widgets extension and modern single-target Watch companion. **BookWiz-tvOS** is the TV application. Deployment targets are iOS/iPadOS 17, watchOS 10, and tvOS 17. Apple Intelligence is conditional on iOS/iPadOS 26 and a compatible device. Device IPA installation requires a suitable signing identity and provisioning.
 
+## Release the checked-out edits
+
+The platform release workflows use the current repository source when the editable tree is present. `tools/prepare-build-source.py` stages only the selected host, shared assets, tools and documentation, then creates its source manifest. Source changes pushed to the default branch automatically build the affected editions and publish new releases after their checks succeed. **Refresh source archives** separately updates all eight root ZIPs, platform READMEs, checksums, origin metadata and offline cache. Its generated commit does not start duplicate release builds. ZIP-only repositories retain verified extraction. Upload a complete change in one commit; keep `.github/workflows/build-*.yml` and the corresponding `packaging/github/` templates together. Manual **Run workflow** remains available.
+
 ## Checks and source archives
 
 ```sh
@@ -81,17 +85,22 @@ python3 tests/docs.test.py
 python3 tests/android-bundletool.test.py
 python3 tests/apple-package.test.py
 python3 tests/platform-kits.test.py
+python3 tests/source-archives.test.py
+npm run sync:source
+npm run check:archives
 python3 tools/package-platform-kits.py --output ../BookWiz-platform-sources
 ```
 
 The documentation check validates local Markdown links and image references without contacting external websites. The committed star-history SVG and JSON are included in platform snapshots, so ordinary contributor checks do not require GitHub authentication. If regenerating the chart, run `gh auth login`, then `python3 scripts/gen_star_history.py` before checking or packaging the documentation.
 
-The archive command includes platform code, shared assets, tests, documentation, and source manifests. The [source guide](SOURCE_ARCHIVES.md) describes the layout. Refresh static cache hashes after changing web assets with `node tools/version-cache.mjs`.
+The archive command includes platform code, shared assets, tests, documentation, and source manifests. The [source guide](SOURCE_ARCHIVES.md) describes the layout. `npm run sync:source` also updates the root offline cache hash; `node tools/version-cache.mjs` can refresh just the cache. Archive freshness checks and synchronization commands require the full editable tree.
 
 <details>
 <summary><strong>Optional local PDF compiler</strong></summary>
 
-Install a Unicode TeX engine through TeX Live, MacTeX, MiKTeX, or Tectonic, then run `npm run compiler`. The helper detects the engine and serves the studio at **http://localhost:4317**, with a health check at `/health` and PDF compilation at `/compile`. Desktop apps inspect installed engines directly. Set `BOOKWIZ_TEX_ENGINE` to a full executable path when needed. Choose **Connect this studio** in the compiler dialog to pair another browser origin for the current helper session. `BOOKWIZ_ALLOWED_ORIGIN` can also preconfigure an exact origin.
+Android and iOS **PDF options** use the native print/save sheet; no localhost service is needed for that export. Android requests the selected book trim as the media size. A printer can override it, so review the paper-size choice before saving. LaTeX source export is available separately.
+
+For the optional desktop/browser LaTeX compiler, install a Unicode TeX engine through TeX Live, MacTeX, MiKTeX, or Tectonic, then run `npm run compiler`. The helper detects the engine and serves the studio at **http://localhost:4317**, with a health check at `/health` and PDF compilation at `/compile`. Desktop apps inspect installed engines directly. Set `BOOKWIZ_TEX_ENGINE` to a full executable path when needed. Choose **Connect this studio** in the compiler dialog to pair another browser origin for the current helper session. `BOOKWIZ_ALLOWED_ORIGIN` can also preconfigure an exact origin.
 
 Arabic/Urdu support and its original LPPL license/source are bundled. CJK books use an installed Noto Serif CJK font. Tectonic can require its first TeX bundle download. Exported LaTeX bundles include the fonts and right-to-left support used by the book.
 

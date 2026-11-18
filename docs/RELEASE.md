@@ -29,6 +29,12 @@ Release filenames include their version label; `{version}` above stands for that
 
 The Watch companion is inside the paired iPhone application. A tvOS IPA belongs to Apple TV.
 
+## How new releases arrive
+
+A source change on the default branch automatically starts the affected platform builds. Shared studio changes rebuild all editions; a native-host change rebuilds its corresponding editions. Checks and packaging must pass before a new release is published. **Refresh source archives** also keeps the eight root source ZIPs, platform README files and their checksums current. Its bot commit does not start duplicate builds. Existing releases remain available as history.
+
+[Source and automation guide](SOURCE_ARCHIVES.md) · [Build guide](BUILDING.md)
+
 ## Other release files
 
 **SHA256SUMS.txt** lists package hashes. **BUILD-INFO.json** records the version, source commit, architecture, and signing status. These are verification files, rather than extra copies of the app.
