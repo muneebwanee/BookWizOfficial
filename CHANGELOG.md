@@ -1,5 +1,11 @@
 <div align="center">
 
+## 1.0.5
+
+- Successful platform builds explicitly queue the combined release publisher, including version-tag builds whose completion event did not start publication.
+- Publication waits briefly for the notifying workflow to complete and retains its existing all-platform checks, stable release page and cleanup rules.
+- Added workflow-handshake tests for every platform and documented how to publish already-built packages manually.
+
 ## 1.0.2
 
 - Compact mobile section and chapter pickers keep the manuscript in view; writing tools open in a small menu.
