@@ -1,0 +1,11 @@
+# Keep build inputs identical on Linux, macOS, and Windows checkouts.
+* text=auto eol=lf
+*.zip binary
+*.png binary
+*.ico binary
+*.icns binary
+*.ttf binary
+*.pfb binary
+*.bcmap binary
+*.wasm binary
+*.pdf binary
