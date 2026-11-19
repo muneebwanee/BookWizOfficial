@@ -79,6 +79,8 @@ The central **Refresh source archives** workflow prepares one patch version, upd
 
 Include the hidden `.github/workflows/` directory when uploading, alongside the matching `packaging/github/` templates. Upload the entire change in one commit. The central workflow requires Contents and Actions write permissions. ZIP-only builds keep verified extraction; full repositories use the prepared editable source. Run **Refresh source archives** manually to retry cancelled/failed editions. Running editions and available successful artifacts are reused; missing or expired artifacts are rebuilt.
 
+Each full-repository platform workflow has a **Queue current downloads** job after its successful build. That small job needs Actions write permission and explicitly dispatches the default-branch publisher; ZIP-only builds omit it. The publisher allows a short, bounded wait for run completion.
+
 Once all eight platform artifacts are ready, **Publish current downloads** verifies and publishes one version page. Only after that succeeds does it remove older generated release pages and duplicate editions. Git commits and source tags remain. Platform jobs upload artifacts instead of creating separate public releases. The collector uses Actions read access and the publisher uses Contents write access. A standalone ZIP-only build produces a downloadable Actions artifact; publication of the combined official release requires the full repository.
 
 ## Checks and source archives
