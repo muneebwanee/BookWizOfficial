@@ -4,7 +4,7 @@
 
 **The writing room, within reach.**
 
-[BookWizOfficial](https://github.com/muneebwanee/BookWizOfficial) · [Downloads](https://github.com/muneebwanee/BookWizOfficial/releases) · [muneebwanee](https://github.com/muneebwanee)
+[BookWizOfficial](https://github.com/muneebwanee/BookWizOfficial) · [Downloads](https://github.com/muneebwanee/BookWizOfficial/releases/latest) · [muneebwanee](https://github.com/muneebwanee)
 
 </div>
 
@@ -14,11 +14,11 @@ Build this edition directly from a clone of BookWizOfficial, using the repositor
 
 ## Your pocket studio
 
-The Android edition bundles the studio offline and adds system file opening, saving, printing, native speech, Back navigation, eight home-screen widgets, and optional local writing reminders. Books and preferences stay on the device.
+The Android edition bundles the studio offline and adds system file opening, saving, printing, native speech, Back navigation, nine home-screen widgets, and optional local writing reminders. Books and preferences stay on the device.
 
-The widgets include a live clock, four writing shortcuts and a seven-day progress view. Each tap opens its named page or controls. See the [widget guide](docs/WIDGETS.md) for sizes, privacy and updating older placements.
+The widgets include a live clock with today’s writing progress, four writing shortcuts, a seven-day progress chart, and a daily writing invitation. Each tap opens its named page or controls. See the [widget guide](docs/WIDGETS.md) for sizes, privacy and updating older placements.
 
-**PDF options** opens the native print/save sheet with the book’s chosen trim and margins. Use **Save as PDF** in that sheet. LaTeX source export remains available for a computer with XeLaTeX or Tectonic; Android PDF export does not require a localhost service.
+**PDF options** opens the native print/save sheet with the book’s chosen trim and margins. Use **Save as PDF** in that sheet. Text reflows to the paper you select, so a service that chooses Letter fills that page instead of shrinking the book into its center. LaTeX source export remains available for a computer with XeLaTeX or Tectonic; Android PDF export does not require a localhost service.
 
 ## Downloads
 
