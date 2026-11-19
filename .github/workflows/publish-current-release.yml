@@ -11,7 +11,8 @@ name: Publish current downloads
     - BookWiz · macOS
     - BookWiz · Linux
     - BookWiz · Web
-    types: [completed]
+    types:
+    - completed
 permissions:
   contents: write
   actions: read
@@ -20,9 +21,8 @@ concurrency:
   cancel-in-progress: false
 jobs:
   publish:
-    if: >-
-      github.event_name == 'workflow_dispatch' ||
-      (github.event.workflow_run.conclusion == 'success' &&
+    if: |-
+      github.event_name == 'workflow_dispatch' || (github.event.workflow_run.conclusion == 'success' &&
        github.event.workflow_run.head_repository.full_name == github.repository)
     runs-on: ubuntu-latest
     timeout-minutes: 30
@@ -41,7 +41,7 @@ jobs:
       run: python3 tools/release-version.py --check
     - name: Collect all eight builds from the prepared version
       id: collect
-      run: python3 tools/collect-release-artifacts.py
+      run: python3 tools/collect-release-artifacts.py --wait-seconds 30
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - name: Publish one download page and remove superseded release pages
