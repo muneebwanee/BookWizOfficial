@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Collect all eight verified builds for the current immutable source tag. BWNCL-1.0."""
 from __future__ import annotations
-import argparse,hashlib,io,json,os,re,stat,urllib.request,urllib.error,zipfile
+import argparse,hashlib,io,json,os,re,stat,time,urllib.request,urllib.error,zipfile
 from pathlib import Path,PurePosixPath
 TARGETS=['android','ios','watchos','tvos','windows','macos','linux','web']
 class NoRedirect(urllib.request.HTTPRedirectHandler):
@@ -15,7 +15,11 @@ def api_client(repository,token,api='https://api.github.com'):
  def get(path,binary=False):
   request=urllib.request.Request(base+path,headers=headers)
   if not binary:
-   with urllib.request.urlopen(request,timeout=90)as response:return json.load(response)
+   try:
+    with urllib.request.urlopen(request,timeout=90)as response:return json.load(response)
+   except urllib.error.HTTPError as error:
+    if error.code==404 and path.startswith('/git/ref/tags/'):return None
+    raise
   try:
    with urllib.request.build_opener(NoRedirect).open(request,timeout=90)as response:return response.read(1024*1024*1024+1)
   except urllib.error.HTTPError as error:
@@ -42,7 +46,9 @@ def extract(data,directory):
 def collect(root,get):
  root=Path(root);state=json.loads((root/'release-state.json').read_text());version=state['version']
  if not re.fullmatch(r'\d+\.\d+\.\d+',version):raise ValueError('Use a prepared stable version.')
- tag='bookwiz-v'+version;ref=get('/git/ref/tags/'+tag);commit=ref['object']['sha']
+ tag='bookwiz-v'+version;ref=get('/git/ref/tags/'+tag)
+ if not ref:return {'ready':False,'version':version,'commit':'','missing':list(TARGETS)}
+ commit=ref['object']['sha']
  if ref['object'].get('type')!='commit' or not re.fullmatch(r'[0-9a-f]{40,64}',commit):raise ValueError('The prepared version tag must point directly to its source commit.')
  ready={};missing=[]
  for target in TARGETS:
@@ -63,10 +69,19 @@ def collect(root,get):
   extract(data,root/'release'/target)
  return {'ready':True,'version':version,'commit':commit,'missing':[]}
 
+def collect_when_ready(root,get,wait_seconds=0,clock=time.monotonic,pause=time.sleep):
+ """Allow the notifying workflow to finish without publishing a partial set."""
+ if not 0<=wait_seconds<=120:raise ValueError('Wait for between 0 and 120 seconds.')
+ deadline=clock()+wait_seconds
+ while True:
+  result=collect(root,get)
+  if result['ready']or clock()>=deadline:return result
+  pause(min(5,max(0,deadline-clock())))
+
 if __name__=='__main__':
- p=argparse.ArgumentParser(description=__doc__);p.add_argument('--root',type=Path,default=Path(__file__).resolve().parents[1]);a=p.parse_args()
+ p=argparse.ArgumentParser(description=__doc__);p.add_argument('--root',type=Path,default=Path(__file__).resolve().parents[1]);p.add_argument('--wait-seconds',type=int,default=0);a=p.parse_args()
  try:
-  result=collect(a.root,api_client(os.environ.get('GITHUB_REPOSITORY',''),os.environ.get('GITHUB_TOKEN',''),os.environ.get('GITHUB_API_URL','https://api.github.com')))
+  result=collect_when_ready(a.root,api_client(os.environ.get('GITHUB_REPOSITORY',''),os.environ.get('GITHUB_TOKEN',''),os.environ.get('GITHUB_API_URL','https://api.github.com')),a.wait_seconds)
   print(json.dumps(result))
   if os.environ.get('GITHUB_OUTPUT'):
    with open(os.environ['GITHUB_OUTPUT'],'a')as output:
