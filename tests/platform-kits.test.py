@@ -125,9 +125,9 @@ class PlatformKits(unittest.TestCase):
                     import os
                     output=root/'output'
                     subprocess.run(['bash','-c',mode],cwd=root,env={**os.environ,'GITHUB_OUTPUT':str(output),'BOOKWIZ_EVENT':'push','BOOKWIZ_REF_TYPE':'branch'},check=True,capture_output=True)
-                    self.assertEqual(output.read_text().strip(),'build=false')
+                    self.assertEqual(dict(line.split('=',1)for line in output.read_text().splitlines()),{'build':'false','combined':'true'})
                     output.unlink();subprocess.run(['bash','-c',mode],cwd=root,env={**os.environ,'GITHUB_OUTPUT':str(output),'BOOKWIZ_EVENT':'workflow_dispatch','BOOKWIZ_REF_TYPE':'tag'},check=True,capture_output=True)
-                    self.assertEqual(output.read_text().strip(),'build=true')
+                    self.assertEqual(dict(line.split('=',1)for line in output.read_text().splitlines()),{'build':'true','combined':'true'})
                 self.assertIn('workflow_dispatch',active['on'])
                 self.assertIn('default_branch',active['jobs']['build']['if'])
 

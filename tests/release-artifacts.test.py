@@ -1,5 +1,6 @@
 """All-platform artifact readiness and extraction checks. BWNCL-1.0."""
 import hashlib,importlib.util,io,json,tempfile,unittest,zipfile
+from unittest.mock import patch
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
 spec=importlib.util.spec_from_file_location('collector',ROOT/'tools/collect-release-artifacts.py');collector=importlib.util.module_from_spec(spec);spec.loader.exec_module(collector)
@@ -9,6 +10,23 @@ def archive(files):
   for name,value in files.items():z.writestr(name,value)
  return data.getvalue()
 class Artifacts(unittest.TestCase):
+ def test_a_prepared_version_waits_for_its_tag_without_an_exception(self):
+  with tempfile.TemporaryDirectory()as tmp:
+   root=Path(tmp);(root/'release-state.json').write_text('{"version":"1.0.5"}')
+   result=collector.collect(root,lambda path:None)
+   self.assertFalse(result['ready']);self.assertEqual(result['missing'],collector.TARGETS)
+ def test_notification_handoff_waits_for_completion_and_remains_bounded(self):
+  now=[0];attempts=[]
+  def clock():return now[0]
+  def pause(seconds):now[0]+=seconds
+  def collect(root,get):
+   attempts.append(now[0]);return {'ready':len(attempts)==3}
+  with patch.object(collector,'collect',side_effect=collect):result=collector.collect_when_ready(None,None,30,clock,pause)
+  self.assertTrue(result['ready']);self.assertEqual(attempts,[0,5,10])
+  now[0]=0;attempts.clear()
+  with patch.object(collector,'collect',return_value={'ready':False}):result=collector.collect_when_ready(None,None,12,clock,pause)
+  self.assertFalse(result['ready']);self.assertEqual(now[0],12)
+  with self.assertRaises(ValueError):collector.collect_when_ready(None,None,121,clock,pause)
  def test_waits_for_all_editions_from_the_exact_commit_before_downloading(self):
   with tempfile.TemporaryDirectory()as tmp:
    root=Path(tmp);(root/'release-state.json').write_text('{"version":"1.0.2"}');downloads=[]
