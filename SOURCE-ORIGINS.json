@@ -5,49 +5,49 @@
   "archives": {
     "android": {
       "archive": "source-android.zip",
-      "sha256": "9a4666d929e87369e4d1afcd67e4c72e2522b85e1e575bf4fd1d6677133f591e",
+      "sha256": "a661cd9af01512da36bb0b6481b0459a83a562f0a855add1cdfd22cb5cf7abfa",
       "files": 620,
       "version": "1.0.10"
     },
     "ios": {
       "archive": "source-ios.zip",
-      "sha256": "7f40a03399feeb7a9b090fe7191af3c32d3f42df0b258affb627969cc9eb7d59",
+      "sha256": "2a614bc0602ab74b98c57bd3676e3704d9bf8e521c3e96d319731905effef40c",
       "files": 619,
       "version": "1.0.10"
     },
     "watchos": {
       "archive": "source-watchos.zip",
-      "sha256": "78d964105573e2ee1538b096f08727c1100660cf061cd15ff5fa529c6db6a6a5",
+      "sha256": "9c8cd05449c0862441780e086364ee86712ede46c619dd1ed450e22e0b4ff296",
       "files": 619,
       "version": "1.0.10"
     },
     "tvos": {
       "archive": "source-tvos.zip",
-      "sha256": "afe7b2eef8dfa18572a8af7a37f83768b41f17c0679251ecdf3c615c51a636ef",
+      "sha256": "a64dcfa83e5af0c9ee0daee4a2d28ab03972ec433fd4104381fa940d88f9f326",
       "files": 619,
       "version": "1.0.10"
     },
     "windows": {
       "archive": "source-windows.zip",
-      "sha256": "e5a8d613a9834524b5c610ce11dc16e1c20bde78e6124b3b9f07ff1863fab7a9",
+      "sha256": "6334b183c1ad6080b6a0e29fed7986c388ed0ad364c0c61d60d2e1c39aad75a6",
       "files": 581,
       "version": "1.0.10"
     },
     "macos": {
       "archive": "source-macos.zip",
-      "sha256": "6d6869d552dd956d548d8f0c20d2eb6ad91a8fc3478ad0c02ae6ee7501beb9d2",
+      "sha256": "83d7f340c4a9817177bb2077aca69cd670729ef2a61479945290de6c1dfa78a9",
       "files": 581,
       "version": "1.0.10"
     },
     "linux": {
       "archive": "source-linux.zip",
-      "sha256": "6358d2c4c39d27fae7521190e1c2f49c8a1d103eb04ae1817723c57d814cd388",
+      "sha256": "565a2b75644e8cf1f752ba1a49e356937db0a81ebb1db9cf060a67d96fee2055",
       "files": 581,
       "version": "1.0.10"
     },
     "web": {
       "archive": "source-web.zip",
-      "sha256": "38150abd8685be695adc7be11429d4fc68feb343bd88bacc2164c9ecbf82ab24",
+      "sha256": "3bb0576965ed31d21a21c64b56f33865140b4c8951e2baa0c1056a0a0f13f268",
       "files": 574,
       "version": "1.0.10"
     }
