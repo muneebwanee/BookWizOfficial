@@ -18,6 +18,8 @@ An outline is a working plan. Edit titles and beats before accepting it. Existin
 
 ## Settle into the manuscript
 
+On a phone, use the chapter selector to move between pages. **Book → Chapter outline** opens the chapter plan; **Book → The Red Pen** closes the menu and opens the editor and co-author panel. Opening that panel keeps your manuscript in place and does not send a model request.
+
 | Tool | Use it for |
 | :--- | :--- |
 | **Back to writing** | Return to the chapter and scroll position you left. |

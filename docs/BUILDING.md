@@ -39,6 +39,8 @@ node tools/prepare-native.mjs --target desktop
 
 The Windows target deliberately omits `${arch}` from the installer filename and combines x64/ARM64 in one NSIS installer. The Mac target merges Intel/Apple Silicon applications into one universal DMG. `release/` contains the resulting packages. The desktop application uses bundled web assets and Electron/Node built-ins; build-only npm modules are excluded from its ASAR. The package check rejects accidental dependencies before the universal Mac merge.
 
+The lockfile pins the desktop packager's two affected `minimatch` dependencies to 11.0.1 through scoped npm overrides, addressing GHSA-g3hv-75wg-m249. Keep these overrides when refreshing dependencies until the packager adopts the patched version. Older matcher dependencies used by other build tools retain their compatible versions.
+
 ## Android
 
 Use **JDK 21** with `JAVA_HOME` set to its installation.
