@@ -49,7 +49,8 @@ test('desktop file matching retains bundled pages and fonts while excluding unli
  for(const file of ['unlisted.js','node_modules/fflate/index.js','web/node_modules/@napi-rs/canvas/skia.node'])assert.equal(accepts(file),false,file);
 });
 
-test('the universal archive merger accepts permitted architecture files and rejects an absent allowlist',{skip:!configuration},async t=>{
+// The Mac universal merger expects POSIX archive paths; Windows uses NSIS.
+test('the universal archive merger accepts permitted architecture files and rejects an absent allowlist',{skip:!configuration||process.platform==='win32'},async t=>{
  const directory=await mkdtemp(path.join(tmpdir(),'bookwiz-universal-filter-'));t.after(()=>rm(directory,{recursive:true,force:true}));
  const {createPackage,extractFile}=await import('@electron/asar');
  const {mergeASARs}=require(path.join(path.dirname(require.resolve('@electron/universal')),'asar-utils.js'));
