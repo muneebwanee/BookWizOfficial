@@ -37,6 +37,35 @@ test('Mac packaging selects a universal DMG and no separate architecture ZIPs',{
  assert.equal(config.mac.artifactName,'BookWiz-${version}-macOS.${ext}');
 });
 
+test('desktop file matching retains bundled pages and fonts while excluding unlisted files and nested dependencies',{skip:!configuration},()=>{
+ const config=require('js-yaml').load(configuration);
+ require('app-builder-lib');
+ const {FileMatcher}=require('app-builder-lib/out/fileMatcher.js');
+ const source=path.join(tmpdir(),'bookwiz-filter-source');
+ const filter=new FileMatcher(source,path.join(tmpdir(),'bookwiz-filter-destination'),value=>value,config.files).createFilter();
+ const accepts=(file,directory=false)=>filter(path.join(source,file),{isDirectory:()=>directory});
+ for(const file of ['main.cjs','preload.cjs','web/index.html','web/assets/book-arabic.ttf','web/assets/providers/openai.svg','latex-engine.mjs','local-services.mjs'])assert.equal(accepts(file),true,file);
+ for(const directory of ['web','web/assets','web/assets/providers'])assert.equal(accepts(directory,true),true,directory);
+ for(const file of ['unlisted.js','node_modules/fflate/index.js','web/node_modules/@napi-rs/canvas/skia.node'])assert.equal(accepts(file),false,file);
+});
+
+test('the universal archive merger accepts permitted architecture files and rejects an absent allowlist',{skip:!configuration},async t=>{
+ const directory=await mkdtemp(path.join(tmpdir(),'bookwiz-universal-filter-'));t.after(()=>rm(directory,{recursive:true,force:true}));
+ const {createPackage,extractFile}=await import('@electron/asar');
+ const {mergeASARs}=require(path.join(path.dirname(require.resolve('@electron/universal')),'asar-utils.js'));
+ const archives={};
+ for(const arch of ['x64','arm64']){
+  const source=path.join(directory,arch);await mkdir(path.join(source,'native'),{recursive:true});
+  await writeFile(path.join(source,'main.cjs'),'shared runtime fixture');await writeFile(path.join(source,'native','common.txt'),'shared asset');await writeFile(path.join(source,'native',arch+'.node'),arch+' fixture');
+  archives[arch]=path.join(directory,arch+'.asar');await createPackage(source,archives[arch]);
+ }
+ const inputs={x64AsarPath:archives.x64,arm64AsarPath:archives.arm64};
+ await assert.rejects(mergeASARs({...inputs,outputAsarPath:path.join(directory,'rejected.asar')}),/not covered by.*allowList rule/s);
+ const output=path.join(directory,'universal.asar');await mergeASARs({...inputs,outputAsarPath:output,singleArchFiles:'*.node'});
+ assert.equal(extractFile(output,'main.cjs').toString(),'shared runtime fixture');
+ for(const arch of ['x64','arm64'])assert.equal(extractFile(output,'native/'+arch+'.node').toString(),arch+' fixture');
+});
+
 test('the real dependency collector excludes build-only native canvas binaries',{skip:!configuration},async t=>{
  const directory=await mkdtemp(path.join(tmpdir(),'bookwiz-dependency-filter-'));t.after(()=>rm(directory,{recursive:true,force:true}));
  const from=path.join(directory,'node_modules','@napi-rs','canvas-darwin-arm64');

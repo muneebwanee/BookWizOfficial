@@ -6,7 +6,7 @@ import {widgetTarget,widgetSnapshot,androidWidgetKinds} from '../dist/device-too
 const dom=new JSDOM('<!doctype html><html><body><div id="app"></div><dialog id="dialog"></dialog><div id="toast"></div></body></html>',{url:'https://bookwiz.test/'});
 for(const k of ['window','document','localStorage','sessionStorage','location','NodeFilter','Event','CustomEvent','FormData','Blob'])globalThis[k]=dom.window[k];
 Object.defineProperty(globalThis,'navigator',{value:dom.window.navigator,configurable:true});
-window.scrollTo=()=>{};dom.window.HTMLElement.prototype.scrollTo=()=>{};
+window.scrollTo=()=>{};dom.window.HTMLElement.prototype.scrollTo=()=>{};dom.window.HTMLElement.prototype.scrollIntoView=()=>{};
 dom.window.HTMLDialogElement.prototype.showModal=function(){this.open=true;};dom.window.HTMLDialogElement.prototype.close=function(){this.open=false;this.dispatchEvent(new Event('close'));};
 const books=seedProjects().slice(0,2).map((p,i)=>({...p,id:'book-'+i,sample:false,lastChapter:1,chapters:p.chapters.slice(0,2).map((c,j)=>({...c,id:'chapter-'+i+'-'+j}))}));
 localStorage.setItem('bookwiz-v1',JSON.stringify({version:1,projects:books,connections:[],activity:{},settings:{name:'Writer',theme:'night',themePack:'graphite',dailyGoal:500,lastProject:books[0].id}}));
@@ -68,4 +68,19 @@ test('compact section and chapter selectors preserve the draft and open the requ
  await click('[data-route="studio"]');const section=document.querySelector('#studio-section');assert.ok(section);section.value='notes';section.dispatchEvent(new Event('change',{bubbles:true}));await pause();assert.ok(document.querySelector('#studio-section'));assert.equal(document.querySelector('#editor'),null);
  document.querySelector('#studio-section').value='draft';document.querySelector('#studio-section').dispatchEvent(new Event('change',{bubbles:true}));await pause();assert.ok(document.querySelector('.mobile-editor-tools'));const chapter=document.querySelector('#mobile-chapter');assert.ok(chapter);const expected=chapter.options[chapter.options.length-1].textContent.replace(/^\d+ · /,'');chapter.value=chapter.options[chapter.options.length-1].value;chapter.dispatchEvent(new Event('change',{bubbles:true}));await pause();assert.equal(document.querySelector('#chapter-title').value,expected);
  window.BookWizHost.scheduleReminders=()=>{};window.dispatchEvent(new CustomEvent('bookwiz-widget-action',{detail:{action:'reminders'}}));await pause();assert.equal(document.querySelector('.reminder-settings').open,true);
+});
+
+test('the Book menu opens an interactive Red Pen by closing its modal and preserving the chapter',async()=>{
+ await click('[data-route="studio"]');const editor=document.querySelector('#editor'),original=editor.innerHTML,chapter=editor.dataset.chapter,before=requests;
+ await click('[data-action="studio-more"]');assert.equal(document.querySelector('#dialog').open,true);
+ await click('.studio-book-menu [data-action="open-red-pen"]');assert.equal(document.querySelector('#dialog').open,false,'The Book dialog must stop blocking the drawer');
+ const drawer=document.querySelector('.red-pen-drawer');assert.ok(drawer);assert.equal(document.activeElement,drawer.querySelector('[data-action="close-drawer"]'));assert.ok(drawer.querySelector('#chat-input'));
+ assert.equal(document.querySelector('#editor').innerHTML,original);assert.equal(document.querySelector('#editor').dataset.chapter,chapter);assert.equal(requests,before);
+ await click('[data-action="close-drawer"]');assert.equal(document.querySelector('.red-pen-drawer'),null);
+});
+test('the mobile chapter picker keeps one outline entry in the Book menu and that entry opens the outline',async()=>{
+ await click('[data-route="studio"]');assert.ok(document.querySelector('#mobile-chapter'));assert.equal(document.querySelector('.mobile-chapter-picker [data-action="outline"]'),null);
+ await click('[data-action="studio-more"]');assert.equal(document.querySelectorAll('.studio-book-menu [data-action="outline"]').length,1);await click('.studio-book-menu [data-action="outline"]');
+ assert.equal(document.querySelector('#dialog').open,true);assert.equal(document.querySelector('#dialog-title').textContent,'The architecture of your book');assert.equal(document.querySelector('.studio-book-menu'),null);
+ await click('#dialog [data-action="close-dialog"]');
 });
