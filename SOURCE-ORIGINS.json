@@ -5,51 +5,51 @@
   "archives": {
     "android": {
       "archive": "source-android.zip",
-      "sha256": "30753429df48c8257b24bd3c28f963c383222182f7234fe8be084ade246fc775",
+      "sha256": "d4013531793e4e02c993a620231f56dd14f428cda4494fca3fec937956f7e1b5",
       "files": 621,
-      "version": "1.0.13"
+      "version": "1.0.14"
     },
     "ios": {
       "archive": "source-ios.zip",
-      "sha256": "038c549e7d704c3e17f0f4e7a473ab7c4d83448e7129f12f12030af8af62bf11",
+      "sha256": "e0414734f001755fe1ee5d33da867544ca53ad0ceabedcbce5f040ac93214e8e",
       "files": 620,
-      "version": "1.0.13"
+      "version": "1.0.14"
     },
     "watchos": {
       "archive": "source-watchos.zip",
-      "sha256": "eba7037fdb6e3d654e6021434be5bd37d94e0dfbe923196b8d6519979643239a",
+      "sha256": "b66b00d48ee151c0085a1a3fe243e4085f9039ce140232a082370c71f66154d9",
       "files": 620,
-      "version": "1.0.13"
+      "version": "1.0.14"
     },
     "tvos": {
       "archive": "source-tvos.zip",
-      "sha256": "6570bed264228fb9ccf64f9c0ef676cf5267a11c5d336e2df8457e660a215ed8",
+      "sha256": "f8c79f57f816b5be6941c2183baefb1683f9fe14de4667d6a1b0a8a7746ac4ee",
       "files": 620,
-      "version": "1.0.13"
+      "version": "1.0.14"
     },
     "windows": {
       "archive": "source-windows.zip",
-      "sha256": "0bb2b323c6feb4b32b7966f2cb99844c7804e57d567908c36d2d06ad2113d797",
+      "sha256": "2aaf9fc389cfd26c2edccf6a6b95f6bef1ec64bf8030539488e21ee059f18a59",
       "files": 582,
-      "version": "1.0.13"
+      "version": "1.0.14"
     },
     "macos": {
       "archive": "source-macos.zip",
-      "sha256": "f74dce68de95ff4fc6bc75b8dd3253903090ce299ebeb8fa198e280c164e948f",
+      "sha256": "c454accce0bede0f8ea12f038e31e59ebafb9ee0fe3f9b074a4b9e3a4a8c3f8a",
       "files": 582,
-      "version": "1.0.13"
+      "version": "1.0.14"
     },
     "linux": {
       "archive": "source-linux.zip",
-      "sha256": "8f5c5efa46b6ec2368d8c3355ed27c98c9055aa2198f6ed8b968b50e77e233ed",
+      "sha256": "554f61f3fa86ff05869661ffc793098e5d29fde63eb722ba8975b499364bb80a",
       "files": 582,
-      "version": "1.0.13"
+      "version": "1.0.14"
     },
     "web": {
       "archive": "source-web.zip",
-      "sha256": "d329a905a0d79aeb3d02b3653a6ed2acbf59734becdbfdbd55a582df86665970",
+      "sha256": "a73bf36e69d56b8363d8fad590eeb3a5fd60b207a198b2a901ce60d1967948ee",
       "files": 575,
-      "version": "1.0.13"
+      "version": "1.0.14"
     }
   }
 }
