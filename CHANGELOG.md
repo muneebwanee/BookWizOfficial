@@ -1,5 +1,13 @@
 <div align="center">
 
+## 1.0.11
+
+- The Book menu closes before The Red Pen opens, keeping the panel interactive and focusing its controls without opening the keyboard.
+- The mobile chapter selector no longer repeats the outline action already available in the Book menu.
+- Enabling reminders during the startup schedule check retains the notification permission request; turning reminders off cancels the pending request.
+- Patched the desktop build tools' affected glob matchers with scoped dependency overrides.
+- Added regression checks for menu-to-panel navigation and the remaining outline entry.
+
 ## 1.0.5
 
 - Successful platform builds explicitly queue the combined release publisher, including version-tag builds whose completion event did not start publication.
