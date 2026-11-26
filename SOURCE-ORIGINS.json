@@ -5,51 +5,51 @@
   "archives": {
     "android": {
       "archive": "source-android.zip",
-      "sha256": "c659f85e712b67f85094f19d54b0795c01f4d7b751d8a0943ab293c511d7a99d",
-      "files": 620,
-      "version": "1.0.12"
+      "sha256": "30753429df48c8257b24bd3c28f963c383222182f7234fe8be084ade246fc775",
+      "files": 621,
+      "version": "1.0.13"
     },
     "ios": {
       "archive": "source-ios.zip",
-      "sha256": "4cf923e7972cea8c8cb710f120c301880e02e4e141df622bff78ac348ee08815",
-      "files": 619,
-      "version": "1.0.12"
+      "sha256": "038c549e7d704c3e17f0f4e7a473ab7c4d83448e7129f12f12030af8af62bf11",
+      "files": 620,
+      "version": "1.0.13"
     },
     "watchos": {
       "archive": "source-watchos.zip",
-      "sha256": "d01ce81c2cc984c85e71fd31ae05989e2cc6d498f9cf5f3b1ba72b4c903b2cb7",
-      "files": 619,
-      "version": "1.0.12"
+      "sha256": "eba7037fdb6e3d654e6021434be5bd37d94e0dfbe923196b8d6519979643239a",
+      "files": 620,
+      "version": "1.0.13"
     },
     "tvos": {
       "archive": "source-tvos.zip",
-      "sha256": "34ae6f7652caff103c7671a565de8110053c50682eca0fddc9e67bcb762e1d03",
-      "files": 619,
-      "version": "1.0.12"
+      "sha256": "6570bed264228fb9ccf64f9c0ef676cf5267a11c5d336e2df8457e660a215ed8",
+      "files": 620,
+      "version": "1.0.13"
     },
     "windows": {
       "archive": "source-windows.zip",
-      "sha256": "49d90d676ec096035500a76401c4c1fe49f038a7ae4d82a78ef58cf6700e2eae",
-      "files": 581,
-      "version": "1.0.12"
+      "sha256": "0bb2b323c6feb4b32b7966f2cb99844c7804e57d567908c36d2d06ad2113d797",
+      "files": 582,
+      "version": "1.0.13"
     },
     "macos": {
       "archive": "source-macos.zip",
-      "sha256": "a5dd9a2929d6b616286fad66533d160eb2fc1ea8db029713c2ec4e1ddc56d903",
-      "files": 581,
-      "version": "1.0.12"
+      "sha256": "f74dce68de95ff4fc6bc75b8dd3253903090ce299ebeb8fa198e280c164e948f",
+      "files": 582,
+      "version": "1.0.13"
     },
     "linux": {
       "archive": "source-linux.zip",
-      "sha256": "4d1a37401ffae861a1f7804f83eba1f071db8c2153f60946dacf2c43a0a2be42",
-      "files": 581,
-      "version": "1.0.12"
+      "sha256": "8f5c5efa46b6ec2368d8c3355ed27c98c9055aa2198f6ed8b968b50e77e233ed",
+      "files": 582,
+      "version": "1.0.13"
     },
     "web": {
       "archive": "source-web.zip",
-      "sha256": "69f317bf58ffc71065018fc6a61a344c864c436ff293cdf972b5de1b350eabc8",
-      "files": 574,
-      "version": "1.0.12"
+      "sha256": "d329a905a0d79aeb3d02b3653a6ed2acbf59734becdbfdbd55a582df86665970",
+      "files": 575,
+      "version": "1.0.13"
     }
   }
 }
