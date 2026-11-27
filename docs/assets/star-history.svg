@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 414" width="960" height="414" role="img" aria-labelledby="title description">
-<title id="title">BookWiz star history</title><desc id="description">1 current stargazers for muneebwanee/BookWizOfficial, grouped by the date they starred. Updated 2026-11-26 UTC. Historical unstars are not available from this snapshot.</desc>
+<title id="title">BookWiz star history</title><desc id="description">1 current stargazers for muneebwanee/BookWizOfficial, grouped by the date they starred. Updated 2026-11-27 UTC. Historical unstars are not available from this snapshot.</desc>
 <defs><linearGradient id="area" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#b45642" stop-opacity=".19"/><stop offset="1" stop-color="#b45642" stop-opacity=".015"/></linearGradient></defs>
 <style>.paper{fill:#fbf8f0;stroke:#dedbd2}text{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#243e48}.eyebrow{font-size:10px;letter-spacing:2px;fill:#69736b}.headline{font-family:Georgia,serif;font-size:29px}.number{font-size:35px;font-weight:650;letter-spacing:-1px}.muted{font-size:11px;fill:#6e766e}.axis{font-size:10px;fill:#727970}.grid{stroke:#e1dfd6;stroke-width:1;stroke-dasharray:3 6}.empty{font-family:Georgia,serif;font-size:19px;fill:#788075}.line{fill:none;stroke:#b45642;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}@media(prefers-color-scheme:dark){.paper{fill:#17272f;stroke:#38474c}text{fill:#f3ece0}.eyebrow,.muted,.axis{fill:#b9c2bc}.grid{stroke:#394b51}.empty{fill:#b1bdb6}.line{stroke:#e0aa8c}}</style>
 <rect x=".5" y=".5" width="959" height="413" rx="23" class="paper"/>
@@ -8,9 +8,9 @@
 <text x="40" y="106" class="muted">muneebwanee/BookWizOfficial</text>
 <text x="903" y="71" text-anchor="end" class="number">1</text>
 <text x="901" y="94" text-anchor="end" class="muted">star</text>
-<line x1="78" y1="329.00" x2="898" y2="329.00" class="grid"/><text x="60" y="333.00" text-anchor="end" class="axis">0</text><line x1="78" y1="161.00" x2="898" y2="161.00" class="grid"/><text x="60" y="165.00" text-anchor="end" class="axis">1</text><text x="78.00" y="356" text-anchor="start" class="axis">17 Nov 2026</text><text x="898.00" y="356" text-anchor="end" class="axis">26 Nov 2026</text>
-<path d="M 78.00 329.00 H 169.11 V 161.00 H 898.00 L 898.00 329 L 78 329 Z" fill="url(#area)"/><path d="M 78.00 329.00 H 169.11 V 161.00 H 898.00" class="line"/>
+<line x1="78" y1="329.00" x2="898" y2="329.00" class="grid"/><text x="60" y="333.00" text-anchor="end" class="axis">0</text><line x1="78" y1="161.00" x2="898" y2="161.00" class="grid"/><text x="60" y="165.00" text-anchor="end" class="axis">1</text><text x="78.00" y="356" text-anchor="start" class="axis">17 Nov 2026</text><text x="898.00" y="356" text-anchor="end" class="axis">27 Nov 2026</text>
+<path d="M 78.00 329.00 H 160.00 V 161.00 H 898.00 L 898.00 329 L 78 329 Z" fill="url(#area)"/><path d="M 78.00 329.00 H 160.00 V 161.00 H 898.00" class="line"/>
 <circle cx="898.00" cy="161.00" r="4.5" fill="#b45642"/>
 <text x="40" y="388" class="muted">Current stargazers, by star date · self-hosted</text>
-<text x="903" y="388" text-anchor="end" class="muted">Updated 2026-11-26 UTC</text>
+<text x="903" y="388" text-anchor="end" class="muted">Updated 2026-11-27 UTC</text>
 </svg>
