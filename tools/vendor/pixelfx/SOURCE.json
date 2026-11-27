@@ -1,0 +1,7 @@
+{
+  "repository": "https://github.com/patch-gg/pixelfx",
+  "commit": "5294518ce7c72e48b6100a744596e0acf57f2826",
+  "license": "MIT",
+  "copyright": "2026 Patch and Hugo Duprez",
+  "included": "Core, PNG encoder, and three selected effect modules. Rendered sprites use BookWiz palettes."
+}
