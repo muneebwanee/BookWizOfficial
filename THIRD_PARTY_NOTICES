@@ -25,3 +25,7 @@ BookWiz theme packs, skeletons, session controls and cover geometry are original
 PDF.js offline resources include Adobe CMap data, Foxit/Liberation standard fonts and codec runtimes. Their separate notices are retained in dist/assets/pdf.
 
 Provider brand artwork: LobeHub Icons contributors, MIT License. Bundled SVGs, source URLs and trademark attribution are in dist/assets/providers/SOURCES.json; full license in dist/licenses/lobehub-icons-MIT.txt. Provider marks identify their respective services and imply no endorsement. The custom-endpoint connection icon and the Google Gemini text identifier are original BookWiz geometry.
+
+pixelfx: Copyright (c) 2026 Patch and Hugo Duprez, MIT License. Three local, recoloured sprite effects and the minimal rendering source are included. Full notice: dist/licenses/pixelfx-MIT.txt. Original source and pinned revision: tools/vendor/pixelfx/SOURCE.json. UI confetti also retains its upstream attribution to Hugo Duprez’s MIT-licensed falling leaves.
+
+Design workflow acknowledgements: unslop by Damir Sokolovsky (https://github.com/heydamir/unslop, CC BY 4.0) informed the UI craft review; logo-design by Kaan Kiziltug (https://github.com/kaankiziltug/logo-design-skill, MIT) informed identity validation. The third-party skill source libraries and reference trademarks are not included in the BookWiz agent bundle.

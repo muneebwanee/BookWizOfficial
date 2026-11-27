@@ -1,5 +1,26 @@
 <div align="center">
 
+# Changelog
+
+### From the first idea to the reader's copy.
+
+What is new in the writing room.
+
+[Download BookWiz](https://github.com/muneebwanee/BookWizOfficial/releases) · [Explore the studio](README.md) · [Created by muneebwanee](https://github.com/muneebwanee)
+
+</div>
+
+---
+
+## 1.0.17 · A clearer room, a portable writing partner
+
+- Refined folded-book identity, outlined wordmarks, optical small-size marks, platform icons and a reproducible brand generator.
+- More consistent alignment, control spacing, readable metadata and mobile layouts, preserving chosen palettes, reading preferences and the compact editor.
+- Preview studio opens an isolated sample library at phone, tablet and desktop sizes, with real page navigation, ten palettes, control profiles, brand downloads and bounded motion studies.
+- Three bundled pixel effects play once on request; a short paper celebration marks a writing session with new words. Reduced motion keeps them still, and headings arrive without blur.
+- A self-contained BookWiz skill/plugin bundle supplies editable workflows, templates, local project tools, snapshots and reader exports for supported Agent Skills hosts.
+- Shared application/skill/plugin versioning, integrity checks and a single agent-bundle download join the current release after all eight app builds are ready.
+
 ## 1.0.11
 
 - The Book menu closes before The Red Pen opens, keeping the panel interactive and focusing its controls without opening the keyboard.
@@ -22,16 +43,6 @@
 - Android writing reminders continue beyond two weeks and recover after restart or timezone changes. Added test notifications and optional session-finished alerts.
 - One current release contains all eight editions. Verified publication reuses its version tag and removes superseded generated pages after every replacement package is ready.
 - Windows and Unix checkouts now produce the same release fingerprint.
-
-# Changelog
-
-### From the first idea to the reader's copy.
-
-What is new in the writing room.
-
-[Download BookWiz](https://github.com/muneebwanee/BookWizOfficial/releases) · [Explore the studio](README.md) · [Created by muneebwanee](https://github.com/muneebwanee)
-
-</div>
 
 ---
 

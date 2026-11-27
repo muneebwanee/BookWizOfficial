@@ -1,0 +1,22 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "bookwiz",
+  "version": "1.0.17",
+  "description": "Plan, draft, revise and prepare original books with editable canon, offline project tools and reader exports.",
+  "author": {
+    "name": "muneebwanee",
+    "url": "https://github.com/muneebwanee"
+  },
+  "homepage": "https://github.com/muneebwanee/BookWizOfficial",
+  "repository": "https://github.com/muneebwanee/BookWizOfficial",
+  "license": "SEE LICENSE IN LICENSE",
+  "keywords": [
+    "writing",
+    "books",
+    "fiction",
+    "nonfiction",
+    "editing",
+    "epub",
+    "canon"
+  ]
+}
