@@ -4,6 +4,14 @@ ROOT=pathlib.Path(__file__).resolve().parents[1]
 spec=importlib.util.spec_from_file_location('kits',ROOT/'tools/package-platform-kits.py');kits=importlib.util.module_from_spec(spec);spec.loader.exec_module(kits)
 
 class PlatformKits(unittest.TestCase):
+    def test_portable_kits_keep_the_documented_preview_visual_and_agent_commands(self):
+        for target in kits.PLATFORMS:
+            with self.subTest(target=target):
+                files=kits.selected_files(target);package=json.loads(files['package.json'])
+                for script,tool in [('preview','preview.mjs'),('build:brand','generate-brand.py'),('build:effects','build-effects.mjs'),('package:agent','package-agent-skill.py')]:
+                    self.assertIn(script,package['scripts']);self.assertIn('tools/'+tool,files)
+                self.assertIn('check:agent',package['scripts']);self.assertIn('tests/agent-skill.test.py',files)
+                self.assertIn('skills/bookwiz/SKILL.md',files);self.assertIn('plugin.json',files)
     def test_all_archives_are_self_contained_and_platform_specific(self):
         for target,meta in kits.PLATFORMS.items():
             with self.subTest(target=target):

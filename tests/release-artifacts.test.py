@@ -1,5 +1,5 @@
 """All-platform artifact readiness and extraction checks. BWNCL-1.0."""
-import hashlib,importlib.util,io,json,tempfile,unittest,zipfile
+import base64,hashlib,importlib.util,io,json,shutil,tempfile,unittest,zipfile
 from unittest.mock import patch
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
@@ -10,6 +10,40 @@ def archive(files):
   for name,value in files.items():z.writestr(name,value)
  return data.getvalue()
 class Artifacts(unittest.TestCase):
+ def test_tag_source_identity_accepts_bot_only_heads_and_blocks_source_drift(self):
+  state={'version':'1.0.17','build':31,'fingerprint':'f'*64};requests=[]
+  def reply(value):
+   data=json.dumps(value).encode();return {'encoding':'base64','size':len(data),'content':base64.b64encode(data).decode()}
+  def get(path):requests.append(path);return reply(state)
+  collector.verify_tag_source(state,'a'*40,get)
+  self.assertEqual(requests,['/contents/release-state.json?ref='+'a'*40])
+  for changed in [{**state,'version':'1.0.16'},{**state,'build':30},{**state,'fingerprint':'e'*64}]:
+   with self.subTest(changed=changed),self.assertRaisesRegex(ValueError,'differs from the prepared version tag'):collector.verify_tag_source(state,'a'*40,lambda path:reply(changed))
+  with tempfile.TemporaryDirectory()as tmp:
+   root=Path(tmp);(root/'release-state.json').write_text(json.dumps(state));paths=[]
+   def mismatch(path,binary=False):
+    paths.append(path)
+    return {'object':{'type':'commit','sha':'a'*40}}if path.startswith('/git/')else reply({**state,'fingerprint':'b'*64})
+   with self.assertRaisesRegex(ValueError,'differs'):collector.collect(root,mismatch)
+   self.assertFalse(any('/workflows/'in path or'/artifacts/'in path for path in paths))
+ def test_agent_bundle_is_self_contained_and_records_the_verified_commit_and_fingerprint(self):
+  with tempfile.TemporaryDirectory()as tmp:
+   root=Path(tmp);(root/'tools').mkdir();shutil.copy2(ROOT/'tools/package-agent-skill.py',root/'tools/package-agent-skill.py')
+   state={'version':'1.0.17','build':31,'fingerprint':'f'*64};(root/'package.json').write_text(json.dumps({'version':state['version']}));(root/'release-state.json').write_text(json.dumps(state))
+   names=['SKILL.md','scripts/bookwiz.py','scripts/install_skill.py','references/workflow.md','references/compatibility.md','templates/planning--brief.md','LICENSE','licenses/BWNCL-1.0.txt','licenses/CC-BY-4.0.txt','BUNDLE-README.md']
+   for name in names:
+    p=root/'skills/bookwiz'/name;p.parent.mkdir(parents=True,exist_ok=True);p.write_text('Fixture '+name+'\n')
+   for name in ['plugin.json','.claude-plugin/plugin.json','.codex-plugin/plugin.json','.antigravity-plugin/plugin.json','.claude-plugin/marketplace.json']:
+    p=root/name;p.parent.mkdir(parents=True,exist_ok=True);p.write_text(json.dumps({'plugins':[{'name':'bookwiz','version':state['version']}]}if name.endswith('marketplace.json')else{'name':'bookwiz','version':state['version']}))
+   with patch.dict('os.environ',{'GITHUB_REPOSITORY':'owner/repo'}):info=collector.prepare_agent_bundle(root,state,'a'*40)
+   self.assertEqual(info['commit'],'a'*40);self.assertEqual(info['sourceFingerprint'],'f'*64)
+   name='BookWiz-1.0.17-Agent-bundle.zip';archive=root/'release/agents'/name;self.assertEqual(info['files'][name],hashlib.sha256(archive.read_bytes()).hexdigest())
+   with zipfile.ZipFile(archive)as z:
+    manifest=json.loads(z.read('MANIFEST.json'));self.assertEqual(manifest['bundleVersion'],'1.0.17');self.assertEqual(manifest['sourceCommit'],'a'*40);self.assertEqual(manifest['sourceFingerprint'],'f'*64)
+    for entry,sha in manifest['files'].items():self.assertEqual(hashlib.sha256(z.read(entry)).hexdigest(),sha)
+    self.assertIn('install.py',z.namelist());self.assertIn('skills/bookwiz/scripts/bookwiz.py',z.namelist())
+   (root/'plugin.json').write_text('{"version":"1.0.16"}')
+   with patch.dict('os.environ',{'GITHUB_REPOSITORY':'owner/repo'}),self.assertRaisesRegex(ValueError,'version differs'):collector.prepare_agent_bundle(root,state,'a'*40)
  def test_a_prepared_version_waits_for_its_tag_without_an_exception(self):
   with tempfile.TemporaryDirectory()as tmp:
    root=Path(tmp);(root/'release-state.json').write_text('{"version":"1.0.5"}')

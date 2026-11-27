@@ -13,6 +13,21 @@ def fixture(root):
  (root/'CITATION.cff').write_text('version: 1.0.0\ndate-released: 2026-01-01\n');(root/'dist').mkdir();(root/'dist/app.js').write_text('export const text="current";')
 
 class VersionTests(unittest.TestCase):
+ def test_agent_plugin_versions_share_the_release_and_skill_edits_prepare_one_new_patch(self):
+  with tempfile.TemporaryDirectory()as temp:
+   root=Path(temp);fixture(root)
+   for name in version.PLUGIN_FILES:
+    path=root/name;path.parent.mkdir(parents=True,exist_ok=True);path.write_text(json.dumps({'name':'bookwiz','version':'0.1.0','skills':'./skills/'}))
+   (root/version.MARKETPLACE).write_text(json.dumps({'name':'bookwiz-official','plugins':[{'name':'bookwiz','version':'0.1.0','source':'./'}]}))
+   skill=root/'skills/bookwiz/SKILL.md';skill.parent.mkdir(parents=True);skill.write_text('---\nmetadata:\n  version: \"0.1.0\"\n---\nOriginal BookWiz workflow.\n')
+   prepared=version.prepare(root);self.assertEqual(prepared['version'],'1.0.1');version.check(root)
+   for name in version.PLUGIN_FILES:self.assertEqual(json.loads((root/name).read_text())['version'],'1.0.1')
+   self.assertEqual(json.loads((root/version.MARKETPLACE).read_text())['plugins'][0]['version'],'1.0.1');self.assertFalse(version.prepare(root)['changed'])
+   skill.write_text(skill.read_text()+'New publishing step.\n')
+   with self.assertRaises(ValueError):version.check(root)
+   self.assertEqual(version.prepare(root)['version'],'1.0.2');self.assertFalse(version.prepare(root)['changed'])
+   path=root/version.PLUGIN_FILES[0];data=json.loads(path.read_text());data['version']='0.1.0';path.write_text(json.dumps(data))
+   with self.assertRaisesRegex(ValueError,'Plugin version mismatch'):version.check(root)
  def test_one_patch_version_updates_every_metadata_file_and_rebuilds_keep_it(self):
   with tempfile.TemporaryDirectory()as temp:
    root=Path(temp);fixture(root);state=version.prepare(root);self.assertEqual(state['version'],'1.0.1');self.assertEqual(state['build'],15);version.check(root)
