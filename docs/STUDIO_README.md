@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="https://raw.githubusercontent.com/muneebwanee/BookWizOfficial/HEAD/screenshots/bookwiz-icon.svg" width="88" height="88" alt="BookWiz">
+<img src="../dist/assets/icon.svg" width="88" height="88" alt="BookWiz">
 
 # BookWiz
 
@@ -13,7 +13,7 @@ Created by **[muneebwanee](https://github.com/muneebwanee)**.
 [![Code license](https://img.shields.io/badge/code-BWNCL-596957?style=flat-square)](../LICENSE)
 [![Content license](https://img.shields.io/badge/content-CC_BY_4.0-596957?style=flat-square)](../LICENSES/CC-BY-4.0.txt)
 
-**[Get BookWiz](https://github.com/muneebwanee/BookWizOfficial/releases/latest)** · [Explore the gallery](https://github.com/muneebwanee/BookWizOfficial/blob/HEAD/screenshots/README.md) · [Your first book](GETTING_STARTED.md) · [Support the project](../SUPPORT.md#support-the-project)
+**[Get BookWiz](https://github.com/muneebwanee/BookWizOfficial/releases/latest)** · [Explore the gallery](https://github.com/muneebwanee/BookWizOfficial/blob/HEAD/screenshots/README.md) · [Your first book](GETTING_STARTED.md) · [Preview studio](PREVIEW_STUDIO.md) · [Agent skill](AGENT_SKILL.md) · [Support the project](../SUPPORT.md#support-the-project)
 
 </div>
 
@@ -58,6 +58,18 @@ https://github.com/user-attachments/assets/76da7785-d02f-4031-969a-5ec14177726c
 
 Three original reading samples are included. Read them, edit them, or clear a space for your own work.
 
+## See the room before you settle in
+
+**Preview studio** opens a separate window inside BookWiz. Inspect the real library, writing editor, Draft Flow, covers, proofs, model hub and settings at phone, tablet and desktop sizes. Switch between ten palettes and five control styles, inspect the refined brand assets and play the short motion studies. Its sample library uses separate memory storage; your books and saved connections stay in the writing room.
+
+[Open the preview guide →](PREVIEW_STUDIO.md) · [Identity and artwork →](BRAND.md)
+
+## Bring BookWiz to your agent
+
+The self-contained **BookWiz agent bundle** carries the writing workflow into Claude Code, OpenCode, OpenAI Codex CLI, Hermes, Google Antigravity and other Agent Skills hosts. It includes original writing and revision guidance, editable planning templates, a local project tool, snapshots, EPUB/Markdown/backup exports, host installers and plugin manifests. Python's standard library is enough for its offline tools.
+
+[Install the skill or plugin →](AGENT_SKILL.md)
+
 ## Choose your edition
 
 All official application downloads are in **[GitHub Releases](https://github.com/muneebwanee/BookWizOfficial/releases/latest)**. The [download guide](RELEASE.md) explains the package for each device.
@@ -72,6 +84,7 @@ All official application downloads are in **[GitHub Releases](https://github.com
 | **Apple Watch** | Companion in the iPhone app | Catch a thought and check your writing progress. |
 | **Apple TV** | A tvOS `.ipa`, when available | Read, listen, review an outline, and bring a book over locally. |
 | **Web** | Web release or source | A responsive browser studio, with offline application assets after caching. |
+| **Agents** | `Agent-bundle.zip` | One self-contained skill/plugin bundle, with host-aware installation and offline writing tools. |
 
 [Platform features →](PLATFORMS.md) · [Source editions →](SOURCE_ARCHIVES.md)
 

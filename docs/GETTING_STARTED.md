@@ -31,6 +31,8 @@ On a phone, use the chapter selector to move between pages. **Book → Chapter o
 
 Undo/redo covers recent text and title edits during the session. Saved Versions offer longer-lived recovery. A restore keeps the current page first, within the retained-version budget.
 
+Use **Preview studio** from the navigation when you want to try layouts and themes without changing the working library. It opens sample pages in a separate window, with size controls, brand artwork and motion studies. [Preview controls](PREVIEW_STUDIO.md) explain what is available.
+
 ## Keep a copy
 
 Export an individual-book or workspace **JSON backup** regularly. A backup carries books and story notes, while excluding API keys. Import previews the contents and adds copies instead of replacing existing projects or credentials.

@@ -23,6 +23,8 @@ python3 -m http.server 4173 --directory dist --bind 127.0.0.1
 
 Open **http://localhost:4173**. Browser modules need HTTP rather than a local-file URL. This address has its own local library.
 
+For an isolated, interactive tour with device sizes, real app pages, palettes, branding and motion, run `npm run preview` and open **http://127.0.0.1:4188/preview.html**. The [preview guide](PREVIEW_STUDIO.md) explains its sample-only storage and controls. `npm run build:brand` and `npm run build:effects` regenerate the bundled visual assets. `npm run package:agent` builds the [portable agent bundle](AGENT_SKILL.md).
+
 ## Desktop applications
 
 Desktop packaging also needs Electron's install step, so use `npm ci` on the build machine, then prepare the local studio:

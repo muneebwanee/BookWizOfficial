@@ -29,17 +29,23 @@ Release filenames include their version label; `{version}` above stands for that
 
 The Watch companion is inside the paired iPhone application. A tvOS IPA belongs to Apple TV.
 
+## Use BookWiz with an agent
+
+`BookWiz-{version}-Agent-bundle.zip` is one self-contained download for the BookWiz writing skill and plugin. It includes the editable workflow, templates, offline project CLI, installer, licenses and host manifests. Choose it when you want BookWiz's planning, canon, drafting, revision and export tools inside an agent rather than an application installer.
+
+Extract the ZIP, then run `python3 install.py --help` to see the supported destinations. The installer offers a dry run and preserves existing files. On Windows, use `python` or `py -3` if `python3` is unavailable. Native plugin loading depends on the host; other agents can use the standard skill folder. The [agent guide](AGENT_SKILL.md) lists the installation paths and compatibility checks.
+
 ## How new releases arrive
 
 A source update on the default branch prepares the next patch version and dispatches all editions from one immutable version tag. Every edition uses the same prepared version; each later source update advances the patch number. Rebuilding unchanged source keeps its version. Package metadata and the version embedded in each application are updated together before building.
 
-**Refresh source archives** refreshes the eight source ZIPs, README files and checksums, then explicitly starts the platform builds. After a full-repository build succeeds, its final job explicitly queues **Publish current downloads** with `workflow_dispatch`; publication also remains available as a manual action. **Publish current downloads** waits for successful, verified packages from all eight editions, publishes one **BookWiz VERSION** download page, and removes older generated release pages and same-version duplicates only after the replacement is complete. Failed builds keep the existing downloads available. Git commits and source tags are retained. If a platform fails or is cancelled, run the central workflow again to retry it; successful/running builds for the same prepared commit are skipped. Manual creation of a release on GitHub does not itself bump application version files.
+**Refresh source archives** refreshes the eight source ZIPs, README files and checksums, then explicitly starts the platform builds. After a full-repository build succeeds, its final job explicitly queues **Publish current downloads** with `workflow_dispatch`; publication also remains available as a manual action. **Publish current downloads** waits for successful, verified packages from all eight editions, checks that its checkout has the same version and source fingerprint as the immutable version tag, and creates the matching agent skill/plugin bundle. It publishes one **BookWiz VERSION** download page and removes older generated release pages and same-version duplicates only after every replacement file has uploaded and passed checksum verification. Failed builds or bundle packaging keep the existing downloads available. Git commits and source tags are retained. If a platform fails or is cancelled, run the central workflow again to retry it; successful/running builds for the same prepared commit are skipped. Manual creation of a release on GitHub does not itself bump application version files.
 
 [Source and automation guide](SOURCE_ARCHIVES.md) · [Build guide](BUILDING.md)
 
 ## Other release files
 
-**SHA256SUMS.txt** lists package hashes. **BUILD-INFO.json** records the version, source commit, architecture, and signing status. These are verification files, rather than extra copies of the app.
+**SHA256SUMS.txt** lists hashes for the application packages and agent bundle. **BUILD-INFO.json** records the version, source commit, architecture and signing status, plus the agent bundle's source fingerprint and checksum. These are verification files, rather than extra copies of the app.
 
 GitHub also adds **Source code (zip)** and **Source code (tar.gz)** to releases automatically. They are repository snapshots, not additional installers. Platform source archives are described in the [source guide](SOURCE_ARCHIVES.md).
 
