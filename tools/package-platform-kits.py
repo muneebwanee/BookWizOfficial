@@ -15,7 +15,8 @@ PLATFORMS={
     'web':{'title':'Web','native':None,'prepare':None,'outputs':'Ready-to-host website ZIP, with index.html at its root','tools':['build-web.py']},
 }
 ROOT_FILES=['release-state.json','CITATION.cff','DESIGN.md','PRODUCT.md','package.json','package-lock.json','LICENSE','README.md','CONTRIBUTING.md','PRIVACY.md','TERMS.md','SUPPORT.md','THIRD_PARTY_NOTICES','CHANGELOG.md','.gitignore','.gitattributes']
-COMMON_TOOLS=['publish-current-release.mjs','collect-release-artifacts.py','release-version.py','dispatch-releases.py','sync-source-archives.py','prepare-build-source.py','sync-pdf-assets.mjs','prepare-native.mjs','latex-service.mjs','latex-engine.mjs','version-cache.mjs','ci-release.mjs','check-source.mjs','package-platform-kits.py']
+AGENT_ROOT_FILES=['plugin.json']
+COMMON_TOOLS=['preview.mjs','generate-brand.py','build-effects.mjs','package-agent-skill.py','install-agent-skill.py','publish-current-release.mjs','collect-release-artifacts.py','release-version.py','dispatch-releases.py','sync-source-archives.py','prepare-build-source.py','sync-pdf-assets.mjs','prepare-native.mjs','latex-service.mjs','latex-engine.mjs','version-cache.mjs','ci-release.mjs','check-source.mjs','package-platform-kits.py']
 IGNORED_NATIVE=['native/desktop/runtime/web/','native/desktop/runtime/latex-engine.mjs','native/desktop/runtime/local-services.mjs','native/android/app/src/main/assets/web/','native/apple/iOS/Web/']
 
 def repository_files(root=ROOT):
@@ -56,7 +57,7 @@ def selected_files(target,root=ROOT):
         if name.startswith(tuple(IGNORED_NATIVE)):continue
         if name.startswith('native/')and ('.xcodeproj/'in name or name.endswith(('.jks','.p12','.mobileprovision'))):continue
         if name.startswith('dist/downloads/'):continue
-        common=name in ROOT_FILES or name.startswith(('dist/','docs/','packaging/github/','LICENSES/','scripts/')) or (name.startswith('tests/')and name.endswith('.test.mjs'))or name in ['tests/source-archives.test.py','tests/release-version.test.py']or name in ['tools/'+x for x in COMMON_TOOLS]
+        common=name in ROOT_FILES+AGENT_ROOT_FILES or name.startswith(('dist/','docs/','packaging/github/','LICENSES/','scripts/','skills/','commands/','.claude-plugin/','.codex-plugin/','.antigravity-plugin/','tools/vendor/pixelfx/')) or (name.startswith('tests/')and name.endswith('.test.mjs'))or name in ['tests/source-archives.test.py','tests/release-version.test.py','tests/agent-skill.test.py']or name in ['tools/'+x for x in COMMON_TOOLS]
         own=(native and name.startswith('native/'+native+'/')) or name in ['tools/'+x for x in spec['tools']]
         if native=='apple'and name=='tests/apple-package.test.py':own=True
         if target=='android'and name=='tests/android-bundletool.test.py':own=True
@@ -85,6 +86,7 @@ def selected_files(target,root=ROOT):
     files['docs/STUDIO_README.md']=studio.read_bytes() if studio.is_file() else relocate_markdown_links(original.decode(),'README.md','docs/STUDIO_README.md').encode()
     files['README.md']=readme(target,spec,root).encode()
     package=json.loads(files['package.json']);package['scripts']={'check':'node tools/check-source.mjs','test':'node --test tests/*.test.mjs','compiler':'node tools/latex-service.mjs','package:source':f'python3 tools/package-platform-kits.py --target {target} --output ../BookWiz-{target}-source'}
+    package['scripts'].update({'preview':'node tools/preview.mjs','build:brand':'python3 tools/generate-brand.py','build:effects':'node tools/build-effects.mjs','package:agent':'python3 tools/package-agent-skill.py','check:agent':'python3 tests/agent-skill.test.py'})
     if spec['prepare']:package['scripts']['native:prepare']='node tools/prepare-native.mjs --target '+spec['prepare']
     if target=='android':package['scripts']['native:android']='python3 tools/build-android.py && python3 tools/build-aab.py'
     if native=='desktop':package['scripts']['native:desktop']='npm run native:prepare && electron-builder --config native/desktop/electron-builder.yml --publish never'

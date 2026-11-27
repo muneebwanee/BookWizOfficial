@@ -7,6 +7,9 @@ ROOT=Path(__file__).resolve().parents[1]
 spec=importlib.util.spec_from_file_location('version_kits',Path(__file__).with_name('package-platform-kits.py'))
 kits=importlib.util.module_from_spec(spec);spec.loader.exec_module(kits)
 STATE='release-state.json'
+PLUGIN_FILES=['plugin.json','.claude-plugin/plugin.json','.codex-plugin/plugin.json','.antigravity-plugin/plugin.json']
+MARKETPLACE='.claude-plugin/marketplace.json'
+SKILL='skills/bookwiz/SKILL.md'
 GENERATED={'SOURCE-ORIGINS.json','SHA256SUMS.txt',STATE,'native/desktop/runtime/icon.png','native/desktop/runtime/LICENSE','native/desktop/runtime/THIRD_PARTY_NOTICES'}
 
 
@@ -19,7 +22,7 @@ def fingerprint(root=ROOT):
     root=Path(root);digest=hashlib.sha256()
     for name in kits.repository_files(root):
         if name in GENERATED or name.startswith(tuple(kits.IGNORED_NATIVE))or name.startswith(('docs/assets/star-history.','dist/downloads/')):continue
-        if not(name in kits.ROOT_FILES or name.startswith(('dist/','native/','tools/','tests/','scripts/','docs/','packaging/','.github/workflows/','LICENSES/'))):continue
+        if not(name in kits.ROOT_FILES+PLUGIN_FILES or name.startswith(('dist/','native/','tools/','tests/','scripts/','docs/','packaging/','.github/workflows/','LICENSES/','skills/','commands/','.claude-plugin/','.codex-plugin/','.antigravity-plugin/'))):continue
         data=(root/name).read_bytes()
         # Git for Windows can check text out as CRLF. Hash the same text on
         # every host; binary fonts/images/archives keep their exact bytes.
@@ -30,6 +33,14 @@ def fingerprint(root=ROOT):
             value=json.loads(data);value['version']='VERSION'
             if name=='package-lock.json'and ''in value.get('packages',{}):value['packages']['']['version']='VERSION'
             data=json.dumps(value,sort_keys=True,separators=(',',':')).encode()
+        elif name in PLUGIN_FILES or name==MARKETPLACE:
+            value=json.loads(data)
+            if name==MARKETPLACE:
+                for plugin in value.get('plugins',[]):
+                    if plugin.get('name')=='bookwiz':plugin['version']='VERSION'
+            else:value['version']='VERSION'
+            data=json.dumps(value,sort_keys=True,separators=(',',':')).encode()
+        elif name==SKILL:data=re.sub(rb'(?m)^  version:[^\n]*',b'  version: "VERSION"',data,count=1)
         elif name=='native/apple/project.yml':
             data=re.sub(rb'(MARKETING_VERSION|CURRENT_PROJECT_VERSION):[^\n]*',rb'\1: VERSION',data)
         elif name=='CITATION.cff':data=re.sub(rb'(?m)^(version|date-released):[^\n]*',rb'\1: VERSION',data)
@@ -59,6 +70,19 @@ def prepare(root=ROOT):
         data=json.loads(path.read_text());data['version']=version
         if name=='package-lock.json'and ''in data.get('packages',{}):data['packages']['']['version']=version
         write_json(path,data)
+    for name in PLUGIN_FILES:
+        path=root/name
+        if path.exists():
+            data=json.loads(path.read_text());data['version']=version;write_json(path,data)
+    if(root/MARKETPLACE).exists():
+        data=json.loads((root/MARKETPLACE).read_text())
+        for plugin in data.get('plugins',[]):
+            if plugin.get('name')=='bookwiz':plugin['version']=version
+        write_json(root/MARKETPLACE,data)
+    if(root/SKILL).exists():
+        text=(root/SKILL).read_text();text,found=re.subn(r'(?m)^  version:[^\n]*',f'  version: "{version}"',text,count=1)
+        if found!=1:raise ValueError('The BookWiz skill needs metadata.version.')
+        (root/SKILL).write_text(text)
     if apple.exists():
         apple_text=re.sub(r'MARKETING_VERSION:[^\n]*',f'MARKETING_VERSION: "{version}"',apple_text)
         apple_text=re.sub(r'CURRENT_PROJECT_VERSION:[^\n]*',f'CURRENT_PROJECT_VERSION: {build}',apple_text);apple.write_text(apple_text)
@@ -83,6 +107,12 @@ def check(root=ROOT):
     apple=root/'native/apple/project.yml'
     if apple.exists()and not re.search(r'MARKETING_VERSION:\s*"?'+re.escape(version)+r'"?(?:\n|$)',apple.read_text()):raise ValueError('Apple marketing version differs.')
     if apple.exists()and not re.search(r'CURRENT_PROJECT_VERSION:\s*'+str(state['build'])+r'(?:\n|$)',apple.read_text()):raise ValueError('Apple build counter differs.')
+    for name in PLUGIN_FILES:
+        if(root/name).exists()and json.loads((root/name).read_text()).get('version')!=version:raise ValueError('Plugin version mismatch: '+name)
+    if(root/MARKETPLACE).exists():
+        for plugin in json.loads((root/MARKETPLACE).read_text()).get('plugins',[]):
+            if plugin.get('name')=='bookwiz'and plugin.get('version')!=version:raise ValueError('Marketplace plugin version differs.')
+    if(root/SKILL).exists()and not re.search(r'(?m)^  version:\s*"?'+re.escape(version)+r'"?\s*$',(root/SKILL).read_text()):raise ValueError('Skill metadata version differs.')
     if state.get('fingerprint')!=fingerprint(root):raise ValueError('Release source changed. Run the central Refresh source archives workflow to prepare its next version.')
     return state
 
