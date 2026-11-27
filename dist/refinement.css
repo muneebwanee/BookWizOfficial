@@ -1,0 +1,343 @@
+/* BookWiz: steady alignment and readable controls across the writing room.
+   Palette, platform radii and reading preferences remain the user's choices. */
+:root[data-pack] {
+  --room-gutter: clamp(20px, 3.2vw, 48px);
+}
+
+:root[data-pack] :is(.page-intro, .intro-copy, .library-toolbar, .tools,
+  .settings-layout, .settings-content, .setting-row, .cover-header-actions,
+  .section-heading, .provider, .connection, .dialog-head, .dialog-actions) {
+  min-width: 0;
+}
+
+:root[data-pack] .page-intro {
+  align-items: center;
+  gap: 24px;
+  margin-bottom: 28px;
+}
+
+:root[data-pack] .page-intro > div { min-width: 0; }
+:root[data-pack] .page-intro p {
+  max-width: 64ch;
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+:root[data-pack] :is(.topbar, .workspace-navigation) {
+  column-gap: 12px;
+}
+:root[data-pack] .breadcrumb { min-width: 0; }
+:root[data-pack] .breadcrumb > span:last-child {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+:root[data-pack] .model-switch {
+  align-items: center;
+  gap: 8px;
+  line-height: 1.35;
+}
+:root[data-pack] .model-switch .icon { flex: 0 0 auto; }
+
+/* Touch targets and the baseline shared by labels, icons and form controls. */
+:root[data-pack][data-platform] .btn {
+  min-height: 44px;
+  min-width: 0;
+  gap: 8px;
+  font-size: 13px;
+  line-height: 1.4;
+  letter-spacing: 0;
+  white-space: normal;
+  text-align: center;
+}
+:root[data-pack] .btn .icon {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 18px;
+  margin: 0;
+}
+:root[data-pack] .icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 40px;
+  min-height: 40px;
+}
+:root[data-pack] .field { min-width: 0; }
+:root[data-pack] .field > span { line-height: 1.5; }
+:root[data-pack] .field :is(input, select, textarea) {
+  min-width: 0;
+  max-width: 100%;
+}
+:root[data-pack] .field :is(small, .small) {
+  font-size: 12px;
+  line-height: 1.65;
+}
+
+/* The shelf's toolbar is one aligned row, including its segmented view switch. */
+:root[data-pack] .library-toolbar {
+  align-items: center;
+  gap: 16px;
+}
+:root[data-pack] .library-toolbar .tools {
+  align-items: center;
+  gap: 8px;
+}
+:root[data-pack] .library-toolbar :is(.sort-control, .search, .view-toggle) {
+  min-height: 44px;
+  height: 44px;
+}
+:root[data-pack] .library-toolbar .sort-control {
+  padding-block: 8px;
+  font-size: 12px;
+  line-height: 1.4;
+}
+:root[data-pack] .library-toolbar .search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+:root[data-pack] .library-toolbar .search input {
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  outline: none;
+  font-size: 13px;
+}
+:root[data-pack] .library-toolbar .search:focus-within {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+:root[data-pack] .view-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 3px;
+  flex: 0 0 auto;
+}
+:root[data-pack] .view-toggle > button {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  min-height: 36px;
+  padding: 8px;
+}
+:root[data-pack] .view-toggle .icon { width: 18px; height: 18px; }
+:root[data-pack] .project-info { min-width: 0; }
+:root[data-pack] .card-title-row { align-items: flex-start; gap: 8px; }
+:root[data-pack] .card-title-row .icon-btn { flex: 0 0 auto; }
+:root[data-pack] .project-title {
+  overflow-wrap: break-word;
+  word-break: normal;
+}
+:root[data-pack] .project-stats {
+  font-size: 11px;
+  line-height: 1.65;
+  font-variant-numeric: tabular-nums;
+}
+:root[data-pack] .card-bottom {
+  gap: 8px 16px;
+  align-items: center;
+  font-size: 11px;
+  line-height: 1.5;
+}
+:root[data-pack] .card-bottom > button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px;
+  min-height: 40px;
+  font-size: 12px;
+  line-height: 1.4;
+}
+:root[data-pack] .card-bottom .icon { width: 16px; height: 16px; }
+:root[data-pack] .new-project-card { gap: 12px; }
+:root[data-pack] .new-project-card strong {
+  max-width: 18ch;
+  font: 400 20px/1.35 Lora, Georgia, serif;
+}
+
+/* A provider's name and description get the same baseline as its bundled mark. */
+:root[data-pack] .provider-grid { gap: 20px; }
+:root[data-pack] .provider { padding: 24px; gap: 20px; }
+:root[data-pack] .provider h3 { font-size: 14px; line-height: 1.4; }
+:root[data-pack] .provider p { font-size: 12px; line-height: 1.65; }
+:root[data-pack] .provider > .row:first-child { gap: 12px; }
+:root[data-pack] .provider > .row:first-child > div:last-child { min-width: 0; }
+:root[data-pack] .provider .badge { font-size: 10px; line-height: 1.4; }
+:root[data-pack] .provider .provider-brand {
+  width: 44px;
+  height: 44px;
+  flex: 0 0 44px;
+  border-radius: 10px;
+}
+:root[data-pack] .local-discovery-heading { gap: 20px; }
+:root[data-pack] .local-discovery-heading > div { min-width: 0; }
+:root[data-pack] .local-discovery-heading h2 { line-height: 1.35; }
+
+/* Shared settings navigation and dialog actions stay aligned at large text sizes. */
+:root[data-pack] .settings-menu { gap: 4px; }
+:root[data-pack] .settings-menu button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  line-height: 1.4;
+}
+:root[data-pack] .settings-menu button .icon { flex: 0 0 18px; }
+:root[data-pack] .setting-row {
+  align-items: flex-start;
+  gap: 20px;
+}
+:root[data-pack] .setting-row > div { min-width: 0; }
+:root[data-pack] .setting-row .switch { flex-shrink: 0; }
+:root[data-pack] .settings-card { padding: 24px; }
+:root[data-pack] .settings-heading p { max-width: 64ch; }
+:root[data-pack] dialog .dialog-head {
+  align-items: flex-start;
+  gap: 16px;
+}
+:root[data-pack] dialog .dialog-head h2 {
+  min-width: 0;
+  overflow-wrap: break-word;
+}
+:root[data-pack] dialog .dialog-head .icon-btn { flex: 0 0 40px; }
+:root[data-pack] dialog .dialog-actions {
+  align-items: stretch;
+  gap: 8px;
+}
+:root[data-pack] dialog .dialog-actions > .btn {
+  min-width: 0;
+  white-space: normal;
+  line-height: 1.4;
+}
+
+/* Pointer feedback is a surface change; labels and icon columns stay still. */
+@media (hover: hover) {
+  :root[data-pack][data-platform] .btn:not(:disabled):hover,
+  :root[data-pack] .icon-btn:not(:disabled):hover,
+  :root[data-pack] .provider:hover,
+  :root[data-pack] .project-card:hover {
+    transform: none;
+  }
+  :root[data-pack][data-platform] .btn:not(:disabled):hover > .icon:last-child {
+    transform: none;
+  }
+}
+
+@media (max-width: 900px) {
+  :root[data-pack] .library-toolbar { flex-wrap: wrap; }
+  :root[data-pack] .library-toolbar .tools { margin-inline-start: auto; }
+}
+
+@media (max-width: 600px) {
+  :root[data-pack] .page { padding-inline: 20px; }
+  :root[data-pack] .page-intro { align-items: flex-start; gap: 20px; }
+  :root[data-pack] .page-intro h1,
+  :root[data-pack] .library-page .page-intro h1 {
+    font-size: 32px;
+    line-height: 1.2;
+    letter-spacing: -.025em;
+  }
+  :root[data-pack] .page-intro p {
+    font-size: 13px;
+    line-height: 1.65;
+    margin-top: 12px;
+  }
+  :root[data-pack] .topbar .model-switch {
+    min-height: 44px;
+    max-width: 164px;
+    font-size: 11px;
+  }
+  :root[data-pack] .library-toolbar { gap: 16px; }
+  :root[data-pack] .library-toolbar .tools {
+    width: 100%;
+    margin: 0;
+    display: grid;
+    grid-template-columns: minmax(90px, 1fr) minmax(64px, 1fr) auto;
+    gap: 8px;
+  }
+  :root[data-pack] .library-toolbar .tools > * { width: 100%; min-width: 0; }
+  :root[data-pack] .library-toolbar .search { padding-inline: 10px; }
+  :root[data-pack] .library-toolbar .sort-control { padding-inline: 12px; }
+  :root[data-pack] .library-toolbar .tabs { gap: 4px; }
+  :root[data-pack] .library-toolbar .tabs > button {
+    min-height: 44px;
+    padding: 8px 12px;
+    font-size: 12px;
+    line-height: 1.4;
+  }
+  :root[data-pack] .project-title { font-size: 17px; line-height: 1.4; }
+  :root[data-pack] .project-info .genre { font-size: 11px; }
+  :root[data-pack] .project-stats { font-size: 11px; }
+  :root[data-pack] .card-bottom { font-size: 11px; }
+  :root[data-pack] .book-grid.list-mode .card-bottom > button {
+    min-height: 40px;
+    font-size: 12px;
+  }
+  :root[data-pack] .book-grid.list-mode .project-card {
+    grid-template-columns: 80px minmax(0, 1fr);
+    gap: 16px;
+  }
+  :root[data-pack] .provider-grid { grid-template-columns: minmax(0, 1fr); gap: 16px; }
+  :root[data-pack] .provider { padding: 20px; }
+  :root[data-pack] .local-discovery-heading { padding: 20px; gap: 16px; }
+  :root[data-pack] .local-discovery-heading .service-vector,
+  :root[data-pack] .local-discovery .loading-vector {
+    width: 48px;
+    height: 48px;
+    flex: 0 0 48px;
+    align-self: flex-start;
+  }
+  :root[data-pack] .local-discovery-heading p { font-size: 12px; line-height: 1.65; }
+  :root[data-pack] .settings-menu { gap: 4px; }
+  :root[data-pack] .settings-menu button {
+    min-height: 52px;
+    padding: 8px 4px;
+    gap: 6px;
+    font-size: 11px;
+    white-space: normal;
+  }
+  :root[data-pack] .settings-card { padding: 20px; }
+  :root[data-pack] .setting-row { gap: 16px; }
+  :root[data-pack] .setting-row p { max-width: none; }
+  :root[data-pack] dialog .dialog-head { padding: 20px 20px 12px; }
+  :root[data-pack] dialog .dialog-body { padding-inline: 20px; }
+  :root[data-pack] dialog .dialog-actions { padding: 12px 20px 20px; }
+  :root[data-pack] .cover-gallery-dialog .dialog-body,
+  :root[data-pack] .proof-dialog .dialog-body { padding-inline: 14px; }
+  :root[data-pack] #main .mobile-book-tools .btn { font-size: 12px; }
+  :root[data-pack] #main .editor-bottom > .row > .btn {
+    min-height: 44px;
+    line-height: 1.4;
+  }
+}
+
+@media (max-width: 360px) {
+  :root[data-pack] .page { padding-inline: 16px; }
+  :root[data-pack] .library-toolbar .tools {
+    grid-template-columns: minmax(84px, 1fr) minmax(52px, 1fr) auto;
+    gap: 6px;
+  }
+  :root[data-pack] .library-toolbar .tabs > button { padding-inline: 10px; }
+  :root[data-pack] .topbar .model-switch { max-width: 144px; padding-inline: 10px; }
+  :root[data-pack] .book-grid { gap: 20px 12px; }
+  :root[data-pack] .book-grid.list-mode .project-card {
+    grid-template-columns: 72px minmax(0, 1fr);
+    gap: 12px;
+  }
+  :root[data-pack] .book-grid.list-mode .cover-stage { width: 72px; padding: 6px; }
+  :root[data-pack] .book-grid.list-mode .cover-stage .book-cover { width: 60px; }
+}
+
+@media print {
+  :root[data-pack] .page { padding: 0; }
+}

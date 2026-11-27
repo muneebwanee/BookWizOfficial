@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en" data-mode="dark">
+<head>
+ <meta charset="utf-8">
+ <meta name="viewport" content="width=device-width,initial-scale=1">
+ <meta name="color-scheme" content="dark light">
+ <meta name="description" content="Explore BookWiz with an isolated sample library, responsive device sizes, brand assets and motion previews.">
+ <title>BookWiz — Preview studio</title>
+ <link rel="icon" href="assets/icon.svg" type="image/svg+xml">
+ <link rel="stylesheet" href="preview.css">
+</head>
+<body>
+ <a class="skip" href="#preview-content">Skip to preview</a>
+ <header class="preview-header">
+  <a class="preview-brand" href="index.html" target="_blank" rel="noopener"><img src="assets/icon.svg" width="32" height="32" alt=""><span>BookWiz<span class="brand-divider" aria-hidden="true">/</span><span class="brand-context">Preview studio</span></span></a>
+  <a class="writing-link" href="index.html" target="_blank" rel="noopener">Open writing room <span aria-hidden="true">↗</span></a>
+ </header>
+ <div class="preview-layout">
+  <aside class="preview-sidebar" aria-label="Preview controls">
+   <div class="preview-intro"><p class="eyebrow">A closer look</p><h1>Your writing room, <br>at every size.</h1><p>Explore the real studio with a sample library. Try a page, a palette, a different point of view.</p></div>
+   <nav class="preview-tabs" aria-label="Preview sections" role="tablist">
+    <button type="button" role="tab" id="tab-studio" aria-controls="panel-studio" aria-selected="true" data-panel="studio">Studio</button>
+    <button type="button" role="tab" id="tab-identity" aria-controls="panel-identity" aria-selected="false" tabindex="-1" data-panel="identity">Identity</button>
+    <button type="button" role="tab" id="tab-motion" aria-controls="panel-motion" aria-selected="false" tabindex="-1" data-panel="motion">Motion</button>
+   </nav>
+   <details class="preview-controls" open>
+    <summary>Preview controls <span aria-hidden="true">⌄</span></summary>
+    <div class="control-grid">
+     <label class="control studio-control"><span>Page</span><select id="preview-view"><option value="library">Library</option><option value="writing">Writing</option><option value="flow">Draft Flow</option><option value="characters">Characters</option><option value="world">World bible</option><option value="notes">Notes</option><option value="redpen">The Red Pen</option><option value="publish">Cover & publish</option><option value="proof">Book proof</option><option value="models">Model hub</option><option value="settings">Appearance</option></select></label>
+     <label class="control studio-control"><span>Viewport</span><select id="preview-device"><option value="phone">Phone</option><option value="small">Small phone</option><option value="tablet">Tablet</option><option value="desktop" selected>Desktop</option></select></label>
+     <label class="control"><span>Color mode</span><select id="preview-theme"><option value="dark">Dark</option><option value="light">Light</option></select></label>
+     <label class="control studio-control"><span>Palette</span><select id="preview-pack" aria-label="Preview theme palette"></select></label>
+     <label class="control studio-control"><span>Control style</span><select id="preview-platform"><option value="bookwiz">BookWiz</option><option value="apple">Apple</option><option value="android">Android</option><option value="windows">Windows</option><option value="linux">Linux</option></select></label>
+     <label class="control"><span>Motion</span><select id="preview-motion"><option value="full">Gentle</option><option value="reduced">Reduced</option></select></label>
+     <label class="control studio-control"><span>Scale</span><select id="preview-scale"><option value="fit">Fit window</option><option value="1">100%</option><option value="0.75">75%</option><option value="0.5">50%</option></select></label>
+    </div>
+   </details>
+   <div class="preview-note"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 10h14v11H5zM8 10V6a4 4 0 0 1 8 0v4"/></svg><p>Sample books only. Edits stay in this window. Model requests, payments and device actions are disabled.</p></div>
+   <p class="preview-credit">BookWiz by <a href="https://github.com/muneebwanee" target="_blank" rel="noopener">muneebwanee</a></p>
+  </aside>
+  <main class="preview-content" id="preview-content">
+   <section id="panel-studio" class="preview-panel" role="tabpanel" aria-labelledby="tab-studio">
+    <div class="stage-toolbar"><div><span id="viewport-label">1440 × 940</span><span id="preview-status" role="status">Preparing sample library…</span></div><button type="button" id="preview-reset" class="plain-button">Reset sample</button></div>
+    <div class="preview-stage" id="preview-stage">
+     <div class="frame-space" id="frame-space"><iframe id="studio-frame" title="BookWiz sample studio" src="about:blank" sandbox="allow-scripts allow-same-origin" referrerpolicy="no-referrer"></iframe></div>
+    </div>
+    <div class="stage-caption"><span id="scale-label">Fit window</span><span>Interact with the page above. Reset restores the sample.</span></div>
+   </section>
+   <section id="panel-identity" class="preview-panel gallery-panel" role="tabpanel" aria-labelledby="tab-identity" hidden>
+    <header class="gallery-intro"><p class="eyebrow">The signature</p><h2>A book. A fold. A point of view.</h2><p>The BookWiz mark, from a browser tab to an app tile. Inspect the master artwork and its small-size companions.</p></header>
+    <div class="brand-size-proof" aria-label="Brand mark at small sizes"><div><img src="assets/brand-icon-small.svg" width="16" height="16" alt="BookWiz mark at 16 pixels"><span>16 px</span></div><div><img src="assets/brand-icon-small.svg" width="24" height="24" alt="BookWiz mark at 24 pixels"><span>24 px</span></div><div><img src="assets/brand-symbol.svg" width="32" height="32" alt="BookWiz mark at 32 pixels"><span>32 px</span></div><div><img src="assets/brand-symbol.svg" width="48" height="48" alt="BookWiz mark at 48 pixels"><span>48 px</span></div></div>
+    <div id="brand-gallery" class="brand-gallery" aria-label="BookWiz brand artwork"></div>
+    <div id="brand-palette" class="brand-palette" aria-label="Brand colors"></div>
+    <p class="gallery-footnote">The wordmark is drawn as paths. The artwork loads from bundled files, including the monochrome and app-icon variants.</p>
+   </section>
+   <section id="panel-motion" class="preview-panel gallery-panel" role="tabpanel" aria-labelledby="tab-motion" hidden>
+    <header class="gallery-intro"><p class="eyebrow">A little life</p><h2>Motion with a place to land.</h2><p>Brief, deliberate effects for a writing milestone or a finished page. Play each once, then return to the words.</p></header>
+    <p class="motion-note" id="motion-note" role="status">Choose an effect to play. Nothing loops in the background.</p>
+    <div id="effect-gallery" class="effect-gallery"></div>
+    <p class="gallery-footnote">Reduced-motion preferences keep these previews still. The manuscript itself stays steady while you write.</p>
+   </section>
+  </main>
+ </div>
+ <script type="module" src="preview.js"></script>
+</body>
+</html>
