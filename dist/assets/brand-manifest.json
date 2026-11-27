@@ -1,0 +1,102 @@
+{
+  "name": "BookWiz",
+  "direction": "A folded open book that forms W; paper, ink, teal and coral.",
+  "font": "DM Sans 550, outlined; bundled font licensed SIL OFL 1.1.",
+  "palette": [
+    {
+      "name": "Ink",
+      "hex": "#17354D"
+    },
+    {
+      "name": "Paper",
+      "hex": "#F5F0E6"
+    },
+    {
+      "name": "Teal",
+      "hex": "#78BEC7"
+    },
+    {
+      "name": "Coral",
+      "hex": "#EBA58D"
+    }
+  ],
+  "assets": [
+    {
+      "id": "icon",
+      "label": "App icon",
+      "src": "assets/icon.svg",
+      "type": "image/svg+xml",
+      "background": "paper"
+    },
+    {
+      "id": "brand-symbol",
+      "label": "Folded-book symbol",
+      "src": "assets/brand-symbol.svg",
+      "type": "image/svg+xml",
+      "background": "ink"
+    },
+    {
+      "id": "brand-symbol-ink",
+      "label": "Ink monochrome",
+      "src": "assets/brand-symbol-ink.svg",
+      "type": "image/svg+xml",
+      "background": "paper"
+    },
+    {
+      "id": "brand-symbol-paper",
+      "label": "Paper monochrome",
+      "src": "assets/brand-symbol-paper.svg",
+      "type": "image/svg+xml",
+      "background": "ink"
+    },
+    {
+      "id": "brand-horizontal",
+      "label": "Horizontal logo",
+      "src": "assets/brand-horizontal.svg",
+      "type": "image/svg+xml",
+      "background": "paper"
+    },
+    {
+      "id": "brand-horizontal-paper",
+      "label": "Reversed horizontal logo",
+      "src": "assets/brand-horizontal-paper.svg",
+      "type": "image/svg+xml",
+      "background": "ink"
+    },
+    {
+      "id": "brand-wordmark",
+      "label": "Outlined wordmark",
+      "src": "assets/brand-wordmark.svg",
+      "type": "image/svg+xml",
+      "background": "paper"
+    },
+    {
+      "id": "brand-wordmark-paper",
+      "label": "Reversed wordmark",
+      "src": "assets/brand-wordmark-paper.svg",
+      "type": "image/svg+xml",
+      "background": "ink"
+    },
+    {
+      "id": "brand-icon-small",
+      "label": "Small-size icon",
+      "src": "assets/brand-icon-small.svg",
+      "type": "image/svg+xml",
+      "background": "paper"
+    },
+    {
+      "id": "icon-512",
+      "label": "Web and desktop icon",
+      "src": "assets/icon-512.png",
+      "type": "image/png",
+      "background": "paper"
+    },
+    {
+      "id": "brand-app-icon",
+      "label": "Opaque Apple app icon",
+      "src": "assets/brand-app-icon.png",
+      "type": "image/png",
+      "background": "paper"
+    }
+  ]
+}
